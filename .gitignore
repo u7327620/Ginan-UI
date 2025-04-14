@@ -10,3 +10,4 @@ build/
 *.qrc
 *.pyc
 app/views/*_ui.py
+.idea/
