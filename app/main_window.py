@@ -1,17 +1,11 @@
-from PySide6 import QtWidgets
-import sys
+from app.controllers.file_dialog import FileDialogController
+from app.views.main_window_ui import Ui_MainWindow
+from PySide6.QtWidgets import QMainWindow
 
-class MainWindow(QtWidgets.QMainWindow):
+class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-
-        self.setWindowTitle("PySide6 init")
-        label = QtWidgets.QLabel("Initial label")
-        label.setMargin(10)
-        self.setCentralWidget(label)
-        self.show()
-
-if __name__ == "__main__":
-    app = QtWidgets.QApplication(sys.argv)
-    window = MainWindow()
-    app.exec()
+        self.ui = Ui_MainWindow()
+        self.ui.setupUi(self)
+        self.model = "" # Model empty for now
+        self.controller = FileDialogController(self.ui, self.model)
