@@ -55,7 +55,7 @@
       <item>
        <layout class="QHBoxLayout" name="inputPathLayout">
         <item>
-         <widget class="QToolButton" name="InputDataButton">
+         <widget class="QToolButton" name="inputDataButton">
           <property name="text">
            <string>Input Data</string>
           </property>
