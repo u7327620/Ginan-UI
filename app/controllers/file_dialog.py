@@ -3,6 +3,7 @@ from PySide6.QtWidgets import QFileDialog
 
 class FileDialogController:
     def __init__(self, ui:Ui_MainWindow, model): # Model empty for now
+        """Directory selector example"""
         self.ui = ui
         self.model = model
         self.setup_file_dialog()
