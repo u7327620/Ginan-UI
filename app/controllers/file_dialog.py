@@ -8,8 +8,8 @@ class FileDialogController:
         self.setup_file_dialog()
 
     def setup_file_dialog(self):
-        self.ui.toolButton.clicked.connect(self.get_directory)
+        self.ui.browseButton.clicked.connect(self.get_directory)
 
     def get_directory(self):
         dialog = QFileDialog().getExistingDirectory(caption='Select root input directory')
-        self.ui.textEdit.setText(str(dialog))
+        self.ui.inputPathLineEdit.setText(str(dialog))

@@ -11,3 +11,7 @@ build/
 *.pyc
 app/views/*_ui.py
 .idea/
+exampleConfigs/
+inputData/
+scripts/
+*.TRACE
