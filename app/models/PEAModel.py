@@ -1,5 +1,4 @@
 import os
-from xml.etree.ElementTree import tostring
 
 
 class PEAModel:
@@ -8,8 +7,8 @@ class PEAModel:
         self.input_path = input_path
         self.output_path = output_path
         self.config_path = config_path
-        self.verify_path(self.input_path, readable=True, non_empty=True)
-        self.verify_path(self.output_path, writable=True)
+        self.verify_path(self.input_path, readable=True, non_empty=True, directory=True)
+        self.verify_path(self.output_path, writable=True, directory=True)
         self.verify_path(self.config_path, readable=True)
 
     def __str__(self):
@@ -19,19 +18,21 @@ class PEAModel:
                 f"- config path: {self.config_path}")
 
     @staticmethod
-    def verify_path(path: str, readable: bool=False, writable: bool=False, non_empty=False):
+    def verify_path(path: str, readable: bool=False, writable: bool=False, non_empty=False, directory=False):
         """
-        Verifies a given <b>DIRECTORY</b> path.
+        Verifies a given path.
 
         :param path: Path to verify.
         :param readable: Check if the path is readable (default=False).
         :param writable: Check if the path is writable (default=False).
         :param non_empty: Check if the path is non-empty (default=False).
+        :param directory: Check if the path is a directory (default=False).
         """
         if not os.path.exists(path):
             raise ValueError(f"Input path does not exist: {path}")
-        if not os.path.isdir(path):
-            raise ValueError(f"Input path is not a directory: {path}")
+        if directory:
+            if not os.path.isdir(path):
+                raise ValueError(f"Input path is not a directory: {path}")
         if readable:
             if not os.access(path, os.R_OK):
                 raise ValueError(f"Input path is not readable: {path}")
