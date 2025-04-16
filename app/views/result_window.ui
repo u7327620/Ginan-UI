@@ -1,87 +1,87 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
-  <class>ResultWindow</class>
-  <widget class="QMainWindow" name="ResultWindow">
-    <property name="geometry">
-      <rect>
-        <x>0</x>
-        <y>0</y>
-        <width>767</width>
-        <height>561</height>
-      </rect>
-    </property>
-    <property name="windowTitle">
-      <string>Ginan Result Viewer</string>
-    </property>
-    <widget class="QWidget" name="centralwidget">
-      <layout class="QHBoxLayout" name="mainLayout">
-        <item>
-          <layout class="QVBoxLayout" name="leftLayout">
-            <item>
-              <widget class="QPushButton" name="datasetButton">
-                <property name="text">
-                  <string>Load Data</string>
-                </property>
-              </widget>
-            </item>
-            <item>
-              <widget class="QPushButton" name="exploreButton">
-                <property name="text">
-                  <string>View Result</string>
-                </property>
-              </widget>
-            </item>
-            <item>
-              <widget class="QPushButton" name="VisualisationButton">
-                <property name="text">
-                  <string>History</string>
-                </property>
-              </widget>
-            </item>
-          </layout>
-        </item>
-        <item>
-          <layout class="QVBoxLayout" name="rightLayout">
-            <item>
-              <widget class="QLabel" name="welcomeLabel">
-                <property name="text">
-                  <string>
+ <class>ResultWindow</class>
+ <widget class="QMainWindow" name="ResultWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>850</width>
+    <height>567</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Ginan Result Viewer</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QHBoxLayout" name="mainLayout">
+    <item>
+     <layout class="QVBoxLayout" name="leftLayout">
+      <item>
+       <widget class="QPushButton" name="datasetButton">
+        <property name="text">
+         <string>Load Data</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="exploreButton">
+        <property name="text">
+         <string>View Result</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="VisualisationButton">
+        <property name="text">
+         <string>History</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <layout class="QVBoxLayout" name="rightLayout">
+      <item>
+       <widget class="QLabel" name="welcomeLabel">
+        <property name="text">
+         <string>
                     &lt;html&gt;&lt;head/&gt;&lt;body&gt;
-                    &lt;h2 style=" margin-top:16px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"&gt;
-                    &lt;span style=" font-size:x-large; font-weight:700;"&gt;Ginan: GNSS System&lt;/span&gt;&lt;/h2&gt;
+                    &lt;h2 style=&quot; margin-top:16px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;
+                    &lt;span style=&quot; font-size:x-large; font-weight:700;&quot;&gt;Ginan: GNSS System&lt;/span&gt;&lt;/h2&gt;
                     &lt;/body&gt;&lt;/html&gt;
                   </string>
-                </property>
-                <property name="alignment">
-                  <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-                </property>
-              </widget>
-            </item>
-            <item>
-              <widget class="QLabel" name="imageLabel">
-                <property name="text">
-                  <string>Result Image Area</string>
-                </property>
-                <property name="alignment">
-                  <set>Qt::AlignCenter</set>
-                </property>
-                <property name="scaledContents">
-                  <bool>true</bool>
-                </property>
-                <property name="sizePolicy">
-                  <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                  </sizepolicy>
-                </property>
-              </widget>
-            </item>
-          </layout>
-        </item>
-      </layout>
-    </widget>
-    <widget class="QStatusBar" name="statusbar"/>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignTop</set>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="imageLabel">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>Result Image Area</string>
+        </property>
+        <property name="scaledContents">
+         <bool>true</bool>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignmentFlag::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+   </layout>
   </widget>
-  <resources/>
-  <connections/>
+  <widget class="QStatusBar" name="statusbar"/>
+ </widget>
+ <resources/>
+ <connections/>
 </ui>
