@@ -1,19 +1,21 @@
 import os
 
-
 class PEAModel:
     """Executes PEA and maintains the configuration for the PEA model."""
-    def __init__(self, input_path: str, output_path: str, config_path: str):
-        self.input_path = input_path
+    def __init__(self, input_data_path: str, input_products_path: str, output_path: str, config_path: str):
+        self.input_data_path = input_data_path
+        self.input_products_path = input_products_path
         self.output_path = output_path
         self.config_path = config_path
-        self.verify_path(self.input_path, readable=True, non_empty=True, directory=True)
+        self.verify_path(self.input_data_path, readable=True, non_empty=True, directory=True)
+        self.verify_path(self.input_products_path, readable=True, non_empty=True, directory=True)
         self.verify_path(self.output_path, writable=True, directory=True)
         self.verify_path(self.config_path, readable=True)
 
     def __str__(self):
         return (f"PEAModel:\n"
-                f"- input path: {self.input_path},\n"
+                f"- input data path: {self.input_data_path},\n"
+                f"- input products path: {self.input_products_path},\n"
                 f"- output path: {self.output_path},\n"
                 f"- config path: {self.config_path}")
 
