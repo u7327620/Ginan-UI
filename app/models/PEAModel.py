@@ -1,4 +1,6 @@
 import os
+from xml.etree.ElementTree import tostring
+
 
 class PEAModel:
     """Executes PEA and maintains the configuration for the PEA model."""
@@ -10,6 +12,11 @@ class PEAModel:
         self.verify_path(self.output_path, writable=True)
         self.verify_path(self.config_path, readable=True)
 
+    def __str__(self):
+        return (f"PEAModel:\n"
+                f"- input path: {self.input_path},\n"
+                f"- output path: {self.output_path},\n"
+                f"- config path: {self.config_path}")
 
     @staticmethod
     def verify_path(path: str, readable: bool=False, writable: bool=False, non_empty=False):
@@ -36,9 +43,5 @@ class PEAModel:
                 raise ValueError(f"Input path is empty: {path}")
 
     def executeConfig(self):
-        """
-        Executes the PEA model with the current configuration.
-        This function should be implemented to run the actual PEA model.
-        """
-        # Placeholder for actual implementation
-        print(f"Executing PEA model with input path: {self.input_path}, output path: {self.output_path}, config path: {self.config_path}")
+        print("Executing " + self.__str__())
+        
