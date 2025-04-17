@@ -46,7 +46,7 @@ class PEAModel:
             if not os.listdir(path):
                 raise ValueError(f"Input path is empty: {path}")
 
-    def executeConfig(self):
+    def execute_config(self):
         """
         Executes PEA using the provided file paths from __init__.
         PEA is executed from the config_path directory
