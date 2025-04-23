@@ -1,5 +1,19 @@
 # app/controllers/config_controller.py
 
+"""
+This controller encapsulates all logic related to populating and managing the configuration drop-down menus (QComboBox) in the main UI.
+
+1. Separation of Concerns:
+   - All combo box setup and data sourcing lives here, not in MainWindow or UI definitions.
+2. View–Logic Decoupling:
+   - UI (.ui) only defines layout and widgets.
+   - Controller handles dynamic data binding and interactions.
+3. Extensibility & Reuse:
+   - New panels or dropdowns can be added in separate controllers without bloating a single file.
+4. Testability:
+   - ConfigController can be instantiated with a mock Ui_MainWindow to verify menu items or simulate user interactions.
+"""
+
 from PySide6.QtCore import Qt
 from app.views.main_window_ui import Ui_MainWindow
 
