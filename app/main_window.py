@@ -1,5 +1,4 @@
 from app.controllers.file_dialog import FileDialogController
-from app.controllers.history_window import HistoryWindowController
 from app.views.main_window_ui import Ui_MainWindow
 from PySide6.QtWidgets import QMainWindow
 
@@ -14,4 +13,3 @@ class MainWindow(QMainWindow):
 
     def setup_controllers(self):
         self.controllers.append(FileDialogController(self.ui, "")) # no model for now
-        self.controllers.append(HistoryWindowController(self.ui))
