@@ -14,11 +14,11 @@
    <string>GINAN GNSS Processing</string>
   </property>
 
-  <!-- 中央窗口 -->
+  
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout">
 
-    <!-- 标题 -->
+    
     <item>
      <widget class="QLabel" name="titleLabel">
       <property name="font"><font><pointsize>16</pointsize><bold>true</bold></font></property>
@@ -27,11 +27,11 @@
      </widget>
     </item>
 
-    <!-- 主体：左侧按钮 + 右侧内容 -->
+    <!-- Body: Left button + Right content -->
     <item>
      <layout class="QHBoxLayout" name="mainContentLayout">
 
-      <!-- 左：功能按钮列 -->
+      <!-- Left: Function button column -->
       <item>
        <layout class="QVBoxLayout" name="leftSidebarLayout">
         <item>
@@ -67,11 +67,11 @@
        </layout>
       </item>
 
-      <!-- 右：配置与输出 -->
+      
       <item>
        <layout class="QVBoxLayout" name="rightLayout">
 
-        <!-- 水平占位（与顶部按钮同高） -->
+        
         <item>
          <layout class="QHBoxLayout" name="processButtonLayout">
           <item><spacer name="horizontalSpacer"><property name="orientation"><enum>Qt::Orientation::Horizontal</enum></property>
@@ -81,7 +81,7 @@
          </layout>
         </item>
 
-        <!-- 标题 -->
+        
         <item><widget class="QLabel" name="configLabel">
           <property name="font"><font><pointsize>14</pointsize><bold>true</bold></font></property>
           <property name="text"><string>Configuration</string></property>
@@ -91,7 +91,7 @@
           <property name="text"><string>Workflow</string></property>
         </widget></item>
 
-        <!-- 配置网格 -->
+        
         <item>
          <widget class="QFrame" name="Constellations">
           <property name="styleSheet"><string notr="true">background-color:white;</string></property>
@@ -164,7 +164,7 @@
             </item>
 
             <item row="14" column="1">
-            <!-- 右侧改成 QLineEdit，只用于显示结果 -->
+            <!-- the right to show the result -->
             <widget class="QLineEdit" name="antennaOffsetValue">
                 <property name="readOnly"><bool>true</bool></property>
                 <property name="text"><string>E/N/U offset m.m, m.m, m.m</string></property>
@@ -176,7 +176,7 @@
                     font:13pt "Segoe UI";
                 </string>
                 </property>
-                <!-- 让它自动扩展填满右列 -->
+                <!-- expand to fill the right column -->
                 <property name="sizePolicy">
                 <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                     <horstretch>0</horstretch><verstretch>0</verstretch>
@@ -216,7 +216,7 @@
          </widget>
         </item>
 
-        <!-- 终端输出 -->
+        <!-- output -->
         <item>
          <widget class="QTextEdit" name="terminalTextEdit">
           <property name="styleSheet"><string notr="true">background-color:#2c5d7c;color:white;</string></property>
@@ -227,10 +227,10 @@
          </widget>
         </item>
 
-        <!-- 预留布局，可后续插入控件 -->
+        <!-- Reserved layout -->
         <item><layout class="QVBoxLayout" name="configLayout"/></item>
 
-        <!-- 可视化标题与区域 -->
+        <!-- Visualisation of headings and areas -->
         <item><widget class="QLabel" name="visualisationLabel">
           <property name="font"><font><pointsize>14</pointsize><bold>true</bold></font></property>
           <property name="text"><string>Visualisation</string></property>
@@ -252,7 +252,7 @@
    </layout>
   </widget>
 
-  <!-- 状态栏 -->
+  <!-- statuz -->
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
  <resources/>

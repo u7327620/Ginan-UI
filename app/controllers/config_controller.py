@@ -63,7 +63,6 @@ class ConfigController:
             cb.setStyleSheet(cb.styleSheet() + hide_arrow_css)
 
 
-
         # Antenna offset：QLineEdit on the right, display only; calendar pops up when clicked on
         self.ui.antennaOffsetValue.mousePressEvent = self._open_calendar_dialog
         self.ui.antennaOffsetValue.setCursor(Qt.PointingHandCursor)
@@ -74,7 +73,7 @@ class ConfigController:
         self.ui.timeWindowValue.mousePressEvent = self._open_time_window_dialog
         self.ui.timeWindowValue.setCursor(Qt.PointingHandCursor)
 
-        # Data interval：seconds
+        # Data interval：set seconds
         self.ui.dataIntervalValue.mousePressEvent = self._open_data_interval_dialog
         self.ui.dataIntervalValue.setCursor(Qt.PointingHandCursor)
 
