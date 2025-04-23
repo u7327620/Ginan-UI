@@ -175,61 +175,39 @@
           </property>
           <layout class="QGridLayout" name="configGridLayout">
            <item row="14" column="0">
-            <widget class="QPushButton" name="antennaOffsetButton">
+            <widget class="QComboBox" name="Antenna_offset">
              <property name="styleSheet">
               <string notr="true">background-color: #2c5d7c; color: white;</string>
              </property>
-             <property name="text">
-              <string>Antenna offset</string>
-             </property>
+             <item>
+              <property name="text">
+               <string>Antenna offset</string>
+              </property>
+             </item>
             </widget>
            </item>
-           <item row="15" column="1">
-            <widget class="QLabel" name="pppProviderValue">
-             <property name="text">
-              <string>List populated from file</string>
-             </property>
-            </widget>
-           </item>
-           <item row="16" column="1">
-            <widget class="QLabel" name="pppSeriesValue">
-             <property name="text">
-              <string>List populated from file</string>
-             </property>
-            </widget>
-           </item>
-           <item row="14" column="1">
-            <widget class="QLabel" name="antennaOffsetValue">
-             <property name="text">
-              <string>E/N/U offset m.m, m.m, m.m</string>
-             </property>
-            </widget>
-           </item>
-           <item row="16" column="0">
-            <widget class="QPushButton" name="pppSeriesButton">
+           <item row="6" column="0">
+            <widget class="QComboBox" name="Data_interval">
              <property name="styleSheet">
               <string notr="true">background-color: #2c5d7c; color: white;</string>
              </property>
-             <property name="text">
-              <string>PPP series</string>
-             </property>
+             <item>
+              <property name="text">
+               <string>Data interval</string>
+              </property>
+             </item>
             </widget>
            </item>
-           <item row="17" column="0">
-            <widget class="QPushButton" name="showConfigButton">
+           <item row="13" column="0">
+            <widget class="QComboBox" name="Antenna_type">
              <property name="styleSheet">
               <string notr="true">background-color: #2c5d7c; color: white;</string>
              </property>
-             <property name="text">
-              <string>Show config</string>
-             </property>
-            </widget>
-           </item>
-           <item row="6" column="1">
-            <widget class="QLabel" name="dataIntervalValue">
-             <property name="text">
-              <string>Seconds S.S</string>
-             </property>
+             <item>
+              <property name="text">
+               <string>Antenna type</string>
+              </property>
+             </item>
             </widget>
            </item>
            <item row="7" column="1">
@@ -246,94 +224,11 @@
              </property>
             </widget>
            </item>
-           <item row="6" column="0">
-            <widget class="QComboBox" name="Data_interval">
-             <property name="styleSheet">
-              <string notr="true">background-color: #2c5d7c; color: white;</string>
-             </property>
-             <item>
-              <property name="text">
-               <string>Data interval</string>
-              </property>
-             </item>
-            </widget>
-           </item>
-           <item row="13" column="1">
-            <widget class="QLabel" name="antennaTypeValue">
+           <item row="14" column="1">
+            <widget class="QLabel" name="antennaOffsetValue">
              <property name="text">
-              <string>List populated from file</string>
+              <string>E/N/U offset m.m, m.m, m.m</string>
              </property>
-            </widget>
-           </item>
-           <item row="15" column="0">
-            <widget class="QPushButton" name="pppProviderButton">
-             <property name="styleSheet">
-              <string notr="true">background-color: #2c5d7c; color: white;</string>
-             </property>
-             <property name="text">
-              <string>PPP provider</string>
-             </property>
-            </widget>
-           </item>
-           <item row="13" column="0">
-            <widget class="QPushButton" name="antennaTypeButton">
-             <property name="styleSheet">
-              <string notr="true">background-color: #2c5d7c; color: white;</string>
-             </property>
-             <property name="text">
-              <string>Antenna type</string>
-             </property>
-            </widget>
-           </item>
-           <item row="3" column="0">
-            <widget class="QComboBox" name="Constellations_2">
-             <property name="styleSheet">
-              <string notr="true">background-color: #2c5d7c; color: white;</string>
-             </property>
-             <item>
-              <property name="text">
-               <string>Constellations</string>
-              </property>
-             </item>
-            </widget>
-           </item>
-           <item row="5" column="1">
-            <widget class="QLabel" name="timeWindowValue">
-             <property name="text">
-              <string>Start/End YYYY-MM-DD_HH:MM:S.S</string>
-             </property>
-            </widget>
-           </item>
-           <item row="5" column="0">
-            <widget class="QComboBox" name="Time_window">
-             <property name="styleSheet">
-              <string notr="true">background-color: #2c5d7c; color: white;</string>
-             </property>
-             <item>
-              <property name="text">
-               <string>Time window</string>
-              </property>
-             </item>
-            </widget>
-           </item>
-           <item row="0" column="0">
-            <widget class="QComboBox" name="Mode">
-             <property name="font">
-              <font>
-               <kerning>true</kerning>
-              </font>
-             </property>
-             <property name="autoFillBackground">
-              <bool>false</bool>
-             </property>
-             <property name="styleSheet">
-              <string notr="true">background-color: #2c5d7c; color: white;</string>
-             </property>
-             <item>
-              <property name="text">
-               <string>Mode</string>
-              </property>
-             </item>
             </widget>
            </item>
            <item row="0" column="1">
@@ -360,11 +255,126 @@
              </item>
             </widget>
            </item>
+           <item row="5" column="1">
+            <widget class="QLabel" name="timeWindowValue">
+             <property name="text">
+              <string>Start/End YYYY-MM-DD_HH:MM:S.S</string>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="0">
+            <widget class="QComboBox" name="Constellations_2">
+             <property name="styleSheet">
+              <string notr="true">background-color: #2c5d7c; color: white;</string>
+             </property>
+             <item>
+              <property name="text">
+               <string>Constellations</string>
+              </property>
+             </item>
+            </widget>
+           </item>
+           <item row="0" column="0">
+            <widget class="QComboBox" name="Mode">
+             <property name="font">
+              <font>
+               <kerning>true</kerning>
+              </font>
+             </property>
+             <property name="autoFillBackground">
+              <bool>false</bool>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">background-color: #2c5d7c; color: white;</string>
+             </property>
+             <item>
+              <property name="text">
+               <string>Mode</string>
+              </property>
+             </item>
+            </widget>
+           </item>
+           <item row="6" column="1">
+            <widget class="QLabel" name="dataIntervalValue">
+             <property name="text">
+              <string>Seconds S.S</string>
+             </property>
+            </widget>
+           </item>
            <item row="17" column="1">
+            <widget class="QLabel" name="pppSeriesValue">
+             <property name="text">
+              <string>List populated from file</string>
+             </property>
+            </widget>
+           </item>
+           <item row="5" column="0">
+            <widget class="QComboBox" name="Time_window">
+             <property name="styleSheet">
+              <string notr="true">background-color: #2c5d7c; color: white;</string>
+             </property>
+             <item>
+              <property name="text">
+               <string>Time window</string>
+              </property>
+             </item>
+            </widget>
+           </item>
+           <item row="16" column="0">
+            <widget class="QComboBox" name="PPP_provider">
+             <property name="styleSheet">
+              <string notr="true">background-color: #2c5d7c; color: white;</string>
+             </property>
+             <item>
+              <property name="text">
+               <string>PPP provider</string>
+              </property>
+             </item>
+            </widget>
+           </item>
+           <item row="18" column="1">
             <widget class="QLabel" name="showConfigValue">
              <property name="text">
               <string>Open Yaml config in editor</string>
              </property>
+            </widget>
+           </item>
+           <item row="17" column="0">
+            <widget class="QComboBox" name="PPP_series">
+             <property name="styleSheet">
+              <string notr="true">background-color: #2c5d7c; color: white;</string>
+             </property>
+             <item>
+              <property name="text">
+               <string>PPP series</string>
+              </property>
+             </item>
+            </widget>
+           </item>
+           <item row="16" column="1">
+            <widget class="QLabel" name="pppProviderValue">
+             <property name="text">
+              <string>List populated from file</string>
+             </property>
+            </widget>
+           </item>
+           <item row="13" column="1">
+            <widget class="QLabel" name="antennaTypeValue">
+             <property name="text">
+              <string>List populated from file</string>
+             </property>
+            </widget>
+           </item>
+           <item row="18" column="0">
+            <widget class="QComboBox" name="Show_config">
+             <property name="styleSheet">
+              <string notr="true">background-color: #2c5d7c; color: white;</string>
+             </property>
+             <item>
+              <property name="text">
+               <string>Show config</string>
+              </property>
+             </item>
             </widget>
            </item>
           </layout>
