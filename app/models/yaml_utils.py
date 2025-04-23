@@ -9,7 +9,7 @@ def update_yaml_values(file_path: str, updates: list[tuple[str, str]]):
     """
     Modify several YAML keys in the provided file path to new values.
 
-    :param file_path: The path to the YAML file to modify (e.g. "resources/ppp_example.yaml")
+    :param file_path: The path to the YAML file to modify (e.g. "/data/resources/ppp_example.yaml")
     :param updates: List of (key_path, new_value) tuples, e.g.
                     [("outputs.outputs_root", "new/path"),
                      ("inputs.inputs_root", "other/path")]
@@ -17,8 +17,9 @@ def update_yaml_values(file_path: str, updates: list[tuple[str, str]]):
     path = Path(file_path)
     data = yaml.load(path.read_text()) # Create a dictionary-like structure
 
-    # Move through the provided dotted path
+    # Iterate through each modification
     for key_path, new_value in updates:
+        # Move through the provided dotted path
         keys = key_path.split(".")
         node = data
         for k in keys[:-1]: # Iterate to the key before the one we want to edit
@@ -30,6 +31,7 @@ def update_yaml_values(file_path: str, updates: list[tuple[str, str]]):
         if last_key not in node:
             raise KeyError(f"Final key '{last_key}' not found in {key_path}")
 
+        # Finally, make the change to the specified key-value pair
         node[last_key] = new_value
 
-    yaml.dump(data, path.open("w")) # Open file_path with write permission and dump in change
+    yaml.dump(data, path.open("w")) # Open file_path with write permission and dump in the changes
