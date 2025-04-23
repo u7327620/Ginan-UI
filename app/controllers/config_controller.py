@@ -27,6 +27,11 @@ class ConfigController:
         self._bind_combo(self.ui.Time_window, self._get_time_window_items)
         self._bind_combo(self.ui.Data_interval, self._get_data_interval_items)
         self._bind_combo(self.ui.Receiver_type, self._get_receiver_type_items)
+        self._bind_combo(self.ui.Antenna_type, self._get_antenna_type_items)
+        self._bind_combo(self.ui.Antenna_offset, self._get_antenna_offset_items)
+        self._bind_combo(self.ui.PPP_provider, self._get_ppp_provider_items)
+        self._bind_combo(self.ui.PPP_series, self._get_ppp_series_items)
+        self._bind_combo(self.ui.Show_config, self._get_show_config_items)
 
     def _bind_combo(self, combo, items_func):
         """
@@ -67,3 +72,17 @@ class ConfigController:
 
     def _get_receiver_type_items(self):
         return ["Type A", "Type B", "Type C"]
+    def _get_antenna_type_items(self):
+        return ["Type X", "Type Y", "Type Z"]
+
+    def _get_antenna_offset_items(self):
+        return ["0,0,0", "1,1,1", "2,2,2"]
+
+    def _get_ppp_provider_items(self):
+        return ["Provider A", "Provider B", "Provider C"]
+
+    def _get_ppp_series_items(self):
+        return ["Series 1", "Series 2", "Series 3"]
+
+    def _get_show_config_items(self):
+        return ["Show in Editor", "Show in Dialog"]
