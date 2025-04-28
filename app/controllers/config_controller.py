@@ -13,8 +13,11 @@ This controller encapsulates all logic related to populating and managing the co
 4. Testability:
    - ConfigController can be instantiated with a mock Ui_MainWindow to verify menu items or simulate user interactions.
 """
-
+import os
+from PySide6.QtCore import QUrl
+from PySide6.QtGui import QDesktopServices
 from PySide6.QtCore import Qt, QDate, QDateTime
+
 from PySide6.QtWidgets import (
     QDialog,
     QVBoxLayout,
@@ -33,50 +36,30 @@ class ConfigController:
         # bond up QComboBox's showPopup
         self._bind_combo(self.ui.Mode, self._get_mode_items)
         self._bind_combo(self.ui.Constellations_2, self._get_constellations_items)
-        # self._bind_combo(self.ui.Time_window, self._get_time_window_items)
-        # self._bind_combo(self.ui.Data_interval, self._get_data_interval_items)
         self._bind_combo(self.ui.Receiver_type, self._get_receiver_type_items)
         self._bind_combo(self.ui.Antenna_type, self._get_antenna_type_items)
-        # self._bind_combo(self.ui.Antenna_offset, self._get_antenna_offset_items)
-        # self._init_date_widget(self.ui.Antenna_offset)
         self._bind_combo(self.ui.PPP_provider, self._get_ppp_provider_items)
         self._bind_combo(self.ui.PPP_series, self._get_ppp_series_items)
-        self._bind_combo(self.ui.Show_config, self._get_show_config_items)
-
-        # ---------- Make Time window / Data interval left dropdown purely decorative ----------
-        hide_arrow_css = (
-            "QComboBox::drop-down{"
-            "  subcontrol-origin: padding;"
-            "  subcontrol-position: top right;"
-            "  width:0px;"
-            "  height:0px;"          
-            "  border:0px;"
-            "}"
-            "QComboBox::down-arrow{"
-            "  width:0px;"          
-            "  height:0px;"
-            "}" 
-        )
-
-        for cb in (self.ui.Time_window, self.ui.Data_interval):
-            cb.setEnabled(False)                       
-            cb.setStyleSheet(cb.styleSheet() + hide_arrow_css)
 
 
-        # Antenna offset：QLineEdit on the right, display only; calendar pops up when clicked on
-        self.ui.antennaOffsetValue.mousePressEvent = self._open_calendar_dialog
-        self.ui.antennaOffsetValue.setCursor(Qt.PointingHandCursor)
-        # Initial value: current date
-        self.ui.antennaOffsetValue.setText(QDate.currentDate().toString("dd-MM-yyyy"))
+
+        # Antenna offset：The left button clicks to bring up a pop-up calendar and the right read-only box displays the results
+        self.ui.antennaOffsetButton.clicked.connect(self._open_calendar_dialog)
+        self.ui.antennaOffsetButton.setCursor(Qt.PointingHandCursor)
+        # initial placeholder text
+        self.ui.antennaOffsetValue.setText("E/N/U offset m.m, m.m, m.m")
 
         # Time window：Start & End Date & Time
-        self.ui.timeWindowValue.mousePressEvent = self._open_time_window_dialog
-        self.ui.timeWindowValue.setCursor(Qt.PointingHandCursor)
+        self.ui.timeWindowButton.clicked.connect(self._open_time_window_dialog)
+        self.ui.timeWindowButton.setCursor(Qt.PointingHandCursor)
 
         # Data interval：set seconds
-        self.ui.dataIntervalValue.mousePressEvent = self._open_data_interval_dialog
-        self.ui.dataIntervalValue.setCursor(Qt.PointingHandCursor)
+        self.ui.dataIntervalButton.clicked.connect(self._open_data_interval_dialog)
+        self.ui.dataIntervalButton.setCursor(Qt.PointingHandCursor)
 
+        # Show config: Click the button to open the editor
+        self.ui.showConfigButton.clicked.connect(self._open_show_config)
+        self.ui.showConfigButton.setCursor(Qt.PointingHandCursor)
 
 
     def _bind_combo(self, combo, items_func):
@@ -103,8 +86,8 @@ class ConfigController:
 
 
     # ---------- Antenna offset  ----------
-    def _open_calendar_dialog(self, event):
-        dlg = QDialog(self.ui.antennaOffsetValue)
+    def _open_calendar_dialog(self):
+        dlg = QDialog(self.ui.antennaOffsetButton)
         dlg.setWindowTitle("Select date")
         layout = QVBoxLayout(dlg)
 
@@ -169,6 +152,26 @@ class ConfigController:
         )
         if ok:
             self.ui.dataIntervalValue.setText(f"{val} s")       
+
+    # ---------- Show config  ---------
+    def _open_show_config(self):
+        """
+        Temporarily replace the yaml folder with the project root folder
+        """
+        # __file__ is the path to config_controller.py, two levels up to the project root.
+        project_root = os.path.abspath(
+            os.path.join(os.path.dirname(__file__), '..', '..')
+        )
+
+        if not os.path.isdir(project_root):
+            print(f"Project root directory does not exist: {project_root}")
+            return
+
+        # Cross-platform opening of directories with the system's default file manager
+        url = QUrl.fromLocalFile(project_root)
+        QDesktopServices.openUrl(url)
+
+
 
 
     def _get_mode_items(self):

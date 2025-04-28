@@ -99,42 +99,82 @@
           <property name="frameShadow"><enum>QFrame::Shadow::Raised</enum></property>
 
           <layout class="QGridLayout" name="configGridLayout">
+            <!-- Setting the spacing -->
+            <property name="verticalSpacing"><number>10</number></property>
+            <property name="horizontalSpacing"><number>8</number></property>
+            <property name="leftMargin">
+              <number>5</number>
+            </property>
+            <property name="topMargin">
+              <number>5</number>
+            </property>
+            <property name="rightMargin">
+              <number>5</number>
+            </property>
+            <property name="bottomMargin">
+              <number>5</number>
+            </property>
 
-           <!-- row-0 : Mode -->
-           <item row="0" column="0">
-            <widget class="QComboBox" name="Mode">
-             <property name="styleSheet"><string notr="true">background-color:#2c5d7c;color:white;</string></property>
-             <item><property name="text"><string>Mode</string></property></item>
-            </widget>
-           </item>
-           <item row="0" column="1"><widget class="QLabel" name="modeValue"><property name="text"><string>Static/Dynamic</string></property></widget></item>
+          
+          <!-- row-0 : Mode -->
+          <item row="0" column="0">
+           <widget class="QComboBox" name="Mode">
+            <property name="styleSheet"><string notr="true">background-color:#2c5d7c;color:white;</string></property>
+            <item><property name="text"><string>Mode</string></property></item>
+           </widget>
+          </item>
+          <item row="0" column="1"><widget class="QLabel" name="modeValue"><property name="text"><string>Static/Dynamic</string></property></widget></item>
 
-           <!-- row-3 : Constellations -->
-           <item row="3" column="0">
-            <widget class="QComboBox" name="Constellations_2">
-             <property name="styleSheet"><string notr="true">background-color:#2c5d7c;color:white;</string></property>
-             <item><property name="text"><string>Constellations</string></property></item>
-            </widget>
-           </item>
-           <item row="3" column="1"><widget class="QLabel" name="constellationsValue"><property name="text"><string>GPS/GAL/GLO/BDS</string></property></widget></item>
+          <!-- row-3 : Constellations -->
+          <item row="3" column="0">
+           <widget class="QComboBox" name="Constellations_2">
+            <property name="styleSheet"><string notr="true">background-color:#2c5d7c;color:white;</string></property>
+            <item><property name="text"><string>Constellations</string></property></item>
+           </widget>
+          </item>
+          <item row="3" column="1"><widget class="QLabel" name="constellationsValue"><property name="text"><string>GPS/GAL/GLO/BDS</string></property></widget></item>
 
-           <!-- row-5 : Time window -->
-           <item row="5" column="0">
-            <widget class="QComboBox" name="Time_window">
-             <property name="styleSheet"><string notr="true">background-color:#2c5d7c;color:white;</string></property>
-             <item><property name="text"><string>Time window</string></property></item>
+          <!-- row-5 : Time window -->
+          <item row="5" column="0">
+            <widget class="QPushButton" name="timeWindowButton">
+              <property name="sizePolicy">
+                <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                  <horstretch>0</horstretch><verstretch>0</verstretch>
+                </sizepolicy>
+              </property>
+              <property name="styleSheet">
+                <string notr="true">
+                  background-color:#2c5d7c;
+                  color:white;
+                  padding:0px 8px;
+                  font:13pt "Segoe UI";
+                </string>
+              </property>
+              <property name="text"><string>Time window</string></property>
             </widget>
-           </item>
-           <item row="5" column="1"><widget class="QLabel" name="timeWindowValue"><property name="text"><string>Start/End YYYY-MM-DD_HH:MM:S.S</string></property></widget></item>
+          </item>
+          <item row="5" column="1"><widget class="QLabel" name="timeWindowValue"><property name="text"><string>Start/End YYYY-MM-DD_HH:MM:S.S</string></property></widget></item>
 
-           <!-- row-6 : Data interval -->
-           <item row="6" column="0">
-            <widget class="QComboBox" name="Data_interval">
-             <property name="styleSheet"><string notr="true">background-color:#2c5d7c;color:white;</string></property>
-             <item><property name="text"><string>Data interval</string></property></item>
+          <!-- row-6 : Data interval -->
+          <item row="6" column="0">
+            <widget class="QPushButton" name="dataIntervalButton">
+              <property name="sizePolicy">
+                <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                  <horstretch>0</horstretch><verstretch>0</verstretch>
+                </sizepolicy>
+              </property>
+              <property name="styleSheet">
+                <string notr="true">
+                  background-color:#2c5d7c;
+                  color:white;
+                  padding:0px 8px;
+                  font:13pt "Segoe UI";
+                </string>
+              </property>
+              <property name="text"><string>Data interval</string></property>
             </widget>
-           </item>
-           <item row="6" column="1"><widget class="QLabel" name="dataIntervalValue"><property name="text"><string>Seconds S.S</string></property></widget></item>
+          </item>
+          <item row="6" column="1"><widget class="QLabel" name="dataIntervalValue"><property name="text"><string>Seconds S.S</string></property></widget></item>
 
            <!-- row-7 : Receiver type -->
            <item row="7" column="0">
@@ -155,35 +195,50 @@
            <item row="13" column="1"><widget class="QLabel" name="antennaTypeValue"><property name="text"><string>List populated from file</string></property></widget></item>
 
            <!-- row-14 : Antenna offset  -->
-            <item row="14" column="0">
-            <widget class="QComboBox" name="Antenna_offset_title">
-                <property name="enabled"><bool>false</bool></property>
-                <property name="styleSheet"><string notr="true">background-color:#2c5d7c;color:white;</string></property>
-                <item><property name="text"><string>Antenna offset</string></property></item>
-            </widget>
-            </item>
-
-            <item row="14" column="1">
-            <!-- the right to show the result -->
-            <widget class="QLineEdit" name="antennaOffsetValue">
-                <property name="readOnly"><bool>true</bool></property>
-                <property name="text"><string>E/N/U offset m.m, m.m, m.m</string></property>
-                <property name="styleSheet">
-                <string notr="true">
-                    background-color:#2c5d7c;
-                    color:white;
-                    padding:0px 8px;
-                    font:13pt "Segoe UI";
-                </string>
-                </property>
-                <!-- expand to fill the right column -->
-                <property name="sizePolicy">
+           <item row="14" column="0">
+            <widget class="QPushButton" name="antennaOffsetButton">
+              <property name="minimumSize">
+                <size><width>0</width><height>30</height></size>
+              </property>
+              <property name="sizePolicy">
                 <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                    <horstretch>0</horstretch><verstretch>0</verstretch>
+                  <horstretch>0</horstretch><verstretch>0</verstretch>
                 </sizepolicy>
-                </property>
+              </property>
+              <property name="styleSheet">
+                <string notr="true">
+                  background-color:#2c5d7c;
+                  color:white;
+                  padding:0px 8px;
+                  font:13pt "Segoe UI";
+                </string>
+              </property>
+              <property name="text">
+                <string>Antenna offset</string>
+              </property>
             </widget>
-            </item>
+          </item>
+          <item row="14" column="1">
+            <!-- Right display E/N/U offset -->
+            <widget class="QLineEdit" name="antennaOffsetValue">
+              <property name="readOnly"><bool>true</bool></property>
+              <!-- Remove borders and backgrounds -->
+              <property name="frame"><bool>false</bool></property>
+              <property name="styleSheet">
+                <string notr="true">
+                  background: transparent;
+                  border: none;
+                </string>
+              </property>
+              <property name="text"><string>E/N/U offset m.m, m.m, m.m</string></property>
+              <property name="sizePolicy">
+                <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                  <horstretch>0</horstretch><verstretch>0</verstretch>
+                </sizepolicy>
+              </property>
+            </widget>
+          </item>
+            
 
            <!-- row-16 : PPP provider -->
            <item row="16" column="0">
@@ -203,14 +258,30 @@
            </item>
            <item row="17" column="1"><widget class="QLabel" name="pppSeriesValue"><property name="text"><string>List populated from file</string></property></widget></item>
 
-           <!-- row-18 : Show config -->
-           <item row="18" column="0">
-            <widget class="QComboBox" name="Show_config">
-             <property name="styleSheet"><string notr="true">background-color:#2c5d7c;color:white;</string></property>
-             <item><property name="text"><string>Show config</string></property></item>
+          <!-- row-18 : Show config -->
+          <item row="18" column="0">
+            <widget class="QPushButton" name="showConfigButton">
+              <property name="sizePolicy">
+                <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                  <horstretch>0</horstretch><verstretch>0</verstretch>
+                </sizepolicy>
+              </property>
+              <property name="styleSheet">
+                <string notr="true">
+                  background-color:#2c5d7c;
+                  color:white;
+                  padding:0px 8px;
+                  font:13pt "Segoe UI";
+                </string>
+              </property>
+              <property name="text"><string>Show config</string></property>
             </widget>
-           </item>
-           <item row="18" column="1"><widget class="QLabel" name="showConfigValue"><property name="text"><string>Open Yaml config in editor</string></property></widget></item>
+          </item>
+          <item row="18" column="1">
+            <widget class="QLabel" name="showConfigValue">
+              <property name="text"><string>Open Yaml config in editor</string></property>
+            </widget>
+          </item>
 
           </layout>
          </widget>
