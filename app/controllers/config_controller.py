@@ -42,6 +42,21 @@ class ConfigController:
         self._bind_combo(self.ui.PPP_series, self._get_ppp_series_items)
 
 
+        # When selected, write the value to the right Label and reset the left text.
+        # Mode, Constellations...
+        self.ui.Mode.activated.connect(
+            lambda idx: self._on_select(self.ui.Mode, self.ui.modeValue, "Mode", idx))
+        self.ui.Constellations_2.activated.connect(
+            lambda idx: self._on_select(self.ui.Constellations_2, self.ui.constellationsValue, "Constellations", idx))
+        self.ui.Receiver_type.activated.connect(
+            lambda idx: self._on_select(self.ui.Receiver_type, self.ui.receiverTypeValue, "Receiver type", idx))
+        self.ui.Antenna_type.activated.connect(
+            lambda idx: self._on_select(self.ui.Antenna_type, self.ui.antennaTypeValue, "Antenna type", idx))
+        self.ui.PPP_provider.activated.connect(
+            lambda idx: self._on_select(self.ui.PPP_provider, self.ui.pppProviderValue, "PPP provider", idx))
+        self.ui.PPP_series.activated.connect(
+            lambda idx: self._on_select(self.ui.PPP_series, self.ui.pppSeriesValue, "PPP series", idx))
+
 
         # Antenna offset：The left button clicks to bring up a pop-up calendar and the right read-only box displays the results
         self.ui.antennaOffsetButton.clicked.connect(self._open_calendar_dialog)
@@ -60,6 +75,13 @@ class ConfigController:
         # Show config: Click the button to open the editor
         self.ui.showConfigButton.clicked.connect(self._open_show_config)
         self.ui.showConfigButton.setCursor(Qt.PointingHandCursor)
+
+    def _on_select(self, combo, label, title, index):
+        value = combo.itemText(index)
+        label.setText(value)
+        # Reset left button text
+        combo.clear()
+        combo.addItem(title)
 
 
     def _bind_combo(self, combo, items_func):

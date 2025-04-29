@@ -148,6 +148,7 @@
                   color:white;
                   padding:0px 8px;
                   font:13pt "Segoe UI";
+                  text-align:left;
                 </string>
               </property>
               <property name="text"><string>Time window</string></property>
@@ -169,6 +170,7 @@
                   color:white;
                   padding:0px 8px;
                   font:13pt "Segoe UI";
+                  text-align:left;
                 </string>
               </property>
               <property name="text"><string>Data interval</string></property>
@@ -211,6 +213,7 @@
                   color:white;
                   padding:0px 8px;
                   font:13pt "Segoe UI";
+                  text-align:left;
                 </string>
               </property>
               <property name="text">
@@ -272,6 +275,7 @@
                   color:white;
                   padding:0px 8px;
                   font:13pt "Segoe UI";
+                  text-align:left;
                 </string>
               </property>
               <property name="text"><string>Show config</string></property>
