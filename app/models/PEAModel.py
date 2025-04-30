@@ -24,7 +24,7 @@ class PEAModel:
 
         try:
             # Run PEA using a subprocess at the directory "config_path"
-            result = subprocess.run(command, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True,
+            result = subprocess.run(command, check=True, text=True,
                                     cwd=os.path.dirname(self.config_path)
             )
             print("PEA output:\n" + result.stdout)
