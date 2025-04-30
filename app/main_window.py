@@ -12,7 +12,6 @@ class MainWindow(QMainWindow):
         self.controllers = []
         self.setup_controllers()
 
-
     def setup_controllers(self):
         self.controllers.append(FileDialogController(self.ui, "")) # no model for now
         self.controllers.append(ConfigController(self.ui))
