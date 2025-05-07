@@ -15,6 +15,10 @@ def get_pea_exec() -> pathlib.Path | [str]:
     elif platform.system().lower() == "linux":
         executable = pathlib.Path(f"{os.getcwd()}/../resources/ginan.AppImage")
 
+    # Automated docker install and setup linking /data to CWD.
+    elif platform.system().lower() == "darwin":
+        pass
+
     # Uses/Installs WSL and Ubuntu before executing PEA
     ## TODO - Test and complete on windows system
     elif platform.system().lower() == "windows":
