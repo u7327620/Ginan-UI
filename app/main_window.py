@@ -38,7 +38,8 @@ class MainWindow(QMainWindow):
 
     def setup_controllers(self):
         # Initialize FileDialogController and ConfigController
-        self.controllers.append(FileDialogController(self.ui, ""))  # No model for now
+        # self.controllers.append(FileDialogController(self.ui, ""))  # No model for now
+        self.controllers.append(FileDialogController(self.ui, None))
         self.controllers.append(ConfigController(self.ui))  # Initialize ConfigController
 
     def load_html_file(self):
