@@ -49,6 +49,7 @@ class FileDialogController:
             self.ui.processButton.setEnabled(True)
 
     def process_and_display(self):
+        # TODO: check the html process order
         html_path, _ = QFileDialog.getOpenFileName(
             parent=None,
             caption="Select HTML File to Display",
