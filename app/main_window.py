@@ -9,6 +9,7 @@ from PySide6.QtCore import Qt
 class FullHtmlDialog(QDialog):
     def __init__(self, file_path):
         super().__init__()
+        self.ui = Ui_MainWindow()
         self.setWindowTitle("Full HTML View")
         self.webview = QWebEngineView(self)
         self.webview.setUrl(QUrl.fromLocalFile(file_path))
