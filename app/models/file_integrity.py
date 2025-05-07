@@ -21,7 +21,7 @@ def get_pea_exec():
 
     # Automated docker install and setup linking /data to CWD.
     elif platform.system().lower() == "darwin":
-        pass
+        raise RuntimeError("Get a computer that isn't mac :)")
 
     # Uses/Installs WSL and Ubuntu before executing PEA
     ## TODO - Test and complete on windows system
