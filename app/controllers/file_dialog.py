@@ -3,9 +3,6 @@ from PySide6.QtWidgets import QFileDialog
 
 class FileDialogController:
     def __init__(self, file_dialog_ui: Ui_MainWindow, file_requiring_model=None):
-        """
-        让 Observations 按钮首次点击就弹出文件对话框，选择 HTML 文件。
-        """
         self.ui = file_dialog_ui
         self.model = file_requiring_model
         self.setup_file_dialog()
