@@ -26,6 +26,7 @@ from PySide6.QtWidgets import (
     QCalendarWidget,
     QDateTimeEdit,
     QInputDialog,
+    QMessageBox,
 )
 from app.views.main_window_ui import Ui_MainWindow
 
@@ -85,12 +86,6 @@ class ConfigController:
 
 
     def _bind_combo(self, combo, items_func):
-        """
-        Monkey-patch combo.showPopup to:
-          1) clear & populate via items_func()
-          2) center-align text
-          3) call original showPopup to expand
-        """
        
         combo._old_showPopup = combo.showPopup
 
@@ -156,6 +151,16 @@ class ConfigController:
         dlg.exec()
 
     def _set_time_window(self, start_edit, end_edit, dlg):
+        # If end < start, warn and do not accept dialog
+        if end_edit.dateTime() < start_edit.dateTime():
+            QMessageBox.warning(
+                dlg,  
+                "Time error",
+                "End time cannot be earlier than start time.\n"
+                "Please select again."
+            )
+            return
+
         s = start_edit.dateTime().toString("yyyy-MM-dd_HH:mm:ss")
         e = end_edit.dateTime().toString("yyyy-MM-dd_HH:mm:ss")
         self.ui.timeWindowValue.setText(f"{s}  →  {e}")
