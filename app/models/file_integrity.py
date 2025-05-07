@@ -19,6 +19,10 @@ def get_pea_exec():
     elif platform.system().lower() == "darwin":
         raise RuntimeError("Please put PEA on path or not use Mac :)")
 
+    # Automated docker install and setup linking /data to CWD.
+    elif platform.system().lower() == "darwin":
+        pass
+
     # Uses/Installs WSL and Ubuntu before executing PEA
     ## TODO - Test and complete on windows system
     elif platform.system().lower() == "windows":
