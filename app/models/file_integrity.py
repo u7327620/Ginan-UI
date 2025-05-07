@@ -1,0 +1,57 @@
+import os
+import pathlib
+import platform
+import shutil
+import subprocess
+from importlib.resources import files
+
+def get_pea_exec():
+
+    # PEA available on PATH
+    if shutil.which("pea"):
+        executable = ["pea"]
+
+    # Attempts executing AppImage natively
+    elif platform.system().lower() == "linux":
+        executable = files('app.resources').joinpath('ginan.AppImage')
+
+    # Automated docker install and setup linking /data to CWD.
+    elif platform.system().lower() == "darwin":
+        raise RuntimeError("Please put PEA on path or not use Mac :)")
+
+    # Uses/Installs WSL and Ubuntu before executing PEA
+    ## TODO - Test and complete on windows system
+    elif platform.system().lower() == "windows":
+        # Check if WSL is installed
+        if not shutil.which("wsl"):
+            result = subprocess.run(['powershell.exe', '-Command',
+                                     'Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Windows-Subsystem-Linux -NoRestart'],
+                                    capture_output=True, text=True)
+            if result.returncode == 0:
+                print("WSL enabled successfully. Please restart your computer.")
+            else:
+                raise RuntimeError(f"Error enabling WSL: {result.stderr}")
+
+        # Check if Ubuntu is installed
+        try:
+            subprocess.call(['wsl', '--install', '-d', 'Ubuntu'], text=True)
+            return pathlib.Path(f"{os.getcwd()}/../resources/ginan.AppImage")
+        except subprocess.CalledProcessError as e:
+            print(f"Error installing Ubuntu: {e.stderr}")
+            raise RuntimeError("Error installing Ubuntu")
+
+        # Execute PEA AppImage
+        pass
+
+    # Unknown system
+    else:
+        raise RuntimeError("Unsupported platform: " + platform.system())
+
+    # Test and return executable
+    if not executable:
+        raise RuntimeError("No executable found yet running on supported system: " + platform.system())
+    else:
+        return executable
+
+if __name__ == "__main__":
+    print(get_pea_exec().resolve())
