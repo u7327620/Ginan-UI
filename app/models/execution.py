@@ -1,13 +1,15 @@
 import os
 import subprocess
+from importlib.resources.abc import Traversable
+
 from app.models.yaml_utils import load_yaml, write_yaml
 
 
 class Execution:
-    def __init__(self, config_path: str, executable):
+    def __init__(self, config_path: str | Traversable, executable):
         self.config_path = config_path
-        self.executable = executable
         self.config = load_yaml(config_path)
+        self.executable = executable
 
     def edit_config(self, key_path: str, value: str, add_field=False):
         """
