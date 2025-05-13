@@ -1,4 +1,3 @@
-import os
 import unittest
 from app.models.file_integrity import get_pea_exec
 from importlib.resources import files
@@ -12,6 +11,3 @@ class GetExecutable(unittest.TestCase):
     def test_executable(self):
         result = subprocess.call(get_pea_exec(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         self.assertEqual(result, 0, "Executable should run without error")
-
-if __name__ == '__main__':
-    unittest.main()
