@@ -1,13 +1,20 @@
 import os
 import subprocess
-from app.models.yaml_utils import load_yaml, write_yaml
+from re import error
+
+from app.models.yaml_utils import (load_yaml,
+                                   write_yaml,
+                                   full_yaml_config)
 
 
 class Execution:
-    def __init__(self, config_path: str, executable):
+    def __init__(self,config_path: str, executable):
+
+
         self.config_path = config_path
         self.executable = executable
-        self.config = load_yaml(config_path)
+        self.config = None
+        #self.config = load_yaml(config_path)
 
     def edit_config(self, key_path: str, value: str, add_field=False):
         """
@@ -29,9 +36,15 @@ class Execution:
                 raise KeyError(f"Key '{keys[-1]}' not found in {node}")
         node[keys[-1]] = value
 
-    def load_config(self, config_path):
+
+    def load_config_file(self, source_path):
+        self.config = load_yaml(source_path)
+
+    def load_config_preset(self, source_path):
+        self.config = full_yaml_config(self.config_path)
+
+    def change_config_file(self, config_path):
         self.config_path = config_path
-        self.config = load_yaml(self.config_path)
 
     def write_config(self):
         write_yaml(self.config_path, self.config)
