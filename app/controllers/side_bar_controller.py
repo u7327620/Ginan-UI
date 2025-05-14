@@ -4,7 +4,8 @@ from PySide6.QtCore import QObject, Signal
 from app.controllers.file_dialog import select_rnx_file, select_output_dir
 
 class SideBarController(QObject):
-    # After setting the two files, use the signal to tell MainWindow or Model
+    # After setting the input files and output directory, 
+    # use the signal to tell MainWindow or Model
     ready = Signal(str, str)   # rnx_path, output_path
 
     def __init__(self, ui, parent_window):
@@ -37,14 +38,24 @@ class SideBarController(QObject):
         path = select_output_dir(self.parent)
         if not path:
             return
-        # accept any directory chosen by user
         self.output_dir = path
         self.ui.terminalTextEdit.append(f"Output directory selected: {path}")
-        self.ui.processButton.setEnabled(True)
+        self.enable_process_button()
 
         # If both are ready, emit the ready signal
         if self.rnx_file:
             self.ready.emit(self.rnx_file, self.output_dir)
 
+    # ------------------------------------------------------------------
+    # Public helpers
+    # ------------------------------------------------------------------
+    def enable_process_button(self):
+        """Enable the Process button (to be called once prerequisites met).
+
+        Back-end processing logic will be integrated later; for now this is
+        simply a convenience wrapper so other components can enable the
+        button without touching UI details.
+        """
+        self.ui.processButton.setEnabled(True)
 
 
