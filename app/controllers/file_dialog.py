@@ -13,9 +13,17 @@ def select_rnx_file(parent) -> str:
     path, _ = QFileDialog.getOpenFileName(parent, caption, "", filters)
     return path or ""
 
-def select_output_file(parent) -> str:
+# def select_output_file(parent) -> str:
+#     default_dir = OUTPUT_DIR if os.path.isdir(OUTPUT_DIR) else HERE
+#     caption = "Select Output File"
+#     filters = "All Files (*)"
+#     path, _ = QFileDialog.getOpenFileName(parent, caption, default_dir, filters)
+#     return path or ""
+
+def select_output_dir(parent) -> str:
+    """Open a dialog to choose a directory to save output files."""
     default_dir = OUTPUT_DIR if os.path.isdir(OUTPUT_DIR) else HERE
-    caption = "Select Output File"
-    filters = "All Files (*)"
-    path, _ = QFileDialog.getOpenFileName(parent, caption, default_dir, filters)
+    caption = "Select Output Directory"
+    # Use getExistingDirectory to pick a folder.
+    path = QFileDialog.getExistingDirectory(parent, caption, default_dir)
     return path or ""

@@ -2,13 +2,14 @@ import os
 from app.controllers.config_controller import ConfigController
 from app.views.main_window_ui import Ui_MainWindow
 from PySide6.QtCore import Qt, QRect, QUrl
-from PySide6.QtWidgets import QFileDialog, QMainWindow, QDialog, QVBoxLayout
+from PySide6.QtWidgets import QMainWindow, QDialog, QVBoxLayout
 from PySide6.QtWebEngineWidgets import QWebEngineView
 
 # Use the script's directory as base to locate the example/ directory
 HERE = os.path.dirname(os.path.abspath(__file__))
 EXAMPLE_DIR = os.path.join(HERE, "example")
 
+# set the code good minimal unit test
 class FullHtmlDialog(QDialog):
     def __init__(self, file_path):
         super().__init__()
@@ -26,12 +27,19 @@ class MainWindow(QMainWindow):
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
 
-        # —— Controllers (optional) —— #
-        self.controllers = [ConfigController(self.ui)]
+        # —— Controllers —— #
+        self.configCtrl = ConfigController(self.ui)
+        # ObservationController handles RNX/Output file selection
+        from app.controllers.observation_controller import ObservationController  # local import avoids circular issues
+        self.observationCtrl = ObservationController(self.ui, self)
+        # gather controllers for reference, if needed elsewhere
+        self.controllers = [self.configCtrl, self.observationCtrl]
+        # connect controller ready signal to handler
+        self.observationCtrl.ready.connect(self.on_files_ready)
 
         # —— State variables —— #
         self.rnx_file = None
-        self.output_file = None
+        self.output_dir = None
         self.current_html = None
 
         # —— Initial button states —— #
@@ -39,51 +47,24 @@ class MainWindow(QMainWindow):
         self.ui.processButton.setEnabled(False)
 
         # —— Signal connections —— #
-        self.ui.observationsButton.clicked.connect(self.load_rnx_file)
-        self.ui.outputButton.clicked.connect(self.load_output_file)
-        # Ensure Process button is connected to the correct method
+        # Process button performs processing once both files are selected (enabled by ObservationController)
         self.ui.processButton.clicked.connect(self.process_and_display_fig1)
 
         # —— Double-click visualization area for full view —— #
         self.ui.visualisationTextEdit.setAttribute(Qt.WA_AcceptTouchEvents)
-        self.ui.visualisationTextEdit.mouseDoubleClickEvent = self.on_double_click_visualisation
+        # self.ui.visualisationTextEdit.mouseDoubleClickEvent = self.on_double_click_visualisation
 
-    def load_rnx_file(self):
-        path, _ = QFileDialog.getOpenFileName(
-            self, "Select RINEX File", "",
-            "RINEX Files (*.rnx *.rnx.gz);;All Files (*)"
-        )
-        if not path:
-            return
-        self.rnx_file = path
-        self.ui.terminalTextEdit.append(f"RNX selected: {path}")
-        self.ui.outputButton.setEnabled(True)
-
-    def load_output_file(self):
-        default_dir = os.path.join(EXAMPLE_DIR, "output")
-        if not os.path.isdir(default_dir):
-            default_dir = HERE
-
-        path, _ = QFileDialog.getOpenFileName(
-            self, "Select Output File", default_dir, "All Files (*)"
-        )
-        if not path:
-            return
-        if os.path.commonpath([default_dir, path]) != default_dir:
-            self.ui.terminalTextEdit.append("Please select a file inside example/output")
-            return
-
-        self.output_file = path
-        self.ui.terminalTextEdit.append(f"Output selected: {path}")
-        self.ui.outputButton.setText(os.path.basename(path))
-        self.ui.processButton.setEnabled(True)
+    def on_files_ready(self, rnx_path, out_path):
+        """Receive selected file paths from ObservationController."""
+        self.rnx_file = rnx_path
+        self.output_dir = out_path
 
     def process_and_display_fig1(self):
         if not self.rnx_file:
             self.ui.terminalTextEdit.append("Please select a RNX file first.")
             return
-        if not self.output_file:
-            self.ui.terminalTextEdit.append("Please select an output file first.")
+        if not self.output_dir:
+            self.ui.terminalTextEdit.append("Please select an output directory first.")
             return
 
         # Always load example/visual/fig1.html
@@ -120,8 +101,8 @@ class MainWindow(QMainWindow):
         # Keep reference to prevent garbage collection
         self.webview = webview
 
-    def on_double_click_visualisation(self, event):
-        if not self.current_html:
-            return
-        dlg = FullHtmlDialog(self.current_html)
-        dlg.exec()
+    # def on_double_click_visualisation(self, event):
+    #     if not self.current_html:
+    #         return
+    #     dlg = FullHtmlDialog(self.current_html)
+    #     dlg.exec()
