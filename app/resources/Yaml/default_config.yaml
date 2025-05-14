@@ -6,17 +6,16 @@
 inputs:
     inputs_root: ./products/ #
 
-    #ask about other inputs like this
-
-
 
     atx_files: [igs20.atx] # required
     igrf_files: [tables/igrf13coeffs.txt]
+    #ask about other inputs like this
     #egm_files: [tables/EGM2008.gfc] # Earth gravity model coefficients file
     erp_files: [finals.data.iau2000.txt]
     planetary_ephemeris_files: [tables/DE436.1950.2050]
 
     # Ask about  troposphere data
+    # probably needed as part of error correction
     troposphere:
         gpt2grid_files: [tables/gpt_25.grd]
 
@@ -82,21 +81,24 @@ satellite_options:
                 enable: false
 
 
-    # ask about the satellite excludes in the yaml config for yaml config
-
+    # ask about the satellite excludes in the yaml config
+    #probably not as it's mvp
     # E05:
     #     exclude: true # Exclude satellites
     # E06:
     #     exclude: true
 
 receiver_options:
+    # Will override TEST values
     global:
         elevation_mask: 15 # degrees
         error_model: ELEVATION_DEPENDENT # {uniform,elevation_dependent}
+        #leave
         code_sigma: 0.3 # Standard deviation of code measurements, m
         phase_sigma: 0.003 # Standard deviation of phase measurmeents, m
         clock_codes: [AUTO, AUTO]
         zero_dcb_codes: [AUTO, AUTO]
+        # would i need to add in stuff for other satellite constellations
         rec_reference_system: GPS
         models:
             phase_bias:
@@ -135,10 +137,10 @@ processing_options:
     epoch_control:
         start_epoch:         #RNX
         end_epoch:           #RNX
-        #max_epochs:          2880 # Future user set.
+        #max_epochs:         2880 # Future user set.
         epoch_interval:      #RNX # seconds
         #ASK CLIENT what this should be set to for MVP
-        wait_next_epoch: 3600 # seconds (make large for post-processing)
+        wait_next_epoch: 3600 # User set seconds (make large for post-processing)
 
     gnss_general:
         #eop_comp
@@ -151,12 +153,22 @@ processing_options:
             # Ask about clock_codes
                 #
             # Ask about reject_eclipse currently being set to false.
-                # should it be set to true for mvp
+                # should it be set to true for mvp as that way it would
+                #keep as false as client wants to keep eclipse data.
             gps:
                 process: false
+
                 reject_eclipse: false
+
+                # For the current iteration
+                # Don't worry about clock_codes
                 # is it L5 or L5W
                 # clock_codes: [ L1W, L2W, L5 ] #L6
+                #code pritised list
+
+                # Check the satellite code priorities from client
+                # then select the best two that appear in the rnx file.
+                # for the chosen code priorites
                 code_priorities: [] # RNX
 
             gal:
@@ -289,6 +301,9 @@ estimation_parameters:
             pos:
                 estimated: [true]
                 sigma: [0]             #USER_SET Defaulting to static
+                                       #saw some bounding (100-10)
+                                       #how would this be done
+                                       # i.e through process_noise
                 # process_noise:      [30]
             pos_rate: # Velocity
                 estimated: [false] # [bools] Estimate state in kalman filter
