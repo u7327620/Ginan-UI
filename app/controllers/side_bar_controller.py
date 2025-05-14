@@ -1,9 +1,9 @@
-# app/controllers/observation_controller.py
+# app/controllers/side_bar_controller.py
 import os
 from PySide6.QtCore import QObject, Signal
 from app.controllers.file_dialog import select_rnx_file, select_output_dir
 
-class ObservationController(QObject):
+class SideBarController(QObject):
     # After setting the two files, use the signal to tell MainWindow or Model
     ready = Signal(str, str)   # rnx_path, output_path
 
@@ -37,14 +37,9 @@ class ObservationController(QObject):
         path = select_output_dir(self.parent)
         if not path:
             return
-        default_dir = os.path.normpath(os.path.join(os.path.dirname(__file__), "..", "example", "output"))
-        if os.path.commonpath([default_dir, path]) != default_dir:
-            self.ui.terminalTextEdit.append("Please select a directory inside example/output")
-            return
-
+        # accept any directory chosen by user
         self.output_dir = path
-        self.ui.terminalTextEdit.append(f"Output directory: {path}")
-        self.ui.outputButton.setText(os.path.basename(path))
+        self.ui.terminalTextEdit.append(f"Output directory selected: {path}")
         self.ui.processButton.setEnabled(True)
 
         # If both are ready, emit the ready signal

@@ -29,9 +29,9 @@ class MainWindow(QMainWindow):
 
         # —— Controllers —— #
         self.configCtrl = ConfigController(self.ui)
-        # ObservationController handles RNX/Output file selection
-        from app.controllers.observation_controller import ObservationController  # local import avoids circular issues
-        self.observationCtrl = ObservationController(self.ui, self)
+        # SideBarController handles RNX and Output file selection
+        from app.controllers.side_bar_controller import SideBarController  # local import avoids circular issues
+        self.observationCtrl = SideBarController(self.ui, self)
         # gather controllers for reference, if needed elsewhere
         self.controllers = [self.configCtrl, self.observationCtrl]
         # connect controller ready signal to handler
@@ -47,7 +47,7 @@ class MainWindow(QMainWindow):
         self.ui.processButton.setEnabled(False)
 
         # —— Signal connections —— #
-        # Process button performs processing once both files are selected (enabled by ObservationController)
+        # Process button performs processing once both files are selected (enabled by SideBarController)
         self.ui.processButton.clicked.connect(self.process_and_display_fig1)
 
         # —— Double-click visualization area for full view —— #
@@ -55,7 +55,7 @@ class MainWindow(QMainWindow):
         # self.ui.visualisationTextEdit.mouseDoubleClickEvent = self.on_double_click_visualisation
 
     def on_files_ready(self, rnx_path, out_path):
-        """Receive selected file paths from ObservationController."""
+        """Receive selected file paths from SideBarController."""
         self.rnx_file = rnx_path
         self.output_dir = out_path
 
