@@ -17,6 +17,7 @@ import os
 from PySide6.QtCore import QUrl
 from PySide6.QtGui import QDesktopServices
 from PySide6.QtCore import Qt, QDate, QDateTime
+from PySide6.QtWidgets import QFileDialog, QMessageBox
 
 from PySide6.QtWidgets import (
     QDialog,
@@ -37,10 +38,11 @@ class ConfigController:
         # bond up QComboBox's showPopup
         self._bind_combo(self.ui.Mode, self._get_mode_items)
         self._bind_combo(self.ui.Constellations_2, self._get_constellations_items)
-        self._bind_combo(self.ui.Receiver_type, self._get_receiver_type_items)
-        self._bind_combo(self.ui.Antenna_type, self._get_antenna_type_items)
+        # self._bind_combo(self.ui.Antenna_type, self._get_antenna_type_items)
         self._bind_combo(self.ui.PPP_provider, self._get_ppp_provider_items)
         self._bind_combo(self.ui.PPP_series, self._get_ppp_series_items)
+
+        
 
 
         # When selected, write the value to the right Label and reset the left text.
@@ -49,8 +51,7 @@ class ConfigController:
             lambda idx: self._on_select(self.ui.Mode, self.ui.modeValue, "Mode", idx))
         self.ui.Constellations_2.activated.connect(
             lambda idx: self._on_select(self.ui.Constellations_2, self.ui.constellationsValue, "Constellations", idx))
-        self.ui.Receiver_type.activated.connect(
-            lambda idx: self._on_select(self.ui.Receiver_type, self.ui.receiverTypeValue, "Receiver type", idx))
+        
         self.ui.Antenna_type.activated.connect(
             lambda idx: self._on_select(self.ui.Antenna_type, self.ui.antennaTypeValue, "Antenna type", idx))
         self.ui.PPP_provider.activated.connect(
@@ -59,11 +60,11 @@ class ConfigController:
             lambda idx: self._on_select(self.ui.PPP_series, self.ui.pppSeriesValue, "PPP series", idx))
 
 
-        # Antenna offset：The left button clicks to bring up a pop-up calendar and the right read-only box displays the results
-        self.ui.antennaOffsetButton.clicked.connect(self._open_calendar_dialog)
+        # Antenna offset: Pop-up dialogue box to enter three floating point numbers，default 0.0, 0.0, 0.0
+        self.ui.antennaOffsetButton.clicked.connect(self._open_antenna_offset_dialog)
         self.ui.antennaOffsetButton.setCursor(Qt.PointingHandCursor)
-        # initial placeholder text
-        self.ui.antennaOffsetValue.setText("E/N/U offset m.m, m.m, m.m")
+        # default
+        self.ui.antennaOffsetValue.setText("0.0, 0.0, 0.0")
 
         # Time window：Start & End Date & Time
         self.ui.timeWindowButton.clicked.connect(self._open_time_window_dialog)
@@ -102,23 +103,49 @@ class ConfigController:
         combo.showPopup = new_showPopup
 
 
+
+        # ---------- Receiver type  ----------
+        def _ask_receiver_type():
+                text, ok = QInputDialog.getText(
+                    self.ui.Receiver_type,
+                    "Receiver Type",
+                    "Enter receiver type:"
+                )
+                if ok and text:
+                    # update left ComboBox 
+                    self.ui.Receiver_type.clear()
+                    self.ui.Receiver_type.addItem(text)
+                    # update right Label
+                    self.ui.receiverTypeValue.setText(text)
+
+        self.ui.Receiver_type.showPopup = _ask_receiver_type
+        self.ui.receiverTypeValue.setText("")
+
+        # ---------- Antenna Type   ----------
+        def _ask_antenna_type():
+            text, ok = QInputDialog.getText(
+                self.ui.Antenna_type,
+                "Antenna Type",
+                "Enter antenna type:"
+            )
+            if ok and text:
+                self.ui.Antenna_type.clear()
+                self.ui.Antenna_type.addItem(text)
+                self.ui.antennaTypeValue.setText(text)
+        self.ui.Antenna_type.showPopup = _ask_antenna_type
+        self.ui.antennaTypeValue.setText("")
+
+
     # ---------- Antenna offset  ----------
-    def _open_calendar_dialog(self):
-        dlg = QDialog(self.ui.antennaOffsetButton)
-        dlg.setWindowTitle("Select date")
-        layout = QVBoxLayout(dlg)
-
-        cal = QCalendarWidget(dlg)
-        cal.setSelectedDate(QDate.currentDate())
-        layout.addWidget(cal)
-
-        # Check to write text and close
-        cal.clicked.connect(lambda d: self._set_offset_date(d, dlg))
-        dlg.exec()
-
-    def _set_offset_date(self, qdate: QDate, dlg: QDialog):
-        self.ui.antennaOffsetValue.setText(qdate.toString("dd-MM-yyyy"))
-        dlg.accept()        
+    def _open_antenna_offset_dialog(self):
+        text, ok = QInputDialog.getText(
+            self.ui.antennaOffsetButton,
+            "Antenna Offset",
+            "Enter E/N/U offsets :",
+            text="0.0, 0.0, 0.0"
+        )
+        if ok:
+            self.ui.antennaOffsetValue.setText(text)       
 
 
     # ---------- Time window - Start & End Date & Time  ----------
@@ -205,7 +232,7 @@ class ConfigController:
         return ["Static", "Dynamic"]
 
     def _get_constellations_items(self):
-        return ["GPS", "GAL", "GLO", "BDS"]
+        return ["GPS", "GAL", "GLO", "BDS", "QZS"]
 
     def _get_time_window_items(self):
         # Example, can actually be generated dynamically
@@ -222,10 +249,10 @@ class ConfigController:
 
     
     def _get_ppp_provider_items(self):
-        return ["Provider A", "Provider B", "Provider C"]
+        return ["COD", "GFZ", "JPL", "ESA", "IGS", "WUH"]
 
     def _get_ppp_series_items(self):
-        return ["Series 1", "Series 2", "Series 3"]
+        return ["RAP", "ULT", "FIN"]
 
     def _get_show_config_items(self):
         return ["Show in Editor", "Show in Dialog"]
