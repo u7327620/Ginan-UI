@@ -3,12 +3,13 @@
 # what fields are missing for proper operation in yaml
 # what fields that are not user input defaults could be
 
-
-
 inputs:
-    inputs_root: ./products/ #not ask client find out if is relative to pea or py
+    inputs_root: ./products/ #
 
-    #ask about other inputs like this.
+    #ask about other inputs like this
+
+
+
     atx_files: [igs20.atx] # required
     igrf_files: [tables/igrf13coeffs.txt]
     #egm_files: [tables/EGM2008.gfc] # Earth gravity model coefficients file
@@ -29,10 +30,11 @@ inputs:
         -  #USERSET
 
     satellite_data:
+        # ASK are the nav files needed for MVP
         # nav_files:
         # - "*.rnx"
 
-        # product provided?
+        # product provided
         clk_files:
             # - "*.CLK"
             -
@@ -55,7 +57,6 @@ inputs:
 outputs:
     metadata:
         config_description: default_config_<BRANCH> #USER_INPUT [default_config]_<BRANCH>
-
     outputs_root: ./outputs/<CONFIG>
 
     gpx:
@@ -70,9 +71,8 @@ outputs:
 
 
 satellite_options:
-
-    # ask if this is needed for all yamls
-    #
+    # ask about this for mvp
+    # leave in the error handling?
     global:
         error_model: ELEVATION_DEPENDENT #  {uniform,elevation_dependent}
         code_sigma: 0 # Standard deviation of code measurements
@@ -82,7 +82,7 @@ satellite_options:
                 enable: false
 
 
-    # ask about the satellite excludes in the yaml config
+    # ask about the satellite excludes in the yaml config for yaml config
 
     # E05:
     #     exclude: true # Exclude satellites
@@ -111,7 +111,7 @@ receiver_options:
                 otl: true # Enable ocean tide loading
                 solid: true # Enable solid Earth tides
                 spole: true # Enable solid Earth pole tides
-    HEADER_NAME: #change to header name
+    TEST: #change to header name of RNX
         receiver_type:       # USER_INPUT (string)
         antenna_type:        # USER_INPUT (string)
 
@@ -135,35 +135,41 @@ processing_options:
     epoch_control:
         start_epoch:         #RNX
         end_epoch:           #RNX
-        #max_epochs:          2880
+        #max_epochs:          2880 # Future user set.
         epoch_interval:      #RNX # seconds
-        wait_next_epoch: 3600 # seconds (make large for post-processing) #ASK CLIENT
+        #ASK CLIENT what this should be set to for MVP
+        wait_next_epoch: 3600 # seconds (make large for post-processing)
 
     gnss_general:
         #eop_comp
         add_eop_component: true
         sys_options:
-            #currently: gps, gal, bds, glo, qzs
-            #ask about the other satellite constellation codes
-            #ask abour clock_codes
+            # Currently: gps, gal, bds, glo, qzs
+            # Ask about the other satellite constellation codes
+            # should it include sanpan(australian) and the IRNSS(indian)
+            # constellations
+            # Ask about clock_codes
+                #
+            # Ask about reject_eclipse currently being set to false.
+                # should it be set to true for mvp
             gps:
                 process: false
                 reject_eclipse: false
-                # ask client about this
                 # is it L5 or L5W
-                # clock_codes: [ L1W, L2W ] L5
+                # clock_codes: [ L1W, L2W, L5 ] #L6
                 code_priorities: [] # RNX
 
             gal:
                 process: false
                 reject_eclipse: false
-                #L1, L2C and L5
+                # E1, E6, E5b E5a
                 # clock_codes: []
                 code_priorities: [] # RNX
 
             bds:
                 process: false
                 reject_eclipse: false
+                # B1, B3, B2b, B2a
                 # clock_codes: []
                 code_priorities: [] # RNX
 
@@ -171,17 +177,21 @@ processing_options:
             glo:
                 process: false
                 reject_eclipse: false
+                #G1,G2,G3/L5
                 # clock_codes: []
                 code_priorities: [] # RNX
 
             qzs:
                 process: false
                 reject_eclipse: false
+                # L1,L2,L5,L6
                 # clock_codes: []
                 code_priorities: [] # RNX
 
 
-    # ask client about necessity
+    # Ask client
+    # Would I keep the current error handling configurations for the MVP
+    # Based on the ppp_example.yaml
     # assuming that there is some sort of problem with measurements from Melbourne-Wubenna
 
     preprocessor: # Configurations for the kalman filter and its sub processes
@@ -190,9 +200,6 @@ processing_options:
             slip_threshold: 0.05 # Value used to determine when a slip has occurred
         preprocess_all_data: true
 
-    # ask client about necessity
-    # probably is as it's doing some sort of fitting
-    # to remove outlisrs
     spp:
         # always_reinitialise: false # Reset SPP state to zero to avoid potential for lock-in of bad states
         max_lsq_iterations: 12 # Maximum number of iterations of least squares allowed for convergence
@@ -259,8 +266,10 @@ processing_options:
                 mw: true # MW test
                 scdia: true # SCDIA test
 
+# ask about the error handling here
+# if it should be kept for the mvp
+# if it is what should I change
 estimation_parameters:
-    #ask about this
     global_models:
         eop:
             # estimated:        [true] # Estimate state in kalman filter
