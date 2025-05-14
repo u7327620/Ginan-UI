@@ -3,9 +3,9 @@ import pathlib
 import platform
 import shutil
 import subprocess
-from importlib.resources import files
 
-def get_pea_exec():
+
+def get_pea_exec() -> pathlib.Path | [str]:
 
     # PEA available on PATH
     if shutil.which("pea"):
@@ -13,11 +13,7 @@ def get_pea_exec():
 
     # Attempts executing AppImage natively
     elif platform.system().lower() == "linux":
-        executable = files('app.resources').joinpath('ginan.AppImage')
-
-    # Automated docker install and setup linking /data to CWD.
-    elif platform.system().lower() == "darwin":
-        raise RuntimeError("Please put PEA on path or not use Mac :)")
+        executable = pathlib.Path(f"{os.getcwd()}/../resources/ginan.AppImage")
 
     # Automated docker install and setup linking /data to CWD.
     elif platform.system().lower() == "darwin":
@@ -55,7 +51,15 @@ def get_pea_exec():
     if not executable:
         raise RuntimeError("No executable found yet running on supported system: " + platform.system())
     else:
+        _test_executable(executable)
         return executable
+
+def _test_executable(pea_exec):
+    try:
+        subprocess.call(pea_exec, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    except subprocess.CalledProcessError as e:
+        print(f"Error running PEA executable: {e.stderr}")
+        raise RuntimeError("Error running PEA executable")
 
 if __name__ == "__main__":
     print(get_pea_exec().resolve())
