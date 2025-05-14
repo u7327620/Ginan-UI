@@ -1,8 +1,7 @@
-from app.views.main_window_ui import Ui_MainWindow
 from PySide6.QtWidgets import QFileDialog
 
 class FileDialogController:
-    def __init__(self, file_dialog_ui:Ui_MainWindow, file_requiring_model): # Model empty for now
+    def __init__(self, file_dialog_ui, file_requiring_model): # Model empty for now
         """Directory selector example"""
         self.file_dialog_ui = file_dialog_ui
         self.model = file_requiring_model
