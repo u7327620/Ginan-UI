@@ -1,21 +1,13 @@
-# working on hard default config
-# currently based on ppp_example.yaml
-# what fields are missing for proper operation in yaml
-# what fields that are not user input defaults could be
-
 inputs:
-    inputs_root: ./products/ #
+    inputs_root:  #USER_SET
 
 
     atx_files: [igs20.atx] # required
     igrf_files: [tables/igrf13coeffs.txt]
-    #ask about other inputs like this
     #egm_files: [tables/EGM2008.gfc] # Earth gravity model coefficients file
     erp_files: [finals.data.iau2000.txt]
     planetary_ephemeris_files: [tables/DE436.1950.2050]
 
-    # Ask about  troposphere data
-    # probably needed as part of error correction
     troposphere:
         gpt2grid_files: [tables/gpt_25.grd]
 
@@ -29,7 +21,6 @@ inputs:
         -  #USERSET
 
     satellite_data:
-        # ASK are the nav files needed for MVP
         # nav_files:
         # - "*.rnx"
 
@@ -45,18 +36,16 @@ inputs:
             -
 
     gnss_observations:
-        gnss_observations_root: ../data/ #
+        gnss_observations_root: # USER SET
         rnx_inputs:
             # - "*.rnx"
             -  #USER_INPUT_RNX
-        # - DARW00AUS_R_20191990000_01D_30S_MO.rnx
-        # - HOB200AUS_R_20191990000_01D_30S_MO.rnx
-        # - "M*.rnx"
+
 
 outputs:
     metadata:
         config_description: default_config_<BRANCH> #USER_INPUT [default_config]_<BRANCH>
-    outputs_root: ./outputs/<CONFIG>
+    outputs_root: #USER_INPUT
 
     gpx:
         output: true
@@ -70,8 +59,6 @@ outputs:
 
 
 satellite_options:
-    # ask about this for mvp
-    # leave in the error handling?
     global:
         error_model: ELEVATION_DEPENDENT #  {uniform,elevation_dependent}
         code_sigma: 0 # Standard deviation of code measurements
@@ -80,25 +67,15 @@ satellite_options:
             phase_bias:
                 enable: false
 
-
-    # ask about the satellite excludes in the yaml config
-    #probably not as it's mvp
-    # E05:
-    #     exclude: true # Exclude satellites
-    # E06:
-    #     exclude: true
-
 receiver_options:
-    # Will override TEST values
     global:
         elevation_mask: 15 # degrees
         error_model: ELEVATION_DEPENDENT # {uniform,elevation_dependent}
-        #leave
         code_sigma: 0.3 # Standard deviation of code measurements, m
         phase_sigma: 0.003 # Standard deviation of phase measurmeents, m
         clock_codes: [AUTO, AUTO]
         zero_dcb_codes: [AUTO, AUTO]
-        # would i need to add in stuff for other satellite constellations
+
         rec_reference_system: GPS
         models:
             phase_bias:
@@ -116,14 +93,9 @@ receiver_options:
     TEST: #change to header name of RNX
         receiver_type:       # USER_INPUT (string)
         antenna_type:        # USER_INPUT (string)
-
-        #don't worry about these
-        #apriori_position: # [floats] #Don
-        #aliases: [ PIVOT ] # set as pivot station
-
         models:
             eccentricity:
-                enable: true # [ 0.0000,   0.0000,   0.0000 ] is equivalent to no eccentricity
+                enable: true
                 offset: [ 0.0000,   0.0000,   0.0000 ] # [floats] USER_SET
 
 processing_options:
@@ -138,73 +110,45 @@ processing_options:
         start_epoch:         #RNX
         end_epoch:           #RNX
         #max_epochs:         2880 # Future user set.
-        epoch_interval:      #RNX # seconds
-        #ASK CLIENT what this should be set to for MVP
-        wait_next_epoch: 3600 # User set seconds (make large for post-processing)
+        epoch_interval:      #USER SET
+        wait_next_epoch:  # User set seconds (make large for post-processing)
 
     gnss_general:
         #eop_comp
         add_eop_component: true
         sys_options:
-            # Currently: gps, gal, bds, glo, qzs
-            # Ask about the other satellite constellation codes
-            # should it include sanpan(australian) and the IRNSS(indian)
-            # constellations
-            # Ask about clock_codes
-                #
-            # Ask about reject_eclipse currently being set to false.
-                # should it be set to true for mvp as that way it would
-                #keep as false as client wants to keep eclipse data.
             gps:
                 process: false
 
                 reject_eclipse: false
-
-                # For the current iteration
-                # Don't worry about clock_codes
-                # is it L5 or L5W
-                # clock_codes: [ L1W, L2W, L5 ] #L6
-                #code pritised list
-
-                # Check the satellite code priorities from client
-                # then select the best two that appear in the rnx file.
-                # for the chosen code priorites
-                code_priorities: [] # RNX
+                code_priorities: [] # Best 2 RNX
 
             gal:
                 process: false
                 reject_eclipse: false
-                # E1, E6, E5b E5a
                 # clock_codes: []
-                code_priorities: [] # RNX
+                code_priorities: [] # Best 2 RNX
 
             bds:
                 process: false
                 reject_eclipse: false
-                # B1, B3, B2b, B2a
                 # clock_codes: []
-                code_priorities: [] # RNX
+                code_priorities: [] # Best 2 RNX
 
 
             glo:
                 process: false
                 reject_eclipse: false
-                #G1,G2,G3/L5
                 # clock_codes: []
-                code_priorities: [] # RNX
+                code_priorities: [] # Best 2 RNX
 
             qzs:
                 process: false
                 reject_eclipse: false
-                # L1,L2,L5,L6
                 # clock_codes: []
-                code_priorities: [] # RNX
+                code_priorities: [] # Best 2 RNX
 
 
-    # Ask client
-    # Would I keep the current error handling configurations for the MVP
-    # Based on the ppp_example.yaml
-    # assuming that there is some sort of problem with measurements from Melbourne-Wubenna
 
     preprocessor: # Configurations for the kalman filter and its sub processes
         cycle_slips: # Cycle slips may be detected by the preprocessor and measurements rejected or ambiguities reinitialised
@@ -252,7 +196,6 @@ processing_options:
             # interval:               86400
             inverter: LDLT # Inverter to be used within the rts processor, which may provide different performance outcomes in terms of processing time and accuracy and stability
             filename: <CONFIG>_<RECEIVER>.rts
-        #moving filter of some sort?
         periodic_reset:
             # enable:                 true
             # interval:              86400
@@ -278,9 +221,6 @@ processing_options:
                 mw: true # MW test
                 scdia: true # SCDIA test
 
-# ask about the error handling here
-# if it should be kept for the mvp
-# if it is what should I change
 estimation_parameters:
     global_models:
         eop:
@@ -300,11 +240,8 @@ estimation_parameters:
         global:
             pos:
                 estimated: [true]
-                sigma: [0]             #USER_SET Defaulting to static
-                                       #saw some bounding (100-10)
-                                       #how would this be done
-                                       # i.e through process_noise
-                # process_noise:      [30]
+                sigma: [100]
+                process_noise: [] #[int] USER_SET currently set to static
             pos_rate: # Velocity
                 estimated: [false] # [bools] Estimate state in kalman filter
                 sigma: [0] # [floats] Apriori sigma values
@@ -325,7 +262,6 @@ estimation_parameters:
                 process_noise: [1]
                 tau: [100]
             clock_rate:
-                # does this mean that the calculation will not take into account cpu clock rate?
                 estimated: [false]
                 sigma: [0.005]
                 process_noise: [1e-4]
