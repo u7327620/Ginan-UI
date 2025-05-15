@@ -241,7 +241,7 @@ estimation_parameters:
             pos:
                 estimated: [true]
                 sigma: [100]
-                process_noise: [] #[int] USER_SET currently set to static
+                process_noise: [] #[int] USER_SET
             pos_rate: # Velocity
                 estimated: [false] # [bools] Estimate state in kalman filter
                 sigma: [0] # [floats] Apriori sigma values
