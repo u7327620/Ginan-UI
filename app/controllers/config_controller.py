@@ -1,5 +1,3 @@
-# app/controllers/config_controller.py
-
 """
 This controller encapsulates all logic related to populating and managing the configuration drop-down menus (QComboBox) in the main UI.
 
@@ -14,13 +12,13 @@ This controller encapsulates all logic related to populating and managing the co
    - ConfigController can be instantiated with a mock Ui_MainWindow to verify menu items or simulate user interactions.
 """
 import os
-from PySide6.QtCore import QUrl
-from PySide6.QtGui import QDesktopServices
-from PySide6.QtCore import Qt, QDate, QDateTime
-from PySide6.QtWidgets import QFileDialog, QMessageBox
-
+from PySide6.QtCore import Qt, QUrl, QDate, QDateTime
+from PySide6.QtGui import QDesktopServices, QStandardItem, QStandardItemModel
 from PySide6.QtWidgets import (
+    QComboBox,
     QDialog,
+    QFormLayout,
+    QDoubleSpinBox,
     QVBoxLayout,
     QHBoxLayout,
     QPushButton,
@@ -28,8 +26,10 @@ from PySide6.QtWidgets import (
     QDateTimeEdit,
     QInputDialog,
     QMessageBox,
+    QFileDialog,
 )
 from app.views.main_window_ui import Ui_MainWindow
+
 
 class ConfigController:
     def __init__(self, ui: Ui_MainWindow):
@@ -37,21 +37,23 @@ class ConfigController:
 
         # bond up QComboBox's showPopup
         self._bind_combo(self.ui.Mode, self._get_mode_items)
-        self._bind_combo(self.ui.Constellations_2, self._get_constellations_items)
-        # self._bind_combo(self.ui.Antenna_type, self._get_antenna_type_items)
         self._bind_combo(self.ui.PPP_provider, self._get_ppp_provider_items)
         self._bind_combo(self.ui.PPP_series, self._get_ppp_series_items)
 
-        
+        # Multiple Choice Binding
+        self._bind_multiselect_combo(self.ui.Constellations_2,
+                                     self._get_constellations_items,
+                                     self.ui.constellationsValue,
+                                     placeholder="Constellations")
 
 
         # When selected, write the value to the right Label and reset the left text.
         # Mode, Constellations...
         self.ui.Mode.activated.connect(
             lambda idx: self._on_select(self.ui.Mode, self.ui.modeValue, "Mode", idx))
-        self.ui.Constellations_2.activated.connect(
-            lambda idx: self._on_select(self.ui.Constellations_2, self.ui.constellationsValue, "Constellations", idx))
-        
+        self.ui.antennaOffsetButton.clicked.connect(self._open_antenna_offset_dialog)
+        self.ui.antennaOffsetButton.setCursor(Qt.PointingHandCursor)
+        self.ui.antennaOffsetValue.setText("0.0, 0.0, 0.0")
         self.ui.Antenna_type.activated.connect(
             lambda idx: self._on_select(self.ui.Antenna_type, self.ui.antennaTypeValue, "Antenna type", idx))
         self.ui.PPP_provider.activated.connect(
@@ -60,11 +62,8 @@ class ConfigController:
             lambda idx: self._on_select(self.ui.PPP_series, self.ui.pppSeriesValue, "PPP series", idx))
 
 
-        # Antenna offset: Pop-up dialogue box to enter three floating point numbers，default 0.0, 0.0, 0.0
-        self.ui.antennaOffsetButton.clicked.connect(self._open_antenna_offset_dialog)
-        self.ui.antennaOffsetButton.setCursor(Qt.PointingHandCursor)
-        # default
-        self.ui.antennaOffsetValue.setText("0.0, 0.0, 0.0")
+        
+        
 
         # Time window：Start & End Date & Time
         self.ui.timeWindowButton.clicked.connect(self._open_time_window_dialog)
@@ -135,17 +134,79 @@ class ConfigController:
         self.ui.Antenna_type.showPopup = _ask_antenna_type
         self.ui.antennaTypeValue.setText("")
 
+    # ---------- Mode  ----------
+    def _bind_multiselect_combo(self, combo: QComboBox, items_func, label, placeholder: str):
+        combo._old_showPopup = combo.showPopup
+
+        def show_popup():
+            model = QStandardItemModel(combo)
+            for txt in items_func():
+                it = QStandardItem(txt)
+                it.setFlags(Qt.ItemIsEnabled | Qt.ItemIsUserCheckable)
+                it.setData(Qt.Unchecked, Qt.CheckStateRole)
+                model.appendRow(it)
+            # Updates the display when the status of items in the model changes
+            model.itemChanged.connect(on_item_changed)
+            combo.setModel(model)
+            combo._old_showPopup()
+
+        def on_item_changed(item: QStandardItem):
+            # Spell out all ticked boxes as ‘A, B, C.’
+            selected = [
+                combo.model().item(r, 0).text()
+                for r in range(combo.model().rowCount())
+                if combo.model().item(r, 0).checkState() == Qt.Checked
+            ]
+            label.setText(", ".join(selected) if selected else placeholder)
+            
+
+        combo.showPopup = show_popup
+        combo.clear()
+        combo.addItem(placeholder)
+        label.setText(placeholder)
 
     # ---------- Antenna offset  ----------
     def _open_antenna_offset_dialog(self):
-        text, ok = QInputDialog.getText(
-            self.ui.antennaOffsetButton,
-            "Antenna Offset",
-            "Enter E/N/U offsets :",
-            text="0.0, 0.0, 0.0"
-        )
-        if ok:
-            self.ui.antennaOffsetValue.setText(text)       
+        dlg = QDialog(self.ui.antennaOffsetButton)
+        dlg.setWindowTitle("Antenna Offset")
+
+        form = QFormLayout(dlg)
+        # 从现有文本解析初始值
+        parts = self.ui.antennaOffsetValue.text().split(",")
+        try:
+            u0, n0, e0 = [float(x.strip()) for x in parts]
+        except:
+            u0 = n0 = e0 = 0.0
+
+        sb_u = QDoubleSpinBox(dlg)
+        sb_u.setRange(-9999, 9999); sb_u.setDecimals(1); sb_u.setValue(u0)
+        sb_n = QDoubleSpinBox(dlg)
+        sb_n.setRange(-9999, 9999); sb_n.setDecimals(1); sb_n.setValue(n0)
+        sb_e = QDoubleSpinBox(dlg)
+        sb_e.setRange(-9999, 9999); sb_e.setDecimals(1); sb_e.setValue(e0)
+
+        form.addRow("U:", sb_u)
+        form.addRow("N:", sb_n)
+        form.addRow("E:", sb_e)
+
+        btn_row = QHBoxLayout()
+        ok_btn = QPushButton("OK", dlg)
+        cancel_btn = QPushButton("Cancel", dlg)
+        btn_row.addWidget(ok_btn)
+        btn_row.addWidget(cancel_btn)
+        form.addRow(btn_row)
+
+        ok_btn.clicked.connect(lambda: self._set_antenna_offset(sb_u, sb_n, sb_e, dlg))
+        cancel_btn.clicked.connect(dlg.reject)
+
+        dlg.exec()
+
+    def _set_antenna_offset(self, sb_u, sb_n, sb_e, dlg):
+        u = sb_u.value()
+        n = sb_n.value()
+        e = sb_e.value()
+        self.ui.antennaOffsetValue.setText(f"{u}, {n}, {e}")
+        dlg.accept()
 
 
     # ---------- Time window - Start & End Date & Time  ----------
@@ -205,7 +266,7 @@ class ConfigController:
             3600                                # maximum
         )
         if ok:
-            self.ui.dataIntervalValue.setText(f"{val} s")       
+            self.ui.dataIntervalValue.setText(str(val))      
 
     # ---------- Show config  ---------
     def _open_show_config(self):
@@ -229,7 +290,7 @@ class ConfigController:
 
 
     def _get_mode_items(self):
-        return ["Static", "Dynamic"]
+        return ["Static","Kinematic","Dynamic"]
 
     def _get_constellations_items(self):
         return ["GPS", "GAL", "GLO", "BDS", "QZS"]
