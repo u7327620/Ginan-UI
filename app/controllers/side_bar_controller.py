@@ -2,6 +2,7 @@
 import os
 from PySide6.QtCore import QObject, Signal
 from app.controllers.file_dialog import select_rnx_file, select_output_dir
+from app.models.rinex_extractor import RinexExtractor
 
 class SideBarController(QObject):
     # After setting the input files and output directory, 
@@ -34,6 +35,29 @@ class SideBarController(QObject):
         self.ui.terminalTextEdit.append(f"RNX selected: {path}")
         self.ui.outputButton.setEnabled(True)
 
+        # Extract information from submitted .RNX file
+        try:
+            extractor = RinexExtractor(path)
+            result = extractor.extract_rinex_data(path)
+
+            # Update UI fields directly
+            self.ui.timeWindowValue.setText(f"{result['start_epoch']} to {result['end_epoch']}")
+            self.ui.dataIntervalValue.setText(f"{result['epoch_interval']} s")
+            self.ui.receiverTypeValue.setText(result["receiver_type"])
+            self.ui.antennaTypeValue.setText(result["antenna_type"])
+            self.ui.antennaOffsetValue.setText(", ".join(map(str, result["antenna_offset"])))
+
+            # Fill drop-downs to match values
+            self._set_combobox_by_value(self.ui.Receiver_type, result["receiver_type"])
+            self._set_combobox_by_value(self.ui.Antenna_type, result["antenna_type"])
+
+            # Logging in terminal to inform user
+            self.ui.terminalTextEdit.append(".RNX file metadata extracted and applied to UI fields")
+
+        except Exception as e:
+            self.ui.terminalTextEdit.append(f"Error extracting RNX metadata: {e}")
+            print(f"Error extracting RNX metadata: {e}")
+
     def load_output_dir(self):
         path = select_output_dir(self.parent)
         if not path:
@@ -58,4 +82,8 @@ class SideBarController(QObject):
         """
         self.ui.processButton.setEnabled(True)
 
+    def _set_combobox_by_value(self, combo, value: str):
+        index = combo.findText(value)
+        if index != -1:
+            combo.setCurrentIndex(index)
 
