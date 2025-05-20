@@ -1,7 +1,0 @@
-antenna_offset: E/N/U offset m.m, m.m, m.m
-antenna_type: Antenna type
-constellation: Constellations
-mode: Mode
-ppp_provider: PPP provider
-ppp_series: PPP series
-receiver_type: Receiver type
