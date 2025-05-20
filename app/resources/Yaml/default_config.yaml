@@ -4,7 +4,6 @@ inputs:
 
     atx_files: [igs20.atx] # required
     igrf_files: [tables/igrf13coeffs.txt]
-    #egm_files: [tables/EGM2008.gfc] # Earth gravity model coefficients file
     erp_files: [finals.data.iau2000.txt]
     planetary_ephemeris_files: [tables/DE436.1950.2050]
 
