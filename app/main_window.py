@@ -4,8 +4,6 @@ from app.views.main_window_ui import Ui_MainWindow
 from PySide6.QtCore import Qt, QRect, QUrl
 from PySide6.QtWidgets import QMainWindow, QDialog, QVBoxLayout
 from PySide6.QtWebEngineWidgets import QWebEngineView
-from PySide6.QtGui import QDesktopServices
-from app.controllers.input_extract_controller import InputExtractController
 
 # Use the script's directory as base to locate the example/ directory
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -70,8 +68,6 @@ class MainWindow(QMainWindow):
     # ------------------------------------------------------------------
     def _on_process_clicked(self):
         """Placeholder for calling backend model; minimal version loads example html."""
-        # Create a parameter extraction controller to retrieve configuration inputs from the UI.
-        extractor = InputExtractController(self.ui)
         
         if not self.rnx_file:
             self.ui.terminalTextEdit.append("Please select a RNX file first.")
