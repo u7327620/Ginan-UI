@@ -62,8 +62,8 @@ class MainWindow(QMainWindow):
 
         # create a button to open the current html file in browser
         self.openInBrowserBtn = QPushButton("Open in Browser", self)
-        self.openInBrowserBtn.clicked.connect(self._open_current_in_browser)
         self.ui.rightLayout.addWidget(self.openInBrowserBtn)
+        self.visCtrl.bind_open_button(self.openInBrowserBtn)
 
     def on_files_ready(self, rnx_path, out_path):
         """Store file paths received from SideBarController."""
@@ -97,8 +97,4 @@ class MainWindow(QMainWindow):
 
         # ── Backend processing ── #
         # html_paths = backend.process(rnx_file, output_dir, ...)
-        # self.visCtrl.set_html_files(html_paths)
-
-    def _open_current_in_browser(self):
-        """open the current html file in browser"""
-        self.visCtrl.open_current_external() 
+        # self.visCtrl.set_html_files(html_paths) 
