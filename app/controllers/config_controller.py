@@ -158,7 +158,7 @@ class ConfigController:
     def _set_time_window(self, start_edit, end_edit, dlg):
         s = start_edit.dateTime().toString("yyyy-MM-dd_HH:mm:ss")
         e = end_edit.dateTime().toString("yyyy-MM-dd_HH:mm:ss")
-        self.ui.timeWindowValue.setText(f"{s}  →  {e}")
+        self.ui.timeWindowValue.setText(f"{s} to {e}")
         dlg.accept()
     
     # ---------- Data interval  ---------  

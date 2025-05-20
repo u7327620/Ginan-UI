@@ -1,5 +1,6 @@
 import os
 from app.controllers.config_controller import ConfigController
+from app.controllers.main_controller import MainController
 from app.views.main_window_ui import Ui_MainWindow
 from PySide6.QtCore import Qt, QRect, QUrl
 from PySide6.QtWidgets import QMainWindow, QDialog, QVBoxLayout
@@ -76,16 +77,29 @@ class MainWindow(QMainWindow):
             self.ui.terminalTextEdit.append("Please select an output directory first.")
             return
 
-        # ── Minimal version: manually use example/visual/fig1.html ── #
-        fig1 = os.path.join(EXAMPLE_DIR, "visual", "fig1.html")
-        if not os.path.exists(fig1):
-            self.ui.terminalTextEdit.append(f"Cannot find fig1.html at: {fig1}")
-            return
 
-        self.ui.terminalTextEdit.append(f"Displaying visualisation: {fig1}")
+
+        # ── launch the backend ────────────────────────────────────────
+        try:
+            controller = MainController(self.ui, "dummy/data", "dummy/products", self.rnx_file, self.output_dir)
+            controller.execute_backend_process()
+            self.ui.terminalTextEdit.append("✔️ Processing finished.")
+        except Exception as err:
+            self.ui.terminalTextEdit.append(f"❌ Processing failed: {err}")
+
+
+
+        # ── Minimal version: manually use example/visual/fig1.html ── #
+        #fig1 = os.path.join(EXAMPLE_DIR, "visual", "fig1.html")
+        #if not os.path.exists(fig1):
+        #    self.ui.terminalTextEdit.append(f"Cannot find fig1.html at: {fig1}")
+        #    return
+
+        #self.ui.terminalTextEdit.append(f"Displaying visualisation: {fig1}")
         # Register & show via visualisation controller
-        self.visCtrl.set_html_files([fig1])
+        #self.visCtrl.set_html_files([fig1])
 
         # ── Backend processing ── #
         # html_paths = backend.process(rnx_file, output_dir, ...)
-        # self.visCtrl.set_html_files(html_paths) 
+        # self.visCtrl.set_html_files(html_paths)
+
