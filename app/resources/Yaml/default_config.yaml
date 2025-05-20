@@ -111,7 +111,7 @@ processing_options:
         end_epoch:           #RNX
         #max_epochs:         2880 # Future user set.
         epoch_interval:      #USER SET
-        wait_next_epoch:  # User set seconds (make large for post-processing)
+        wait_next_epoch: 3600  # User set seconds (make large for post-processing)
 
     gnss_general:
         #eop_comp
