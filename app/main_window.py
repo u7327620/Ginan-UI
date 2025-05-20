@@ -1,7 +1,7 @@
 from app.controllers.file_dialog import FileDialogController
 from PySide6.QtWidgets import QMainWindow
 from app.controllers.config_controller import ConfigController
-from utils.helpers import compile_ui
+from app.utils.helpers import compile_ui
 
 
 def setup_main_window():
