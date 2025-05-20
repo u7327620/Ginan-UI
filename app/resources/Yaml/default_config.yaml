@@ -119,34 +119,32 @@ processing_options:
         sys_options:
             gps:
                 process: false
-
                 reject_eclipse: false
-                code_priorities: [] # Best 2 RNX
-
+                code_priorities: [L1W, L1C, L1X, L2W, L2C, L2X, L2S, L2L, L5Q, L5X]
             gal:
                 process: false
                 reject_eclipse: false
                 # clock_codes: []
-                code_priorities: [] # Best 2 RNX
+                code_priorities: [L1C, L1X, L5Q, L5X, L6C, L6X, L7Q, L7X]
 
             bds:
                 process: false
                 reject_eclipse: false
                 # clock_codes: []
-                code_priorities: [] # Best 2 RNX
+                code_priorities: [L2I, L7I, L6I, L5P]
 
 
             glo:
                 process: false
                 reject_eclipse: false
                 # clock_codes: []
-                code_priorities: [] # Best 2 RNX
+                code_priorities: [L1P, L1C, L2P, L2C]
 
             qzs:
                 process: false
                 reject_eclipse: false
                 # clock_codes: []
-                code_priorities: [] # Best 2 RNX
+                code_priorities: [L1C, L1X, L2L, L2X, L5Q, L5X]
 
 
 
