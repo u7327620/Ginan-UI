@@ -72,6 +72,7 @@ class MainWindow(QMainWindow):
         """Placeholder for calling backend model; minimal version loads example html."""
         # Create a parameter extraction controller to retrieve configuration inputs from the UI.
         extractor = InputExtractController(self.ui)
+        
         if not self.rnx_file:
             self.ui.terminalTextEdit.append("Please select a RNX file first.")
             return
