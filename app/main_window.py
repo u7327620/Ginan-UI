@@ -99,10 +99,6 @@ class MainWindow(QMainWindow):
         # html_paths = backend.process(rnx_file, output_dir, ...)
         # self.visCtrl.set_html_files(html_paths)
 
-        # open the browser after the html files are set
-        import threading
-        threading.Timer(1.0, self.visCtrl.open_current_external).start()
-
     def _open_current_in_browser(self):
         """open the current html file in browser"""
         self.visCtrl.open_current_external() 
