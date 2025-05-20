@@ -248,7 +248,6 @@ estimation_parameters:
                 # apriori_val:        [0]     # [floats] Apriori state values
                 # mu:                 [0]     # [floats] Desired mean value for gauss markov states
                 # tau:                [-1]    # [floats] Correlation times for gauss markov noise, defaults to -1 -> inf (Random Walk)
-            # will these be user set values or values derived from something like the troposphere file that is pulled in
 
             clock:
                 estimated: [true]
