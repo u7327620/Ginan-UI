@@ -2,7 +2,7 @@ import os
 from app.controllers.config_controller import ConfigController
 from app.views.main_window_ui import Ui_MainWindow
 from PySide6.QtCore import Qt, QRect, QUrl
-from PySide6.QtWidgets import QMainWindow, QDialog, QVBoxLayout
+from PySide6.QtWidgets import QMainWindow, QDialog, QVBoxLayout, QPushButton
 from PySide6.QtWebEngineWidgets import QWebEngineView
 from PySide6.QtGui import QDesktopServices
 from app.controllers.input_extract_controller import InputExtractController
@@ -57,8 +57,13 @@ class MainWindow(QMainWindow):
         # Process button performs processing once both files are selected (enabled by SideBarController)
         self.ui.processButton.clicked.connect(self._on_process_clicked)
 
-        # —— Double-click visualization area for full view —— #
-        self.ui.visualisationTextEdit.setAttribute(Qt.WA_AcceptTouchEvents)
+        # # —— Double-click visualization area for full view —— #
+        # self.ui.visualisationTextEdit.setAttribute(Qt.WA_AcceptTouchEvents)
+
+        # create a button to open the current html file in browser
+        self.openInBrowserBtn = QPushButton("Open in Browser", self)
+        self.openInBrowserBtn.clicked.connect(self._open_current_in_browser)
+        self.ui.rightLayout.addWidget(self.openInBrowserBtn)
 
     def on_files_ready(self, rnx_path, out_path):
         """Store file paths received from SideBarController."""
@@ -92,4 +97,12 @@ class MainWindow(QMainWindow):
 
         # ── Backend processing ── #
         # html_paths = backend.process(rnx_file, output_dir, ...)
-        # self.visCtrl.set_html_files(html_paths) 
+        # self.visCtrl.set_html_files(html_paths)
+
+        # open the browser after the html files are set
+        import threading
+        threading.Timer(1.0, self.visCtrl.open_current_external).start()
+
+    def _open_current_in_browser(self):
+        """open the current html file in browser"""
+        self.visCtrl.open_current_external() 
