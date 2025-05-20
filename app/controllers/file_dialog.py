@@ -1,15 +1,23 @@
+# app/controllers/file_dialog.py
+
+import os
 from PySide6.QtWidgets import QFileDialog
 
-class FileDialogController:
-    def __init__(self, file_dialog_ui, file_requiring_model): # Model empty for now
-        """Directory selector example"""
-        self.file_dialog_ui = file_dialog_ui
-        self.model = file_requiring_model
-        self.setup_file_dialog()
+HERE = os.path.dirname(os.path.abspath(__file__))
+EXAMPLE_DIR = os.path.normpath(os.path.join(HERE, "..", "example"))
+OUTPUT_DIR = os.path.join(EXAMPLE_DIR, "output")
 
-    def setup_file_dialog(self):
-        self.file_dialog_ui.observationsButton.clicked.connect(self.get_directory)
+def select_rnx_file(parent) -> str:
+    caption = "Select RINEX File"
+    filters = "RINEX Files (*.rnx *.rnx.gz);;All Files (*)"
+    path, _ = QFileDialog.getOpenFileName(parent, caption, "", filters)
+    return path or ""
 
-    def get_directory(self):
-        dialog = QFileDialog().getExistingDirectory(caption='Select root input directory')
-        self.file_dialog_ui.terminalTextEdit.setText(f"Selected directory: {dialog}")
+
+def select_output_dir(parent) -> str:
+    """Open a dialog to choose a directory to save output files."""
+    default_dir = OUTPUT_DIR if os.path.isdir(OUTPUT_DIR) else HERE
+    caption = "Select Output Directory"
+    # Use getExistingDirectory to pick a folder.
+    path = QFileDialog.getExistingDirectory(parent, caption, default_dir)
+    return path or ""
