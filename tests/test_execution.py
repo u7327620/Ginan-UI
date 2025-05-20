@@ -1,7 +1,7 @@
 import unittest
 from importlib.resources import files
 from app.models.execution import Execution
-from app.models.file_integrity import get_pea_exec
+from app.models.find_executable import get_pea_exec
 
 class TestExecution(unittest.TestCase):
     def test_load_config(self):
