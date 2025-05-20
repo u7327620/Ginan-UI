@@ -51,7 +51,7 @@ class MainWindow(QMainWindow):
 
         # —— Initial button states —— #
         self.ui.outputButton.setEnabled(False)
-        self.ui.processButton.setEnabled(True)
+        self.ui.processButton.setEnabled(False)
 
         # —— Signal connections —— #
         # Process button performs processing once both files are selected (enabled by SideBarController)
