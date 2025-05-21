@@ -1,7 +1,5 @@
 import os
 
-from app.controllers.config_controller import ConfigController
-from app.views.main_window_ui import Ui_MainWindow
 from PySide6.QtCore import Qt, QRect, QUrl
 from PySide6.QtWidgets import QMainWindow, QDialog, QVBoxLayout, QPushButton
 from PySide6.QtWebEngineWidgets import QWebEngineView
