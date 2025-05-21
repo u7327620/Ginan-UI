@@ -34,6 +34,11 @@ class ConfigController:
     def __init__(self, ui):
         self.ui = ui
 
+        # —— Show config & Run PEA —— #
+        self.ui.showConfigButton.clicked.disconnect()          
+        self.ui.showConfigButton.clicked.connect(self.on_show_config)
+        self.ui.processButton.clicked.connect(self.on_run_pea)       
+
         # bond up QComboBox's showPopup
         self._bind_combo(self.ui.Mode, self._get_mode_items)
         self._bind_combo(self.ui.PPP_provider, self._get_ppp_provider_items)
@@ -268,26 +273,64 @@ class ConfigController:
             self.ui.dataIntervalValue.setText(str(val))      
 
     # ---------- Show config  ---------
-    def _open_show_config(self):
-        """
-        Temporarily replace the yaml folder with the project root folder
-        """
-        # __file__ is the path to config_controller.py, two levels up to the project root.
-        project_root = os.path.abspath(
-            os.path.join(os.path.dirname(__file__), '..', '..')
+    def on_show_config(self):
+        file_path, _ = QFileDialog.getOpenFileName(
+            None,
+            "Select a YAML config file",
+            "",
+            "YAML files (*.yml *.yaml)"
         )
-
-        if not os.path.isdir(project_root):
-            print(f"Project root directory does not exist: {project_root}")
+        if not file_path:
             return
 
-        # Cross-platform opening of directories with the system's default file manager
-        url = QUrl.fromLocalFile(project_root)
-        QDesktopServices.openUrl(url)
+        if not (file_path.endswith(".yml") or file_path.endswith(".yaml")):
+            QMessageBox.warning(
+                None,
+                "File format error",
+                "Please select a file ending with .yml or .yaml"
+            )
+            return
 
+        self.config_path = file_path
 
+    # ——— 迁移自 MainWindow: 点击 Process 后校验并运行 PEA ———
+    def on_run_pea(self):
+        """点击 Process 后，从 UI 读取时间窗口和配置文件路径，并做基本校验。"""
+        # 读取时间窗口文本，并把下划线换成空格
+        raw = self.ui.timeWindowValue.text().replace("_", " ")
+        try:
+            start_str, end_str = raw.split("→")
+            start = datetime.strptime(start_str.strip(), "%Y-%m-%d %H:%M:%S")
+            end   = datetime.strptime(end_str.strip(),   "%Y-%m-%d %H:%M:%S")
+        except Exception:
+            QMessageBox.warning(
+                None,
+                "Format error",
+                "Time window must be in the format:\n"
+                "YYYY-MM-DD HH:MM:SS → YYYY-MM-DD HH:MM:SS"
+            )
+            return
 
+        if start > end:
+            QMessageBox.warning(
+                None,
+                "Time error",
+                "Start time cannot be later than end time."
+            )
+            return
 
+        if not getattr(self, "config_path", None):
+            QMessageBox.warning(
+                None,
+                "No config file",
+                "Please click Show config and select a YAML file first."
+            )
+            return
+
+        self.ui.terminalTextEdit.clear()
+        self.ui.terminalTextEdit.append("Basic validation passed, starting PEA execution...")
+     
+        
     def _get_mode_items(self):
         return ["Static","Kinematic","Dynamic"]
 
