@@ -34,6 +34,7 @@ class FullHtmlDialog(QDialog):
         self.resize(800, 600)
 
 
+
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -108,6 +109,8 @@ class MainWindow(QMainWindow):
         self.ui.terminalTextEdit.append(f"Displaying visualisations: {htmls}")
         self.visCtrl.set_html_files(htmls)
 
+
         # ── Replace with real backend call when ready:
         # html_paths = backend.process(self.rnx_file, self.output_dir, **extractor.get_params())
         # self.visCtrl.set_html_files(html_paths)
+
