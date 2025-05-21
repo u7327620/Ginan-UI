@@ -37,16 +37,34 @@
        <layout class="QVBoxLayout" name="leftSidebarLayout">
         <item>
          <widget class="QPushButton" name="observationsButton">
-          <property name="minimumSize"><size><width>0</width><height>40</height></size></property>
-          <property name="styleSheet"><string notr="true">background-color:#e0e0e0;</string></property>
-          <property name="text"><string>Observations</string></property>
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>40</height>
+           </size>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">background-color:#e0e0e0;</string>
+          </property>
+          <property name="text">
+           <string>Observations</string>
+          </property>
          </widget>
         </item>
         <item>
          <widget class="QPushButton" name="outputButton">
-          <property name="minimumSize"><size><width>0</width><height>40</height></size></property>
-          <property name="styleSheet"><string notr="true">background-color:#e0e0e0;</string></property>
-          <property name="text"><string>Output</string></property>
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>40</height>
+           </size>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">background-color:#e0e0e0;</string>
+          </property>
+          <property name="text">
+           <string>Output</string>
+          </property>
          </widget>
         </item>
         <item>
@@ -201,7 +219,6 @@
              <property name="text"><string>Open Yaml config in editor</string></property>
             </widget>
            </item>
-
           </layout>
          </widget>
         </item>

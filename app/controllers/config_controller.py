@@ -28,11 +28,10 @@ from PySide6.QtWidgets import (
     QMessageBox,
     QFileDialog,
 )
-from app.views.main_window_ui import Ui_MainWindow
 
 
 class ConfigController:
-    def __init__(self, ui: Ui_MainWindow):
+    def __init__(self, ui):
         self.ui = ui
 
         # bond up QComboBox's showPopup
