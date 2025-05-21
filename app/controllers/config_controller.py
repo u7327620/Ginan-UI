@@ -293,10 +293,8 @@ class ConfigController:
 
         self.config_path = file_path
 
-    # ——— 迁移自 MainWindow: 点击 Process 后校验并运行 PEA ———
+    # ——— migrate from MainWindow———
     def on_run_pea(self):
-        """点击 Process 后，从 UI 读取时间窗口和配置文件路径，并做基本校验。"""
-        # 读取时间窗口文本，并把下划线换成空格
         raw = self.ui.timeWindowValue.text().replace("_", " ")
         try:
             start_str, end_str = raw.split("→")
