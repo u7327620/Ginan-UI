@@ -13,321 +13,490 @@
   <property name="windowTitle">
    <string>GINAN GNSS Processing</string>
   </property>
-
-  
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout">
-
-    
     <item>
      <widget class="QLabel" name="titleLabel">
-      <property name="font"><font><pointsize>16</pointsize><bold>true</bold></font></property>
-      <property name="text"><string>GINAN GNSS PROCESSING GUI</string></property>
-      <property name="alignment"><set>Qt::AlignmentFlag::AlignCenter</set></property>
+      <property name="font">
+       <font>
+        <pointsize>16</pointsize>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>GINAN GNSS PROCESSING GUI</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignmentFlag::AlignCenter</set>
+      </property>
      </widget>
     </item>
-
-    <!-- Body: Left button + Right content -->
     <item>
      <layout class="QHBoxLayout" name="mainContentLayout">
-
-      <!-- Left: Function button column -->
       <item>
        <layout class="QVBoxLayout" name="leftSidebarLayout">
         <item>
          <widget class="QPushButton" name="observationsButton">
-          <property name="minimumSize"><size><width>0</width><height>40</height></size></property>
-          <property name="styleSheet"><string notr="true">background-color:#e0e0e0;</string></property>
-          <property name="text"><string>Observations</string></property>
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>40</height>
+           </size>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">background-color:#e0e0e0;</string>
+          </property>
+          <property name="text">
+           <string>Observations</string>
+          </property>
          </widget>
         </item>
         <item>
          <widget class="QPushButton" name="outputButton">
-          <property name="minimumSize"><size><width>0</width><height>40</height></size></property>
-          <property name="styleSheet"><string notr="true">background-color:#e0e0e0;</string></property>
-          <property name="text"><string>Output</string></property>
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>40</height>
+           </size>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">background-color:#e0e0e0;</string>
+          </property>
+          <property name="text">
+           <string>Output</string>
+          </property>
          </widget>
         </item>
         <item>
          <widget class="QPushButton" name="processButton">
-          <property name="minimumSize"><size><width>0</width><height>40</height></size></property>
-          <property name="maximumSize"><size><width>200</width><height>16777215</height></size></property>
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>40</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>200</width>
+            <height>16777215</height>
+           </size>
+          </property>
           <property name="styleSheet">
            <string notr="true">background-color:#6cb75f;color:black;font-weight:bold;</string>
           </property>
-          <property name="text"><string>Process</string></property>
+          <property name="text">
+           <string>Process</string>
+          </property>
          </widget>
         </item>
         <item>
+         <widget class="QFrame" name="Constellations">
+          <property name="styleSheet">
+           <string notr="true">background-color:white;</string>
+          </property>
+          <property name="frameShape">
+           <enum>QFrame::Shape::StyledPanel</enum>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Shadow::Raised</enum>
+          </property>
+          <layout class="QGridLayout" name="configGridLayout">
+           <property name="leftMargin">
+            <number>5</number>
+           </property>
+           <property name="topMargin">
+            <number>5</number>
+           </property>
+           <property name="rightMargin">
+            <number>5</number>
+           </property>
+           <property name="bottomMargin">
+            <number>5</number>
+           </property>
+           <property name="horizontalSpacing">
+            <number>8</number>
+           </property>
+           <property name="verticalSpacing">
+            <number>10</number>
+           </property>
+           <item row="17" column="0">
+            <widget class="QComboBox" name="PPP_provider">
+             <property name="styleSheet">
+              <string notr="true">background-color:#2c5d7c;color:white;</string>
+             </property>
+             <item>
+              <property name="text">
+               <string>PPP provider</string>
+              </property>
+             </item>
+            </widget>
+           </item>
+           <item row="15" column="1">
+            <widget class="QLineEdit" name="antennaOffsetValue">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">
+                  background: transparent;
+                  border: none;
+                </string>
+             </property>
+             <property name="text">
+              <string>E/N/U offset m.m, m.m, m.m</string>
+             </property>
+             <property name="frame">
+              <bool>false</bool>
+             </property>
+             <property name="readOnly">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="18" column="1">
+            <widget class="QLabel" name="pppSeriesValue">
+             <property name="text">
+              <string>List populated from file</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QLabel" name="modeValue">
+             <property name="text">
+              <string>Static/Dynamic</string>
+             </property>
+            </widget>
+           </item>
+           <item row="19" column="1">
+            <widget class="QLabel" name="showConfigValue">
+             <property name="text">
+              <string>Open Yaml config in editor</string>
+             </property>
+            </widget>
+           </item>
+           <item row="7" column="0">
+            <widget class="QPushButton" name="dataIntervalButton">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">
+                  background-color:#2c5d7c;
+                  color:white;
+                  padding:0px 8px;
+                  font:13pt &quot;Segoe UI&quot;;
+                  text-align:left;
+                </string>
+             </property>
+             <property name="text">
+              <string>Data interval</string>
+             </property>
+            </widget>
+           </item>
+           <item row="15" column="0">
+            <widget class="QPushButton" name="antennaOffsetButton">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>30</height>
+              </size>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">
+                  background-color:#2c5d7c;
+                  color:white;
+                  padding:0px 8px;
+                  font:13pt &quot;Segoe UI&quot;;
+                  text-align:left;
+                </string>
+             </property>
+             <property name="text">
+              <string>Antenna offset</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QComboBox" name="Mode">
+             <property name="styleSheet">
+              <string notr="true">background-color:#2c5d7c;color:white;</string>
+             </property>
+             <item>
+              <property name="text">
+               <string>Mode</string>
+              </property>
+             </item>
+            </widget>
+           </item>
+           <item row="6" column="1">
+            <widget class="QLabel" name="timeWindowValue">
+             <property name="text">
+              <string>Start/End YYYY-MM-DD_HH:MM:S.S</string>
+             </property>
+            </widget>
+           </item>
+           <item row="8" column="1">
+            <widget class="QLabel" name="receiverTypeValue">
+             <property name="text">
+              <string>List populated from file</string>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="1">
+            <widget class="QLabel" name="constellationsValue">
+             <property name="text">
+              <string>GPS/GAL/GLO/BDS</string>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="0">
+            <widget class="QComboBox" name="Constellations_2">
+             <property name="styleSheet">
+              <string notr="true">background-color:#2c5d7c;color:white;</string>
+             </property>
+             <item>
+              <property name="text">
+               <string>Constellations</string>
+              </property>
+             </item>
+            </widget>
+           </item>
+           <item row="17" column="1">
+            <widget class="QLabel" name="pppProviderValue">
+             <property name="text">
+              <string>List populated from file</string>
+             </property>
+            </widget>
+           </item>
+           <item row="6" column="0">
+            <widget class="QPushButton" name="timeWindowButton">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">
+                  background-color:#2c5d7c;
+                  color:white;
+                  padding:0px 8px;
+                  font:13pt &quot;Segoe UI&quot;;
+                  text-align:left;
+                </string>
+             </property>
+             <property name="text">
+              <string>Time window</string>
+             </property>
+            </widget>
+           </item>
+           <item row="14" column="1">
+            <widget class="QLabel" name="antennaTypeValue">
+             <property name="text">
+              <string>List populated from file</string>
+             </property>
+            </widget>
+           </item>
+           <item row="8" column="0">
+            <widget class="QComboBox" name="Receiver_type">
+             <property name="styleSheet">
+              <string notr="true">background-color:#2c5d7c;color:white;</string>
+             </property>
+             <item>
+              <property name="text">
+               <string>Receiver type</string>
+              </property>
+             </item>
+            </widget>
+           </item>
+           <item row="19" column="0">
+            <widget class="QPushButton" name="showConfigButton">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">
+                  background-color:#2c5d7c;
+                  color:white;
+                  padding:0px 8px;
+                  font:13pt &quot;Segoe UI&quot;;
+                  text-align:left;
+                </string>
+             </property>
+             <property name="text">
+              <string>Show config</string>
+             </property>
+            </widget>
+           </item>
+           <item row="14" column="0">
+            <widget class="QComboBox" name="Antenna_type">
+             <property name="styleSheet">
+              <string notr="true">background-color:#2c5d7c;color:white;</string>
+             </property>
+             <item>
+              <property name="text">
+               <string>Antenna type</string>
+              </property>
+             </item>
+            </widget>
+           </item>
+           <item row="7" column="1">
+            <widget class="QLabel" name="dataIntervalValue">
+             <property name="text">
+              <string>Seconds S.S</string>
+             </property>
+            </widget>
+           </item>
+           <item row="18" column="0">
+            <widget class="QComboBox" name="PPP_series">
+             <property name="styleSheet">
+              <string notr="true">background-color:#2c5d7c;color:white;</string>
+             </property>
+             <item>
+              <property name="text">
+               <string>PPP series</string>
+              </property>
+             </item>
+            </widget>
+           </item>
+           <item row="0" column="0">
+            <widget class="QLabel" name="configLabel">
+             <property name="font">
+              <font>
+               <pointsize>14</pointsize>
+               <bold>true</bold>
+              </font>
+             </property>
+             <property name="text">
+              <string>Configuration</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer_2">
+          <property name="orientation">
+           <enum>Qt::Orientation::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
          <spacer name="verticalSpacer">
-          <property name="orientation"><enum>Qt::Orientation::Vertical</enum></property>
-          <property name="sizeHint" stdset="0"><size><width>20</width><height>40</height></size></property>
+          <property name="orientation">
+           <enum>Qt::Orientation::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
          </spacer>
         </item>
        </layout>
       </item>
-
-      
       <item>
        <layout class="QVBoxLayout" name="rightLayout">
-
-        
         <item>
-         <layout class="QHBoxLayout" name="processButtonLayout">
-          <item><spacer name="horizontalSpacer"><property name="orientation"><enum>Qt::Orientation::Horizontal</enum></property>
-           <property name="sizeHint" stdset="0"><size><width>40</width><height>20</height></size></property></spacer></item>
-          <item><spacer name="horizontalSpacer_2"><property name="orientation"><enum>Qt::Orientation::Horizontal</enum></property>
-           <property name="sizeHint" stdset="0"><size><width>40</width><height>20</height></size></property></spacer></item>
-         </layout>
+         <layout class="QHBoxLayout" name="processButtonLayout"/>
         </item>
-
-        
-        <item><widget class="QLabel" name="configLabel">
-          <property name="font"><font><pointsize>14</pointsize><bold>true</bold></font></property>
-          <property name="text"><string>Configuration</string></property>
-        </widget></item>
-        <item><widget class="QLabel" name="workflowLabel">
-          <property name="font"><font><pointsize>14</pointsize><bold>true</bold></font></property>
-          <property name="text"><string>Workflow</string></property>
-        </widget></item>
-
-        
         <item>
-         <widget class="QFrame" name="Constellations">
-          <property name="styleSheet"><string notr="true">background-color:white;</string></property>
-          <property name="frameShape"><enum>QFrame::Shape::StyledPanel</enum></property>
-          <property name="frameShadow"><enum>QFrame::Shadow::Raised</enum></property>
-
-          <layout class="QGridLayout" name="configGridLayout">
-            <!-- Setting the spacing -->
-            <property name="verticalSpacing"><number>10</number></property>
-            <property name="horizontalSpacing"><number>8</number></property>
-            <property name="leftMargin">
-              <number>5</number>
-            </property>
-            <property name="topMargin">
-              <number>5</number>
-            </property>
-            <property name="rightMargin">
-              <number>5</number>
-            </property>
-            <property name="bottomMargin">
-              <number>5</number>
-            </property>
-
-          
-          <!-- row-0 : Mode -->
-          <item row="0" column="0">
-           <widget class="QComboBox" name="Mode">
-            <property name="styleSheet"><string notr="true">background-color:#2c5d7c;color:white;</string></property>
-            <item><property name="text"><string>Mode</string></property></item>
-           </widget>
-          </item>
-          <item row="0" column="1"><widget class="QLabel" name="modeValue"><property name="text"><string>Static/Dynamic</string></property></widget></item>
-
-          <!-- row-3 : Constellations -->
-          <item row="3" column="0">
-           <widget class="QComboBox" name="Constellations_2">
-            <property name="styleSheet"><string notr="true">background-color:#2c5d7c;color:white;</string></property>
-            <item><property name="text"><string>Constellations</string></property></item>
-           </widget>
-          </item>
-          <item row="3" column="1"><widget class="QLabel" name="constellationsValue"><property name="text"><string>GPS/GAL/GLO/BDS</string></property></widget></item>
-
-          <!-- row-5 : Time window -->
-          <item row="5" column="0">
-            <widget class="QPushButton" name="timeWindowButton">
-              <property name="sizePolicy">
-                <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                  <horstretch>0</horstretch><verstretch>0</verstretch>
-                </sizepolicy>
-              </property>
-              <property name="styleSheet">
-                <string notr="true">
-                  background-color:#2c5d7c;
-                  color:white;
-                  padding:0px 8px;
-                  font:13pt "Segoe UI";
-                  text-align:left;
-                </string>
-              </property>
-              <property name="text"><string>Time window</string></property>
-            </widget>
-          </item>
-          <item row="5" column="1"><widget class="QLabel" name="timeWindowValue"><property name="text"><string>Start/End YYYY-MM-DD_HH:MM:S.S</string></property></widget></item>
-
-          <!-- row-6 : Data interval -->
-          <item row="6" column="0">
-            <widget class="QPushButton" name="dataIntervalButton">
-              <property name="sizePolicy">
-                <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                  <horstretch>0</horstretch><verstretch>0</verstretch>
-                </sizepolicy>
-              </property>
-              <property name="styleSheet">
-                <string notr="true">
-                  background-color:#2c5d7c;
-                  color:white;
-                  padding:0px 8px;
-                  font:13pt "Segoe UI";
-                  text-align:left;
-                </string>
-              </property>
-              <property name="text"><string>Data interval</string></property>
-            </widget>
-          </item>
-          <item row="6" column="1"><widget class="QLabel" name="dataIntervalValue"><property name="text"><string>Seconds S.S</string></property></widget></item>
-
-           <!-- row-7 : Receiver type -->
-           <item row="7" column="0">
-            <widget class="QComboBox" name="Receiver_type">
-             <property name="styleSheet"><string notr="true">background-color:#2c5d7c;color:white;</string></property>
-             <item><property name="text"><string>Receiver type</string></property></item>
-            </widget>
-           </item>
-           <item row="7" column="1"><widget class="QLabel" name="receiverTypeValue"><property name="text"><string>List populated from file</string></property></widget></item>
-
-           <!-- row-13 : Antenna type -->
-           <item row="13" column="0">
-            <widget class="QComboBox" name="Antenna_type">
-             <property name="styleSheet"><string notr="true">background-color:#2c5d7c;color:white;</string></property>
-             <item><property name="text"><string>Antenna type</string></property></item>
-            </widget>
-           </item>
-           <item row="13" column="1"><widget class="QLabel" name="antennaTypeValue"><property name="text"><string>List populated from file</string></property></widget></item>
-
-           <!-- row-14 : Antenna offset  -->
-           <item row="14" column="0">
-            <widget class="QPushButton" name="antennaOffsetButton">
-              <property name="minimumSize">
-                <size><width>0</width><height>30</height></size>
-              </property>
-              <property name="sizePolicy">
-                <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                  <horstretch>0</horstretch><verstretch>0</verstretch>
-                </sizepolicy>
-              </property>
-              <property name="styleSheet">
-                <string notr="true">
-                  background-color:#2c5d7c;
-                  color:white;
-                  padding:0px 8px;
-                  font:13pt "Segoe UI";
-                  text-align:left;
-                </string>
-              </property>
-              <property name="text">
-                <string>Antenna offset</string>
-              </property>
-            </widget>
-          </item>
-          <item row="14" column="1">
-            <!-- Right display E/N/U offset -->
-            <widget class="QLineEdit" name="antennaOffsetValue">
-              <property name="readOnly"><bool>true</bool></property>
-              <!-- Remove borders and backgrounds -->
-              <property name="frame"><bool>false</bool></property>
-              <property name="styleSheet">
-                <string notr="true">
-                  background: transparent;
-                  border: none;
-                </string>
-              </property>
-              <property name="text"><string>E/N/U offset m.m, m.m, m.m</string></property>
-              <property name="sizePolicy">
-                <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                  <horstretch>0</horstretch><verstretch>0</verstretch>
-                </sizepolicy>
-              </property>
-            </widget>
-          </item>
-            
-
-           <!-- row-16 : PPP provider -->
-           <item row="16" column="0">
-            <widget class="QComboBox" name="PPP_provider">
-             <property name="styleSheet"><string notr="true">background-color:#2c5d7c;color:white;</string></property>
-             <item><property name="text"><string>PPP provider</string></property></item>
-            </widget>
-           </item>
-           <item row="16" column="1"><widget class="QLabel" name="pppProviderValue"><property name="text"><string>List populated from file</string></property></widget></item>
-
-           <!-- row-17 : PPP series -->
-           <item row="17" column="0">
-            <widget class="QComboBox" name="PPP_series">
-             <property name="styleSheet"><string notr="true">background-color:#2c5d7c;color:white;</string></property>
-             <item><property name="text"><string>PPP series</string></property></item>
-            </widget>
-           </item>
-           <item row="17" column="1"><widget class="QLabel" name="pppSeriesValue"><property name="text"><string>List populated from file</string></property></widget></item>
-
-          <!-- row-18 : Show config -->
-          <item row="18" column="0">
-            <widget class="QPushButton" name="showConfigButton">
-              <property name="sizePolicy">
-                <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                  <horstretch>0</horstretch><verstretch>0</verstretch>
-                </sizepolicy>
-              </property>
-              <property name="styleSheet">
-                <string notr="true">
-                  background-color:#2c5d7c;
-                  color:white;
-                  padding:0px 8px;
-                  font:13pt "Segoe UI";
-                  text-align:left;
-                </string>
-              </property>
-              <property name="text"><string>Show config</string></property>
-            </widget>
-          </item>
-          <item row="18" column="1">
-            <widget class="QLabel" name="showConfigValue">
-              <property name="text"><string>Open Yaml config in editor</string></property>
-            </widget>
-          </item>
-
-          </layout>
+         <widget class="QLabel" name="workflowLabel">
+          <property name="font">
+           <font>
+            <pointsize>14</pointsize>
+            <bold>true</bold>
+           </font>
+          </property>
+          <property name="text">
+           <string>Workflow</string>
+          </property>
          </widget>
         </item>
-
-        <!-- output -->
         <item>
          <widget class="QTextEdit" name="terminalTextEdit">
-          <property name="styleSheet"><string notr="true">background-color:#2c5d7c;color:white;</string></property>
-          <property name="readOnly"><bool>true</bool></property>
+          <property name="styleSheet">
+           <string notr="true">background-color:#2c5d7c;color:white;</string>
+          </property>
+          <property name="readOnly">
+           <bool>true</bool>
+          </property>
           <property name="html">
-           <string>&lt;html&gt;&lt;body&gt;Pea output terminal&lt;/body&gt;&lt;/html&gt;</string>
+           <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;meta charset=&quot;utf-8&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+hr { height: 1px; border-width: 0; }
+li.unchecked::marker { content: &quot;\2610&quot;; }
+li.checked::marker { content: &quot;\2612&quot;; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'.AppleSystemUIFont'; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Pea output terminal&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
          </widget>
         </item>
-
-        <!-- Reserved layout -->
-        <item><layout class="QVBoxLayout" name="configLayout"/></item>
-
-        <!-- Visualisation of headings and areas -->
-        <item><widget class="QLabel" name="visualisationLabel">
-          <property name="font"><font><pointsize>14</pointsize><bold>true</bold></font></property>
-          <property name="text"><string>Visualisation</string></property>
-        </widget></item>
+        <item>
+         <layout class="QVBoxLayout" name="configLayout"/>
+        </item>
+        <item>
+         <widget class="QLabel" name="visualisationLabel">
+          <property name="font">
+           <font>
+            <pointsize>14</pointsize>
+            <bold>true</bold>
+           </font>
+          </property>
+          <property name="text">
+           <string>Visualisation</string>
+          </property>
+         </widget>
+        </item>
         <item>
          <widget class="QTextEdit" name="visualisationTextEdit">
-          <property name="styleSheet"><string notr="true">background-color:#2c5d7c;color:white;</string></property>
-          <property name="readOnly"><bool>true</bool></property>
+          <property name="styleSheet">
+           <string notr="true">background-color:#2c5d7c;color:white;</string>
+          </property>
+          <property name="readOnly">
+           <bool>true</bool>
+          </property>
           <property name="html">
-           <string>&lt;html&gt;&lt;body&gt;Graphical visualization of outputs&lt;/body&gt;&lt;/html&gt;</string>
+           <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;meta charset=&quot;utf-8&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+hr { height: 1px; border-width: 0; }
+li.unchecked::marker { content: &quot;\2610&quot;; }
+li.checked::marker { content: &quot;\2612&quot;; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'.AppleSystemUIFont'; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Graphical visualization of outputs&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
          </widget>
         </item>
-
        </layout>
       </item>
      </layout>
     </item>
    </layout>
   </widget>
-
-  <!-- statuz -->
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
  <resources/>

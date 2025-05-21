@@ -1,6 +1,9 @@
 import os
-from PySide6.QtCore import Qt, QUrl
-from PySide6.QtWidgets import QMainWindow, QDialog, QVBoxLayout
+
+from app.controllers.config_controller import ConfigController
+from app.views.main_window_ui import Ui_MainWindow
+from PySide6.QtCore import Qt, QRect, QUrl
+from PySide6.QtWidgets import QMainWindow, QDialog, QVBoxLayout, QPushButton
 from PySide6.QtWebEngineWidgets import QWebEngineView
 
 from app.controllers.file_dialog import EXAMPLE_DIR
@@ -65,8 +68,13 @@ class MainWindow(QMainWindow):
         # Process button performs processing once both files are selected (enabled by SideBarController)
         self.ui.processButton.clicked.connect(self._on_process_clicked)
 
-        # —— Double-click visualization area for full view —— #
-        self.ui.visualisationTextEdit.setAttribute(Qt.WA_AcceptTouchEvents)
+        # # —— Double-click visualization area for full view —— #
+        # self.ui.visualisationTextEdit.setAttribute(Qt.WA_AcceptTouchEvents)
+
+        # create a button to open the current html file in browser
+        self.openInBrowserBtn = QPushButton("Open in Browser", self)
+        self.ui.rightLayout.addWidget(self.openInBrowserBtn)
+        self.visCtrl.bind_open_button(self.openInBrowserBtn)
 
     def on_files_ready(self, rnx_path, out_path):
         """Store file paths received from SideBarController."""
