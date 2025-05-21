@@ -1,20 +1,22 @@
 import os
-from app.controllers.config_controller import ConfigController
-from app.utils.helpers import compile_ui
-from app.controllers.config_controller import ConfigController
-from app.views.main_window_ui import Ui_MainWindow
-from PySide6.QtCore import Qt, QRect, QUrl
+from PySide6.QtCore import Qt, QUrl
 from PySide6.QtWidgets import QMainWindow, QDialog, QVBoxLayout
 from PySide6.QtWebEngineWidgets import QWebEngineView
-from PySide6.QtGui import QDesktopServices
+
+from app.controllers.file_dialog import EXAMPLE_DIR
+from app.utils.ui_compilation import compile_ui
+from app.controllers.config_controller import ConfigController
 from app.controllers.input_extract_controller import InputExtractController
+from app.controllers.visualisation_controller import VisualisationController
+
 
 def setup_main_window():
     try :
+        # Attempts to import the UI
         from app.views.main_window_ui import Ui_MainWindow
     except ModuleNotFoundError:
+        # Compiles if not available
         compile_ui()
-        print("Compiled ui, re import")
         from app.views.main_window_ui import Ui_MainWindow
     window = Ui_MainWindow()
     return window
@@ -30,14 +32,12 @@ class FullHtmlDialog(QDialog):
         layout.addWidget(webview)
         self.resize(800, 600)
 
-# Visualisation controller embeds HTML into the panel and handles double-click etc.
-from app.controllers.visualisation_controller import VisualisationController
 
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         # —— UI Initialization —— #
-        self.ui = Ui_MainWindow()
+        self.ui = setup_main_window()
         self.ui.setupUi(self)
 
         # —— Controllers —— #
