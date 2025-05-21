@@ -49,7 +49,7 @@ class VisualisationController(QObject):
     def display_html(self, index: int):
         """Embed the *index*-th html into the QTextEdit panel."""
         if not (0 <= index < len(self.html_files)):
-            return  # out of range
+            return 
         file_path = self.html_files[index]
         self.current_index = index
         self._embed_html(file_path)
@@ -88,15 +88,6 @@ class VisualisationController(QObject):
                 combo.addItem(f"#{idx} – {os.path.basename(path)}", userData=idx)
         _refresh_items()
         combo.currentIndexChanged.connect(lambda i: self.display_html(combo.currentData()))
-
-    # ------------------------------------------------------------------
-    # Qt event filter to capture double clicks anywhere inside container
-    # ------------------------------------------------------------------
-    def eventFilter(self, obj, event):  # type: ignore[override]
-        if event.type() == QEvent.MouseButtonDblClick:
-            self.open_current_external()
-            return True  # swallow
-        return super().eventFilter(obj, event)
 
     # ------------------------------------------------------------------
     # Internal helpers

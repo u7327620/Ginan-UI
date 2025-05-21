@@ -2,7 +2,7 @@ import os
 import subprocess
 from importlib.resources.abc import Traversable
 
-from app.models.yaml_utils import load_yaml, write_yaml
+from app.utils.yaml import load_yaml, write_yaml
 
 
 class Execution:

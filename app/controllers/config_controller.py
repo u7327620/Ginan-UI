@@ -1,5 +1,3 @@
-# app/controllers/config_controller.py
-
 """
 This controller encapsulates all logic related to populating and managing the configuration drop-down menus (QComboBox) in the main UI.
 
@@ -14,42 +12,52 @@ This controller encapsulates all logic related to populating and managing the co
    - ConfigController can be instantiated with a mock Ui_MainWindow to verify menu items or simulate user interactions.
 """
 import os
-from PySide6.QtCore import QUrl
-from PySide6.QtGui import QDesktopServices
-from PySide6.QtCore import Qt, QDate, QDateTime
-
+from PySide6.QtCore import Qt, QUrl, QDate, QDateTime
+from PySide6.QtGui import QDesktopServices, QStandardItem, QStandardItemModel
 from PySide6.QtWidgets import (
+    QComboBox,
     QDialog,
+    QFormLayout,
+    QDoubleSpinBox,
     QVBoxLayout,
     QHBoxLayout,
     QPushButton,
     QCalendarWidget,
     QDateTimeEdit,
     QInputDialog,
+    QMessageBox,
+    QFileDialog,
 )
-from app.views.main_window_ui import Ui_MainWindow
+
 
 class ConfigController:
-    def __init__(self, ui: Ui_MainWindow):
+    def __init__(self, ui):
         self.ui = ui
+
+        # —— Show config & Run PEA —— #
+        self.ui.showConfigButton.clicked.connect(self.on_show_config)
+        self.ui.showConfigButton.setCursor(Qt.PointingHandCursor)
+        self.ui.processButton.clicked.connect(self.on_run_pea)       
 
         # bond up QComboBox's showPopup
         self._bind_combo(self.ui.Mode, self._get_mode_items)
-        self._bind_combo(self.ui.Constellations_2, self._get_constellations_items)
-        self._bind_combo(self.ui.Receiver_type, self._get_receiver_type_items)
-        self._bind_combo(self.ui.Antenna_type, self._get_antenna_type_items)
         self._bind_combo(self.ui.PPP_provider, self._get_ppp_provider_items)
         self._bind_combo(self.ui.PPP_series, self._get_ppp_series_items)
+
+        # Multiple Choice Binding
+        self._bind_multiselect_combo(self.ui.Constellations_2,
+                                     self._get_constellations_items,
+                                     self.ui.constellationsValue,
+                                     placeholder="Constellations")
 
 
         # When selected, write the value to the right Label and reset the left text.
         # Mode, Constellations...
         self.ui.Mode.activated.connect(
             lambda idx: self._on_select(self.ui.Mode, self.ui.modeValue, "Mode", idx))
-        self.ui.Constellations_2.activated.connect(
-            lambda idx: self._on_select(self.ui.Constellations_2, self.ui.constellationsValue, "Constellations", idx))
-        self.ui.Receiver_type.activated.connect(
-            lambda idx: self._on_select(self.ui.Receiver_type, self.ui.receiverTypeValue, "Receiver type", idx))
+        self.ui.antennaOffsetButton.clicked.connect(self._open_antenna_offset_dialog)
+        self.ui.antennaOffsetButton.setCursor(Qt.PointingHandCursor)
+        self.ui.antennaOffsetValue.setText("0.0, 0.0, 0.0")
         self.ui.Antenna_type.activated.connect(
             lambda idx: self._on_select(self.ui.Antenna_type, self.ui.antennaTypeValue, "Antenna type", idx))
         self.ui.PPP_provider.activated.connect(
@@ -58,11 +66,8 @@ class ConfigController:
             lambda idx: self._on_select(self.ui.PPP_series, self.ui.pppSeriesValue, "PPP series", idx))
 
 
-        # Antenna offset：The left button clicks to bring up a pop-up calendar and the right read-only box displays the results
-        self.ui.antennaOffsetButton.clicked.connect(self._open_calendar_dialog)
-        self.ui.antennaOffsetButton.setCursor(Qt.PointingHandCursor)
-        # initial placeholder text
-        self.ui.antennaOffsetValue.setText("E/N/U offset m.m, m.m, m.m")
+        
+        
 
         # Time window：Start & End Date & Time
         self.ui.timeWindowButton.clicked.connect(self._open_time_window_dialog)
@@ -73,7 +78,7 @@ class ConfigController:
         self.ui.dataIntervalButton.setCursor(Qt.PointingHandCursor)
 
         # Show config: Click the button to open the editor
-        self.ui.showConfigButton.clicked.connect(self._open_show_config)
+        self.ui.showConfigButton.clicked.connect(self.on_show_config)
         self.ui.showConfigButton.setCursor(Qt.PointingHandCursor)
 
     def _on_select(self, combo, label, title, index):
@@ -85,12 +90,6 @@ class ConfigController:
 
 
     def _bind_combo(self, combo, items_func):
-        """
-        Monkey-patch combo.showPopup to:
-          1) clear & populate via items_func()
-          2) center-align text
-          3) call original showPopup to expand
-        """
        
         combo._old_showPopup = combo.showPopup
 
@@ -107,23 +106,111 @@ class ConfigController:
         combo.showPopup = new_showPopup
 
 
+
+        # ---------- Receiver type  ----------
+        def _ask_receiver_type():
+                text, ok = QInputDialog.getText(
+                    self.ui.Receiver_type,
+                    "Receiver Type",
+                    "Enter receiver type:"
+                )
+                if ok and text:
+                    # update left ComboBox 
+                    self.ui.Receiver_type.clear()
+                    self.ui.Receiver_type.addItem(text)
+                    # update right Label
+                    self.ui.receiverTypeValue.setText(text)
+
+        self.ui.Receiver_type.showPopup = _ask_receiver_type
+        self.ui.receiverTypeValue.setText("")
+
+        # ---------- Antenna Type   ----------
+        def _ask_antenna_type():
+            text, ok = QInputDialog.getText(
+                self.ui.Antenna_type,
+                "Antenna Type",
+                "Enter antenna type:"
+            )
+            if ok and text:
+                self.ui.Antenna_type.clear()
+                self.ui.Antenna_type.addItem(text)
+                self.ui.antennaTypeValue.setText(text)
+        self.ui.Antenna_type.showPopup = _ask_antenna_type
+        self.ui.antennaTypeValue.setText("")
+
+    # ---------- Mode  ----------
+    def _bind_multiselect_combo(self, combo: QComboBox, items_func, label, placeholder: str):
+        combo._old_showPopup = combo.showPopup
+
+        def show_popup():
+            model = QStandardItemModel(combo)
+            for txt in items_func():
+                it = QStandardItem(txt)
+                it.setFlags(Qt.ItemIsEnabled | Qt.ItemIsUserCheckable)
+                it.setData(Qt.Unchecked, Qt.CheckStateRole)
+                model.appendRow(it)
+            # Updates the display when the status of items in the model changes
+            model.itemChanged.connect(on_item_changed)
+            combo.setModel(model)
+            combo._old_showPopup()
+
+        def on_item_changed(item: QStandardItem):
+            # Spell out all ticked boxes as ‘A, B, C.’
+            selected = [
+                combo.model().item(r, 0).text()
+                for r in range(combo.model().rowCount())
+                if combo.model().item(r, 0).checkState() == Qt.Checked
+            ]
+            label.setText(", ".join(selected) if selected else placeholder)
+            
+
+        combo.showPopup = show_popup
+        combo.clear()
+        combo.addItem(placeholder)
+        label.setText(placeholder)
+
     # ---------- Antenna offset  ----------
-    def _open_calendar_dialog(self):
+    def _open_antenna_offset_dialog(self):
         dlg = QDialog(self.ui.antennaOffsetButton)
-        dlg.setWindowTitle("Select date")
-        layout = QVBoxLayout(dlg)
+        dlg.setWindowTitle("Antenna Offset")
 
-        cal = QCalendarWidget(dlg)
-        cal.setSelectedDate(QDate.currentDate())
-        layout.addWidget(cal)
+        form = QFormLayout(dlg)
+        # 从现有文本解析初始值
+        parts = self.ui.antennaOffsetValue.text().split(",")
+        try:
+            u0, n0, e0 = [float(x.strip()) for x in parts]
+        except:
+            u0 = n0 = e0 = 0.0
 
-        # Check to write text and close
-        cal.clicked.connect(lambda d: self._set_offset_date(d, dlg))
+        sb_u = QDoubleSpinBox(dlg)
+        sb_u.setRange(-9999, 9999); sb_u.setDecimals(1); sb_u.setValue(u0)
+        sb_n = QDoubleSpinBox(dlg)
+        sb_n.setRange(-9999, 9999); sb_n.setDecimals(1); sb_n.setValue(n0)
+        sb_e = QDoubleSpinBox(dlg)
+        sb_e.setRange(-9999, 9999); sb_e.setDecimals(1); sb_e.setValue(e0)
+
+        form.addRow("U:", sb_u)
+        form.addRow("N:", sb_n)
+        form.addRow("E:", sb_e)
+
+        btn_row = QHBoxLayout()
+        ok_btn = QPushButton("OK", dlg)
+        cancel_btn = QPushButton("Cancel", dlg)
+        btn_row.addWidget(ok_btn)
+        btn_row.addWidget(cancel_btn)
+        form.addRow(btn_row)
+
+        ok_btn.clicked.connect(lambda: self._set_antenna_offset(sb_u, sb_n, sb_e, dlg))
+        cancel_btn.clicked.connect(dlg.reject)
+
         dlg.exec()
 
-    def _set_offset_date(self, qdate: QDate, dlg: QDialog):
-        self.ui.antennaOffsetValue.setText(qdate.toString("dd-MM-yyyy"))
-        dlg.accept()        
+    def _set_antenna_offset(self, sb_u, sb_n, sb_e, dlg):
+        u = sb_u.value()
+        n = sb_n.value()
+        e = sb_e.value()
+        self.ui.antennaOffsetValue.setText(f"{u}, {n}, {e}")
+        dlg.accept()
 
 
     # ---------- Time window - Start & End Date & Time  ----------
@@ -156,6 +243,16 @@ class ConfigController:
         dlg.exec()
 
     def _set_time_window(self, start_edit, end_edit, dlg):
+        # If end < start, warn and do not accept dialog
+        if end_edit.dateTime() < start_edit.dateTime():
+            QMessageBox.warning(
+                dlg,  
+                "Time error",
+                "End time cannot be earlier than start time.\n"
+                "Please select again."
+            )
+            return
+
         s = start_edit.dateTime().toString("yyyy-MM-dd_HH:mm:ss")
         e = end_edit.dateTime().toString("yyyy-MM-dd_HH:mm:ss")
         self.ui.timeWindowValue.setText(f"{s} to {e}")
@@ -173,34 +270,70 @@ class ConfigController:
             3600                                # maximum
         )
         if ok:
-            self.ui.dataIntervalValue.setText(f"{val} s")       
+            self.ui.dataIntervalValue.setText(str(val))      
 
     # ---------- Show config  ---------
-    def _open_show_config(self):
-        """
-        Temporarily replace the yaml folder with the project root folder
-        """
-        # __file__ is the path to config_controller.py, two levels up to the project root.
-        project_root = os.path.abspath(
-            os.path.join(os.path.dirname(__file__), '..', '..')
+    def on_show_config(self):
+        file_path, _ = QFileDialog.getOpenFileName(
+            None,
+            "Select a YAML config file",
+            "",
+            "YAML files (*.yml *.yaml)"
         )
-
-        if not os.path.isdir(project_root):
-            print(f"Project root directory does not exist: {project_root}")
+        if not file_path:
             return
 
-        # Cross-platform opening of directories with the system's default file manager
-        url = QUrl.fromLocalFile(project_root)
-        QDesktopServices.openUrl(url)
+        if not (file_path.endswith(".yml") or file_path.endswith(".yaml")):
+            QMessageBox.warning(
+                None,
+                "File format error",
+                "Please select a file ending with .yml or .yaml"
+            )
+            return
 
+        self.config_path = file_path
 
+    # ——— migrate from MainWindow———
+    def on_run_pea(self):
+        raw = self.ui.timeWindowValue.text().replace("_", " ")
+        try:
+            start_str, end_str = raw.split("→")
+            start = datetime.strptime(start_str.strip(), "%Y-%m-%d %H:%M:%S")
+            end   = datetime.strptime(end_str.strip(),   "%Y-%m-%d %H:%M:%S")
+        except Exception:
+            QMessageBox.warning(
+                None,
+                "Format error",
+                "Time window must be in the format:\n"
+                "YYYY-MM-DD HH:MM:SS → YYYY-MM-DD HH:MM:SS"
+            )
+            return
 
+        if start > end:
+            QMessageBox.warning(
+                None,
+                "Time error",
+                "Start time cannot be later than end time."
+            )
+            return
 
+        if not getattr(self, "config_path", None):
+            QMessageBox.warning(
+                None,
+                "No config file",
+                "Please click Show config and select a YAML file first."
+            )
+            return
+
+        self.ui.terminalTextEdit.clear()
+        self.ui.terminalTextEdit.append("Basic validation passed, starting PEA execution...")
+     
+        
     def _get_mode_items(self):
-        return ["Static", "Dynamic"]
+        return ["Static","Kinematic","Dynamic"]
 
     def _get_constellations_items(self):
-        return ["GPS", "GAL", "GLO", "BDS"]
+        return ["GPS", "GAL", "GLO", "BDS", "QZS"]
 
     def _get_time_window_items(self):
         # Example, can actually be generated dynamically
@@ -217,10 +350,10 @@ class ConfigController:
 
     
     def _get_ppp_provider_items(self):
-        return ["Provider A", "Provider B", "Provider C"]
+        return ["COD", "GFZ", "JPL", "ESA", "IGS", "WUH"]
 
     def _get_ppp_series_items(self):
-        return ["Series 1", "Series 2", "Series 3"]
+        return ["RAP", "ULT", "FIN"]
 
     def _get_show_config_items(self):
         return ["Show in Editor", "Show in Dialog"]
