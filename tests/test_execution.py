@@ -7,3 +7,13 @@ class TestExecution(unittest.TestCase):
     def test_load_config(self):
         execution = Execution(files("tests.resources").joinpath("ppp_example.yaml"), get_pea_exec())
         self.assertFalse(execution.config.values() == {}, "Config isn't empty")
+
+    def test_execute_config(self):
+        execution = Execution(files("tests.resources").joinpath("ppp_example.yaml"), get_pea_exec())
+        alterations = {"outputs.outputs_root": files("tests.resources").joinpath("output"),
+                       "inputs.inputs_root": files("tests.resources").joinpath("input")}
+        for key, value in alterations.items():
+            execution.edit_config(key, str(value))
+
+        execution.execute_config()
+        # TODO - Verify output when execution is complete.
