@@ -1,6 +1,10 @@
 import sys
 from PySide6.QtWidgets import QApplication
 from app.main_window import MainWindow
+import os
+os.environ["QT_QPA_PLATFORM_PLUGIN_PATH"] = os.path.join(
+    sys.prefix, "Lib", "site-packages", "PySide6", "plugins", "platforms"
+)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
