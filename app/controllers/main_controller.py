@@ -53,7 +53,7 @@ class MainController:
         execution.edit_config(f"receiver_options.{extractor.marker_name}.receiver_type", extractor.receiver_type, False)
         execution.edit_config(f"receiver_options.{extractor.marker_name}.antenna_type", extractor.antenna_type, False)
         execution.edit_config(f"receiver_options.{extractor.marker_name}.models.eccentricity.offset", extractor.antenna_offset, False)
-        execution.edit_config("estimation_parameters.receivers.global.pos.process_noise", str([extractor.mode]), False)
+        execution.edit_config("estimation_parameters.receivers.global.pos.process_noise", f"[{extractor.mode}]", False)
 
         # Modify the file to include the PPP auto download product values
         #
