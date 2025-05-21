@@ -34,6 +34,7 @@ class FullHtmlDialog(QDialog):
         self.resize(800, 600)
 
 
+
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -104,6 +105,8 @@ class MainWindow(QMainWindow):
         # Register & show via visualisation controller
         self.visCtrl.set_html_files([fig1])
 
+
         # ── Backend processing ── #
         # html_paths = backend.process(rnx_file, output_dir, ...)
         # self.visCtrl.set_html_files(html_paths)
+
