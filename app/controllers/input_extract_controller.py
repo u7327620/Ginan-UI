@@ -10,7 +10,7 @@ class InputExtractController:
         self.output_path = output_path
 
         # Extract user input from the UI and assign it to class variables.
-        self.mode = self.ui.modeValue.text()
+        self.mode_raw = self.ui.modeValue.text()
         self.constellation = self.ui.constellationsValue.text()
         self.time_window_raw = self.ui.timeWindowValue.text()
         self.epoch_interval_raw = self.ui.dataIntervalValue.text()
@@ -25,6 +25,7 @@ class InputExtractController:
         self.antenna_offset = self.parse_antenna_offset()
         self.epoch_interval = self.epoch_interval_raw.replace("s", "").strip()
         self.marker_name = self.extract_marker_name()
+        self.mode = self.determine_mode_value()
 
         # Print verification
         print("InputExtractController Extraction Completed：")
@@ -68,3 +69,11 @@ class InputExtractController:
         stem = Path(self.rnx_path).stem # Drops the .gz / .rnx file path ending
         m = re.match(r"([A-Za-z]{4})", stem)
         return m.group(1).upper() if m else "TEST"
+
+    def determine_mode_value(self):
+        if self.mode_raw == "Static":
+            return 0
+        elif self.mode_raw == "Kinematic":
+            return 30
+        elif self.mode_raw == "Dynamic":
+            return 100
