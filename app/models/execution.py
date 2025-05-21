@@ -10,16 +10,19 @@ class Execution:
         self.config_path = config_path
         self.config = load_yaml(config_path)
         self.executable = executable
+        self.changes = False
 
     def edit_config(self, key_path: str, value: str, add_field=False):
         """
-        Edits the cached config, ensure the config is written before executing
+        Edits the cached config
 
         :param key_path: Yaml key e.g. "outputs.outputs_root"
         :param value: new Yaml value e.g. "/my/path/to/outputs"
         :param add_field: Adds field if it doesn't exist
         :raises KeyError if key not found
         """
+        self.changes = True
+
         keys = key_path.split(".")
         node = self.config # Should be a reference
         for key in keys[:-1]: # Ensure key path validity
@@ -39,6 +42,10 @@ class Execution:
         write_yaml(self.config_path, self.config)
 
     def execute_config(self):
+        if self.changes:
+            self.write_config()
+            self.changes = False
+
         command = [self.executable, "--config", self.config_path]
         try:
             # Run PEA using a subprocess at the directory "config_path"

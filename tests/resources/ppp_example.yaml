@@ -1,5 +1,5 @@
 inputs:
-    inputs_root: ./products/
+    inputs_root: /home/ryan/Documents/Ginan-UI/tests/resources/inputData/products
 
     atx_files: [igs20.atx] # required
     igrf_files: [tables/igrf13coeffs.txt]
@@ -48,7 +48,7 @@ outputs:
     metadata:
         config_description: ppp_example_<BRANCH>
 
-    outputs_root: ./outputs/<CONFIG>
+    outputs_root: /home/ryan/Documents/Ginan-UI/tests/resources/output
 
     gpx:
         output: true
