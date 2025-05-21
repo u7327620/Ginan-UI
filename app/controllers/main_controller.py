@@ -1,6 +1,6 @@
 from pathlib import Path
 import shutil
-from app.controllers.config_controller import ConfigController
+from importlib.resources import files
 from app.controllers.input_extract_controller import InputExtractController
 from app.models.execution import Execution
 from app.models.file_integrity import get_pea_exec
@@ -29,8 +29,8 @@ class MainController:
 
         # 1. Modify the .yaml config file to include the user’s input
         # Create the new .yaml config file
-        template_path = "app/resources/Yaml/default_config.yaml"
-        config_path = f"app/resources/ppp_{extractor.marker_name}.yaml"
+        template_path = str(files("app.resources").joinpath("Yaml/default_config.yaml"))
+        config_path = str(files("app.resources").joinpath(f"ppp_{extractor.marker_name}.yaml"))
         shutil.copy(template_path, config_path)
         print(f"Template copied to {config_path}")
 
@@ -60,10 +60,9 @@ class MainController:
 
         # 2. Run PEA using PEAModel.py in the back-end and provide the YAML config file using --config [FILENAME]
         execution.write_config()
-        #execution.execute_config()  # Will execute PEA with the provided config
+        execution.execute_config()  # Will execute PEA with the provided config
 
         # 3. PEA processes the data, and eventually outputs the files.
-        # Done automatically
 
         # 4. Plot the output using plot_pos.py or other means.
         # TODO
