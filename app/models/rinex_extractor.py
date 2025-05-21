@@ -14,9 +14,17 @@ class RinexExtractor:
         :param rinex_path: File path for .RNX file to extract from e.g. "resources/input/ALIC.rnx"
         :raises FileNotFoundError if .RNX file is not found
         """
+        system_mapping = {
+            "G": "GPS",
+            "E": "GAL",
+            "R": "GLO",
+            "C": "BDS",
+            "J": "QZS"
+        }
+        found_constellations = set()
 
         def format_time(year, month, day, hour, minute, second):
-            return f"{year:04d}-{month:02d}-{day:02d} {hour:02d}:{minute:02d}:{(int(second)):02d}"
+            return f"{year:04d}-{month:02d}-{day:02d}_{hour:02d}:{minute:02d}:{(int(second)):02d}"
 
         # Iterate through each line of the .RNX file
         previous_observation_dt = None
@@ -25,6 +33,11 @@ class RinexExtractor:
             for line in file:
                 if in_header: # Within the header section of the .RNX file
                     label = line[60:].strip()
+
+                    if label == "SYS / # / OBS TYPES":
+                        system_id = line[0]
+                        if system_id in system_mapping:
+                            found_constellations.add(system_mapping[system_id])
 
                     # Read and assign variables if they are present in .RNX file's header
                     # If not present, find them in the observations section
@@ -90,6 +103,9 @@ class RinexExtractor:
                         end_epoch = format_time(year, month, day, hour, minute, second)
                         previous_observation_dt = (year, month, day, hour, minute, int(second))
 
+        # Build the list of constellations
+        constellations = ", ".join(sorted(found_constellations))
+
         # Safety checks
         if start_epoch is None:
             raise ValueError("TIME OF FIRST OBS not found in provided .RNX file")
@@ -106,4 +122,5 @@ class RinexExtractor:
             "receiver_type": receiver_type,
             "antenna_type": antenna_type,
             "antenna_offset": antenna_offset,
+            "constellations": constellations
         }

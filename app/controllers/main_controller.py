@@ -3,7 +3,7 @@ import shutil
 from importlib.resources import files
 from app.controllers.input_extract_controller import InputExtractController
 from app.models.execution import Execution
-from app.models.file_integrity import get_pea_exec
+from app.models.find_executable import get_pea_exec
 
 
 class MainController:
@@ -53,14 +53,19 @@ class MainController:
         execution.edit_config(f"receiver_options.{extractor.marker_name}.receiver_type", extractor.receiver_type, False)
         execution.edit_config(f"receiver_options.{extractor.marker_name}.antenna_type", extractor.antenna_type, False)
         execution.edit_config(f"receiver_options.{extractor.marker_name}.models.eccentricity.offset", extractor.antenna_offset, False)
-        execution.edit_config("estimation_parameters.receivers.global.pos.process_noise", f"[{extractor.mode}]", False)
+        execution.edit_config("estimation_parameters.receivers.global.pos.process_noise", extractor.mode, False)
+
+        # Enable the constellations
+        for const in extractor.constellations_raw.split(","):
+            const = const.strip().lower()
+            execution.edit_config(f"processing_options.gnss_general.sys_options.{const}.process", True, False)
 
         # Modify the file to include the PPP auto download product values
         #
 
         # 2. Run PEA using PEAModel.py in the back-end and provide the YAML config file using --config [FILENAME]
         execution.write_config()
-        execution.execute_config()  # Will execute PEA with the provided config
+        #execution.execute_config()  # Will execute PEA with the provided config
 
         # 3. PEA processes the data, and eventually outputs the files.
 

@@ -11,7 +11,7 @@ class InputExtractController:
 
         # Extract user input from the UI and assign it to class variables.
         self.mode_raw = self.ui.modeValue.text()
-        self.constellation = self.ui.constellationsValue.text()
+        self.constellations_raw = self.ui.constellationsValue.text()
         self.time_window_raw = self.ui.timeWindowValue.text()
         self.epoch_interval_raw = self.ui.dataIntervalValue.text()
         self.receiver_type = self.ui.receiverTypeValue.text()
@@ -23,14 +23,14 @@ class InputExtractController:
         # Parsed values
         self.start_epoch, self.end_epoch = self.parse_time_window()
         self.antenna_offset = self.parse_antenna_offset()
-        self.epoch_interval = self.epoch_interval_raw.replace("s", "").strip()
+        self.epoch_interval = int(self.epoch_interval_raw.replace("s", "").strip())
         self.marker_name = self.extract_marker_name()
         self.mode = self.determine_mode_value()
 
         # Print verification
         print("InputExtractController Extraction Completed：")
         print("mode =", self.mode)
-        print("constellation =", self.constellation)
+        print("constellation =", self.constellations_raw)
         print("start_epoch =", self.start_epoch)
         print("end_epoch =", self.end_epoch)
         print("epoch_interval =", self.epoch_interval)
@@ -51,9 +51,8 @@ class InputExtractController:
     def parse_antenna_offset(self):
         """Convert the raw "0.0, 0.0, 0.0" format of antenna_offset to three usable variables, and return in correct formatting"""
         try:
-            test = "0.0, 0.0, 0.0"
-            u, n, e = map(str.strip, test.split(",")) #self.antenna_offset_raw.split(","))
-            return f"[{u}, {n}, {e}]"
+            u, n, e = map(str.strip, self.antenna_offset_raw.split(",")) #self.antenna_offset_raw.split(","))
+            return [float(u), float(n), float(e)]
         except ValueError:
             raise ValueError("Invalid antenna offset format. Expected: 'u, n, e'")
 

@@ -11,7 +11,7 @@ class Execution:
         self.config = load_yaml(config_path)
         self.executable = executable
 
-    def edit_config(self, key_path: str, value: str, add_field=False):
+    def edit_config(self, key_path: str, value, add_field=False):
         """
         Edits the cached config, ensure the config is written before executing
 

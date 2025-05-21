@@ -41,6 +41,7 @@ class SideBarController(QObject):
             result = extractor.extract_rinex_data(path)
 
             # Update UI fields directly
+            self.ui.constellationsValue.setText(result["constellations"])
             self.ui.timeWindowValue.setText(f"{result['start_epoch']} to {result['end_epoch']}")
             self.ui.dataIntervalValue.setText(f"{result['epoch_interval']} s")
             self.ui.receiverTypeValue.setText(result["receiver_type"])

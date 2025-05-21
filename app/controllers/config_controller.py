@@ -12,6 +12,8 @@ This controller encapsulates all logic related to populating and managing the co
    - ConfigController can be instantiated with a mock Ui_MainWindow to verify menu items or simulate user interactions.
 """
 import os
+from datetime import datetime
+
 from PySide6.QtCore import Qt, QUrl, QDate, QDateTime
 from PySide6.QtGui import QDesktopServices, QStandardItem, QStandardItemModel
 from PySide6.QtWidgets import (
@@ -293,19 +295,18 @@ class ConfigController:
 
         self.config_path = file_path
 
-    # ——— migrate from MainWindow———
     def on_run_pea(self):
         raw = self.ui.timeWindowValue.text().replace("_", " ")
         try:
-            start_str, end_str = raw.split("→")
-            start = datetime.strptime(start_str.strip(), "%Y-%m-%d %H:%M:%S")
-            end   = datetime.strptime(end_str.strip(),   "%Y-%m-%d %H:%M:%S")
+            start_str, end_str = raw.split("to")
+            start = datetime.strptime(start_str.strip(), "%Y-%m-%d_%H:%M:%S")
+            end   = datetime.strptime(end_str.strip(),   "%Y-%m-%d_%H:%M:%S")
         except Exception:
             QMessageBox.warning(
                 None,
                 "Format error",
                 "Time window must be in the format:\n"
-                "YYYY-MM-DD HH:MM:SS → YYYY-MM-DD HH:MM:SS"
+                "YYYY-MM-DD_HH:MM:SS to YYYY-MM-DD_HH:MM:SS"
             )
             return
 
