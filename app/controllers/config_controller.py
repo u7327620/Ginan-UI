@@ -35,8 +35,8 @@ class ConfigController:
         self.ui = ui
 
         # —— Show config & Run PEA —— #
-        self.ui.showConfigButton.clicked.disconnect()          
         self.ui.showConfigButton.clicked.connect(self.on_show_config)
+        self.ui.showConfigButton.setCursor(Qt.PointingHandCursor)
         self.ui.processButton.clicked.connect(self.on_run_pea)       
 
         # bond up QComboBox's showPopup
@@ -78,7 +78,7 @@ class ConfigController:
         self.ui.dataIntervalButton.setCursor(Qt.PointingHandCursor)
 
         # Show config: Click the button to open the editor
-        self.ui.showConfigButton.clicked.connect(self._open_show_config)
+        self.ui.showConfigButton.clicked.connect(self.on_show_config)
         self.ui.showConfigButton.setCursor(Qt.PointingHandCursor)
 
     def _on_select(self, combo, label, title, index):
