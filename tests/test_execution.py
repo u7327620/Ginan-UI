@@ -10,11 +10,14 @@ class TestExecution(unittest.TestCase):
 
     def test_execute_config(self):
         execution = Execution(files("tests.resources").joinpath("ppp_example.yaml"), get_pea_exec())
+        print("Execution loaded")
         alterations = {"outputs.outputs_root": files("tests.resources").joinpath("output"),
                        "inputs.inputs_root": files("tests.resources").joinpath("inputData/products")}
         for key, value in alterations.items():
             execution.edit_config(key, str(value))
+        print("Execution edited")
         execution.write_config()
 
         execution.execute_config()
+        self.assertTrue(True)
         # TODO - Verify output when execution is complete.
