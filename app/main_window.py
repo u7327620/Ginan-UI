@@ -1,15 +1,28 @@
 import os
+
 from app.controllers.config_controller import ConfigController
 from app.views.main_window_ui import Ui_MainWindow
 from PySide6.QtCore import Qt, QRect, QUrl
 from PySide6.QtWidgets import QMainWindow, QDialog, QVBoxLayout, QPushButton
 from PySide6.QtWebEngineWidgets import QWebEngineView
-from PySide6.QtGui import QDesktopServices
-from app.controllers.input_extract_controller import InputExtractController
 
-# Use the script's directory as base to locate the example/ directory
-HERE = os.path.dirname(os.path.abspath(__file__))
-EXAMPLE_DIR = os.path.join(HERE, "example")
+from app.controllers.file_dialog import EXAMPLE_DIR
+from app.utils.ui_compilation import compile_ui
+from app.controllers.config_controller import ConfigController
+from app.controllers.input_extract_controller import InputExtractController
+from app.controllers.visualisation_controller import VisualisationController
+
+
+def setup_main_window():
+    try :
+        # Attempts to import the UI
+        from app.views.main_window_ui import Ui_MainWindow
+    except ModuleNotFoundError:
+        # Compiles if not available
+        compile_ui()
+        from app.views.main_window_ui import Ui_MainWindow
+    window = Ui_MainWindow()
+    return window
 
 # set the code good minimal unit test
 class FullHtmlDialog(QDialog):
@@ -22,14 +35,12 @@ class FullHtmlDialog(QDialog):
         layout.addWidget(webview)
         self.resize(800, 600)
 
-# Visualisation controller embeds HTML into the panel and handles double-click etc.
-from app.controllers.visualisation_controller import VisualisationController
 
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         # —— UI Initialization —— #
-        self.ui = Ui_MainWindow()
+        self.ui = setup_main_window()
         self.ui.setupUi(self)
 
         # —— Controllers —— #
@@ -77,7 +88,7 @@ class MainWindow(QMainWindow):
         """Placeholder for calling backend model; minimal version loads example html."""
         # Create a parameter extraction controller to retrieve configuration inputs from the UI.
         extractor = InputExtractController(self.ui)
-        
+
         if not self.rnx_file:
             self.ui.terminalTextEdit.append("Please select a RNX file first.")
             return
@@ -97,4 +108,4 @@ class MainWindow(QMainWindow):
 
         # ── Backend processing ── #
         # html_paths = backend.process(rnx_file, output_dir, ...)
-        # self.visCtrl.set_html_files(html_paths) 
+        # self.visCtrl.set_html_files(html_paths)
