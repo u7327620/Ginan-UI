@@ -1,6 +1,6 @@
-from pathlib import Path
 import shutil
-from app.controllers.config_controller import ConfigController
+from importlib.resources import files
+
 from app.controllers.input_extract_controller import InputExtractController
 from app.models.execution import Execution
 from app.models.file_integrity import get_pea_exec
@@ -25,44 +25,30 @@ class MainController:
         and return back
         :return:
         """
-        extractor = self.extractor
-
         # 1. Modify the .yaml config file to include the user’s input
-        # Create the new .yaml config file
-        template_path = "app/resources/Yaml/default_config.yaml"
-        config_path = f"app/resources/ppp_{extractor.marker_name}.yaml"
+        template_path = str(files("app.resources").joinpath("Yaml/default_config.yaml"))
+        config_path = str(files("app.resources").joinpath(f"ppp_{self.extractor.marker_name}.yaml"))
         shutil.copy(template_path, config_path)
-        print(f"Template copied to {config_path}")
 
         # Create the Execution class to write the new config and call PEA
         execution = Execution(config_path, get_pea_exec())
 
         # Modify the file to include the correct input and output roots
-        execution.edit_config("inputs.inputs_root", self.input_data_path, False)
-        execution.edit_config("inputs.gnss_observations.gnss_observations_root", self.input_products_path, False)
-        execution.edit_config("inputs.gnss_observations.rnx_inputs", extractor.rnx_path, False)
-        execution.edit_config("outputs.outputs_root", extractor.output_path, False)
+        execution.config["receiver_options"][self.extractor.marker_name] = execution.config["receiver_options"].pop("TEST")
+        alterations = {"inputs.inputs_root": self.input_data_path,
+                       "inputs.gnss_observations.gnss_observations_root": self.input_products_path,
+                       "inputs.gnss_observations.rnx_inputs": self.extractor.rnx_path,
+                       "outputs.outputs_root": self.extractor.output_path,
+                       "processing_options.epoch_control.start_epoch": self.extractor.start_epoch,
+                       "processing_options.epoch_control.end_epoch": self.extractor.end_epoch,
+                       "processing_options.epoch_control.epoch_interval": self.extractor.epoch_interval,
+                       f"receiver_options.{self.extractor.marker_name}.receiver_type": self.extractor.receiver_type,
+                       f"receiver_options.{self.extractor.marker_name}.antenna_type": self.extractor.antenna_type,
+                       f"receiver_options.{self.extractor.marker_name}.models.eccentricity.offset": self.extractor.antenna_offset}
 
-        # Modify the config file to use the right receiver acronym
-        execution.config["receiver_options"][extractor.marker_name] = execution.config["receiver_options"].pop("TEST")
+        for key, value in alterations.items():
+            execution.edit_config(key, value)
 
-        # Modify the file to include the UI extraction values
-        execution.edit_config("processing_options.epoch_control.start_epoch", extractor.start_epoch, False)
-        execution.edit_config("processing_options.epoch_control.end_epoch", extractor.end_epoch, False)
-        execution.edit_config("processing_options.epoch_control.epoch_interval", extractor.epoch_interval, False)
-        execution.edit_config(f"receiver_options.{extractor.marker_name}.receiver_type", extractor.receiver_type, False)
-        execution.edit_config(f"receiver_options.{extractor.marker_name}.antenna_type", extractor.antenna_type, False)
-        execution.edit_config(f"receiver_options.{extractor.marker_name}.models.eccentricity.offset", extractor.antenna_offset, False)
+        execution.execute_config()
 
-        # Modify the file to include the PPP auto download product values
-        #
-
-        # 2. Run PEA using PEAModel.py in the back-end and provide the YAML config file using --config [FILENAME]
-        execution.write_config()
-        #execution.execute_config()  # Will execute PEA with the provided config
-
-        # 3. PEA processes the data, and eventually outputs the files.
-        # Done automatically
-
-        # 4. Plot the output using plot_pos.py or other means.
-        # TODO
+        # TODO 4. Plot the output using plot_pos.py or other means.

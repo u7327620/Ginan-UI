@@ -1,4 +1,5 @@
 import os
+from importlib.resources import files
 from app.controllers.config_controller import ConfigController
 from app.controllers.main_controller import MainController
 from app.views.main_window_ui import Ui_MainWindow
@@ -81,7 +82,7 @@ class MainWindow(QMainWindow):
 
         # ── launch the backend ────────────────────────────────────────
         try:
-            controller = MainController(self.ui, "dummy/data", "dummy/products", self.rnx_file, self.output_dir)
+            controller = MainController(self.ui, str(files("tests.resources").joinpath("inputData")), str(files("tests.resources").joinpath("inputData/products")), self.rnx_file, self.output_dir)
             controller.execute_backend_process()
             self.ui.terminalTextEdit.append("✔️ Processing finished.")
         except Exception as err:
