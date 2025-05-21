@@ -73,6 +73,12 @@ class MainWindow(QMainWindow):
         self.openInBrowserBtn = QPushButton("Open in Browser", self)
         self.ui.rightLayout.addWidget(self.openInBrowserBtn)
         self.visCtrl.bind_open_button(self.openInBrowserBtn)
+        
+        from PySide6.QtWidgets import QComboBox
+        self.visSelector = QComboBox(self)
+        self.ui.rightLayout.addWidget(self.visSelector)
+        self.visCtrl.bind_selector(self.visSelector)
+
 
     def on_files_ready(self, rnx_path, out_path):
         """Store file paths received from SideBarController."""
