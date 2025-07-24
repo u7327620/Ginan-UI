@@ -12,7 +12,7 @@ def get_pea_exec():
 
     # PEA available on PATH
     elif shutil.which("pea"):
-        executable = ["pea"]
+        executable = "pea"
 
     elif platform.system().lower() == "darwin":
         raise RuntimeError("macOS requires a manual installation of pea on PATH. Please install it from github.com/GeoscienceAustralia/ginan")
@@ -25,10 +25,7 @@ def get_pea_exec():
     else:
         raise RuntimeError("Unsupported platform: " + platform.system())
 
-    if not executable:
-        raise RuntimeError("No executable found on *supported* system: " + platform.system())
-    else:
-        return executable
+    return executable
 
 if __name__ == "__main__":
     print(get_pea_exec())

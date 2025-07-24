@@ -38,7 +38,6 @@ class ConfigController:
 
         # —— Show config & Run PEA —— #
         self.ui.showConfigButton.clicked.connect(self.on_show_config)
-        self.ui.showConfigButton.setCursor(Qt.PointingHandCursor)
         self.ui.processButton.clicked.connect(self.on_run_pea)       
 
         # bond up QComboBox's showPopup
@@ -269,7 +268,7 @@ class ConfigController:
             "Input interval (seconds):",        # label
             1,                                  # value
             1,                                  # minimum
-            3600                                # maximum
+            999999                                # maximum
         )
         if ok:
             self.ui.dataIntervalValue.setText(str(val))      
@@ -296,12 +295,13 @@ class ConfigController:
         self.config_path = file_path
 
     def on_run_pea(self):
-        raw = self.ui.timeWindowValue.text().replace("_", " ")
+        raw = self.ui.timeWindowValue.text()
+        print(raw)
         try:
             start_str, end_str = raw.split("to")
             start = datetime.strptime(start_str.strip(), "%Y-%m-%d_%H:%M:%S")
             end   = datetime.strptime(end_str.strip(),   "%Y-%m-%d_%H:%M:%S")
-        except Exception:
+        except ValueError:
             QMessageBox.warning(
                 None,
                 "Format error",

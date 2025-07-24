@@ -4,13 +4,13 @@ import os
 from PySide6.QtWidgets import QFileDialog
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-EXAMPLE_DIR = os.path.normpath(os.path.join(HERE, "..", "example"))
-OUTPUT_DIR = os.path.join(EXAMPLE_DIR, "output")
+EXAMPLE_DIR = os.path.normpath(os.path.join(HERE, "..", "..", "tests", "resources", "inputData", "data"))
+OUTPUT_DIR = os.path.join(EXAMPLE_DIR, "..", "..", "output")
 
 def select_rnx_file(parent) -> str:
     caption = "Select RINEX File"
     filters = "RINEX Files (*.rnx *.rnx.gz);;All Files (*)"
-    path, _ = QFileDialog.getOpenFileName(parent, caption, "", filters)
+    path, _ = QFileDialog.getOpenFileName(parent, caption, EXAMPLE_DIR, filters)
     return path or ""
 
 
