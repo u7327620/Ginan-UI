@@ -37,6 +37,7 @@ class ConfigController:
         self.ui = ui
 
         # —— Show config & Run PEA —— #
+        self.default_config_path = "app/resources/Yaml/default_config.yaml"
         self.ui.showConfigButton.clicked.connect(self.on_show_config)
         self.ui.processButton.clicked.connect(self.on_run_pea)       
 
@@ -65,10 +66,6 @@ class ConfigController:
             lambda idx: self._on_select(self.ui.PPP_provider, self.ui.pppProviderValue, "PPP provider", idx))
         self.ui.PPP_series.activated.connect(
             lambda idx: self._on_select(self.ui.PPP_series, self.ui.pppSeriesValue, "PPP series", idx))
-
-
-        
-        
 
         # Time window：Start & End Date & Time
         self.ui.timeWindowButton.clicked.connect(self._open_time_window_dialog)
@@ -270,24 +267,67 @@ class ConfigController:
             999999                                # maximum
         )
         if ok:
-            self.ui.dataIntervalValue.setText(str(val))      
+            self.ui.dataIntervalValue.setText(str(val))     
+
+    # ----------  generate modified config YAML file (placeholder for backend)  ----------
+    def _generate_modified_config_yaml(self, config_parameters):
+        """
+        Args:
+            config_parameters (dict): modified config parameters directory
+                example: {
+                    'setting1': 'value1',
+                    'setting2': 'value2',
+                    'nested_config': {
+                        'subsetting1': 'subvalue1'
+                    }
+                }
+        
+        Returns:
+            str: generated YAML file path, should return the path in the format of /resources/Yaml/xxxx.yaml
+        
+        TODO: backend please implement the following functions:
+        1. receive config_parameters parameter
+        2. convert the parameters to YAML format
+        3. save to /resources/Yaml/ directory
+        4. file name format can be: timestamp.yaml, config_v1.yaml, etc.
+        5. return the complete file path
+        
+        Note: the current UI version uses the hardcode path /resources/Yaml/default_config.yaml
+        """
+        # TODO: backend please implement functions here.
+        return self.default_config_path
 
     # ---------- Show config  ---------
     def on_show_config(self):
-        file_path, _ = QFileDialog.getOpenFileName(
-            None,
-            "Select a YAML config file",
-            "",
-            "YAML files (*.yml *.yaml)"
-        )
-        if not file_path:
-            return
+        """
+        Show config file
+        Open the fixed path YAML config file: /resources/Yaml/default_config.yaml
+        No longer need to manually select files
+        """
+        print("opening default config file...")
 
+        # file_path, _ = QFileDialog.getOpenFileName(
+        #     None,
+        #     "Select a YAML config file",
+        #     "",
+        #     "YAML files (*.yml *.yaml)"
+        # )
+
+        file_path = self.default_config_path
+        
+        if not os.path.exists(file_path):
+            QMessageBox.warning(
+                None,
+                "File not found",
+                f"The file {file_path} does not exist."
+            )
+            return
+        
         if not (file_path.endswith(".yml") or file_path.endswith(".yaml")):
             QMessageBox.warning(
                 None,
-                "File format error",
-                "Please select a file ending with .yml or .yaml"
+                "File Format Error",
+                f"The file is not a valid YAML file:\n{file_path}"
             )
             return
 
@@ -298,26 +338,58 @@ class ConfigController:
 
     # ----------  open config file in editor  ----------
     def on_open_config_in_editor(self, file_path):
+        """
+        Open the config file in an external editor
+        
+        Args:
+            file_path (str): the complete path of the YAML config file
+        """
         import os
         import subprocess
         import platform
 
+        if not file_path:
+            QMessageBox.warning(
+                None,
+                "No File Path",
+                "No config file path specified."
+            )
+            return
+        
+        if not os.path.exists(file_path):
+            QMessageBox.critical(
+                None,
+                "File Not Found",
+                f"Config file not found:\n{file_path}"
+            )
+            return
+        
         try:
             abs_path = os.path.abspath(file_path)
-        
+            print(f"Opening config file: {abs_path}")
+            
+            # Open the file with the appropriate method for the operating system
             if platform.system() == "Windows":
                 os.startfile(abs_path)
-            elif platform.system() == "Darwin":
+                print("Opened with default Windows application")
+                
+            elif platform.system() == "Darwin":  # macOS
                 subprocess.run(["open", abs_path])
-            else:
+                print("Opened with default macOS application")
+                
+            else:  # Linux and other Unix-like systems
                 subprocess.run(["xdg-open", abs_path])
-            
+                print("Opened with default Linux application")
+                
         except Exception as e:
+            error_message = f"Cannot open config file:\n{file_path}\n\nError: {str(e)}"
+            print(f"Error: {error_message}")
             QMessageBox.critical(
-                None, 
-                "Error", 
-                f"Can not open config file: {str(e)}"
+                None,
+                "Error Opening File",
+                error_message
             )
+
         
     def on_run_pea(self):
         raw = self.ui.timeWindowValue.text()
