@@ -74,6 +74,8 @@ class ExtractedInputs:
 
 class MainController:
     """
+    Back-end controller
+
     Called when the "Process" button is clicked.
     It gathers UI input, writes the YAML config, and calls PEA.
     """

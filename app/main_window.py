@@ -31,6 +31,15 @@ class FullHtmlDialog(QDialog):
         self.resize(800, 600)
 
 class MainWindow(QMainWindow):
+    """
+    Top-level QMainWindow that is essential for the app to run. It:
+        - Builds the UI
+        - Composes InputController and VisualisationController
+        - Owns the Process action to start PEA
+        - Listens for InputController.ready(rnx_path, output_path)
+        - Invokes MainController to generate PPP outputs and drive visualisation.
+    """
+
     def __init__(self):
         super().__init__()
 

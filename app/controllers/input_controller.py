@@ -25,6 +25,8 @@ from app.models.rinex_extractor import RinexExtractor
 
 class InputController(QObject):
     """
+    Front-end controller
+
     Owns all UI input flows:
         - Select RNX file and Output directory
         - Extract RINEX metadata and apply to UI
