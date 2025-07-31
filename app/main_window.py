@@ -13,10 +13,8 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtWebEngineWidgets import QWebEngineView
 
-from app.controllers.file_dialog import EXAMPLE_DIR
 from app.utils.ui_compilation import compile_ui
 from app.controllers.config_controller import ConfigController
-from app.controllers.input_extract_controller import InputExtractController
 from app.controllers.visualisation_controller import VisualisationController
 
 

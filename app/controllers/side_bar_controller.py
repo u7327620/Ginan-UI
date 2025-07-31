@@ -1,8 +1,28 @@
 # app/controllers/side_bar_controller.py
 import os
 from PySide6.QtCore import QObject, Signal
-from app.controllers.file_dialog import select_rnx_file, select_output_dir
 from app.models.rinex_extractor import RinexExtractor
+from PySide6.QtWidgets import QFileDialog
+
+
+def select_rnx_file(parent) -> str:
+    caption = "Select RINEX File"
+    filters = "RINEX Files (*.rnx *.rnx.gz);;All Files (*)"
+    path, _ = QFileDialog.getOpenFileName(parent, caption, "", filters)
+    return path or ""
+
+def select_output_dir(parent) -> str:
+    # Build the file path string to the resources/output folder
+    system_file_path = os.path.dirname(os.path.abspath(__file__))
+    resources_file_path = os.path.normpath(os.path.join(system_file_path, "..", "app", "resources"))
+    output_file_path = os.path.join(resources_file_path, "output")
+
+    """Open a dialog to choose a directory to save output files."""
+    default_dir = output_file_path if os.path.isdir(output_file_path) else system_file_path
+    caption = "Select Output Directory"
+    # Use getExistingDirectory to pick a folder.
+    path = QFileDialog.getExistingDirectory(parent, caption, default_dir)
+    return path or ""
 
 class SideBarController(QObject):
     # After setting the input files and output directory, 
