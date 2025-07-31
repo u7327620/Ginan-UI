@@ -57,22 +57,28 @@ class VisualisationController(QObject):
         self.current_index = index
         self._embed_html(file_path)
 
+    # def open_current_external(self):‼️（modified when the pea is installed)
+    #     """Open the currently displayed html in the system web browser."""
+    #     if self.current_index is None:
+    #         return
+    #     path = self.html_files[self.current_index]
+    #     if self.external_base_url:
+    #         import pathlib
+    #         try:
+    #             project_root = pathlib.Path(__file__).resolve().parents[2]
+    #             rel_path = pathlib.Path(path).resolve().relative_to(project_root)
+    #             url = self.external_base_url + str(rel_path).replace(os.sep, '/')
+    #             QDesktopServices.openUrl(QUrl(url))
+    #             return
+    #         except Exception:
+    #             pass
+    #     QDesktopServices.openUrl(QUrl.fromLocalFile(path))
     def open_current_external(self):
-        """Open the currently displayed html in the system web browser."""
         if self.current_index is None:
             return
         path = self.html_files[self.current_index]
-        if self.external_base_url:
-            import pathlib
-            try:
-                project_root = pathlib.Path(__file__).resolve().parents[2]
-                rel_path = pathlib.Path(path).resolve().relative_to(project_root)
-                url = self.external_base_url + str(rel_path).replace(os.sep, '/')
-                QDesktopServices.openUrl(QUrl(url))
-                return
-            except Exception:
-                pass
         QDesktopServices.openUrl(QUrl.fromLocalFile(path))
+
 
     # ------------------------------------------------------------------
     # Helpers for wiring additional UI elements

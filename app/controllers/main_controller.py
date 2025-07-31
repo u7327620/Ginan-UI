@@ -1,5 +1,6 @@
 from pathlib import Path
 import shutil
+import os
 from importlib.resources import files
 from app.controllers.input_extract_controller import InputExtractController
 from app.models.execution import Execution
@@ -34,26 +35,26 @@ class MainController:
         shutil.copy(template_path, config_path)
         print(f"Template copied to {config_path}")
 
-        # Create the Execution class to write the new config and call PEA
-        execution = Execution(config_path, get_pea_exec())
+        # Create the Execution class to write the new config and call PEA‼️
+        #  execution = Execution(config_path, get_pea_exec())
 
-        # Modify the file to include the correct input and output roots
-        execution.edit_config("inputs.inputs_root", self.input_data_path, False)
-        execution.edit_config("inputs.gnss_observations.gnss_observations_root", self.input_products_path, False)
-        execution.edit_config("inputs.gnss_observations.rnx_inputs", extractor.rnx_path, False)
-        execution.edit_config("outputs.outputs_root", extractor.output_path, False)
+        # Modify the file to include the correct input and output roots‼️
+        # execution.edit_config("inputs.inputs_root", self.input_data_path, False)
+        # execution.edit_config("inputs.gnss_observations.gnss_observations_root", self.input_products_path, False)
+        # execution.edit_config("inputs.gnss_observations.rnx_inputs", extractor.rnx_path, False)
+        # execution.edit_config("outputs.outputs_root", extractor.output_path, False)
 
-        # Modify the config file to use the right receiver acronym
-        execution.config["receiver_options"][extractor.marker_name] = execution.config["receiver_options"].pop("TEST")
+        # Modify the config file to use the right receiver acronym‼️
+        # execution.config["receiver_options"][extractor.marker_name] = execution.config["receiver_options"].pop("TEST")
 
-        # Modify the file to include the UI extraction values
-        execution.edit_config("processing_options.epoch_control.start_epoch", extractor.start_epoch, False)
-        execution.edit_config("processing_options.epoch_control.end_epoch", extractor.end_epoch, False)
-        execution.edit_config("processing_options.epoch_control.epoch_interval", extractor.epoch_interval, False)
-        execution.edit_config(f"receiver_options.{extractor.marker_name}.receiver_type", extractor.receiver_type, False)
-        execution.edit_config(f"receiver_options.{extractor.marker_name}.antenna_type", extractor.antenna_type, False)
-        execution.edit_config(f"receiver_options.{extractor.marker_name}.models.eccentricity.offset", extractor.antenna_offset, False)
-        execution.edit_config("estimation_parameters.receivers.global.pos.process_noise", extractor.mode, False)
+        # Modify the file to include the UI extraction values‼️
+        # execution.edit_config("processing_options.epoch_control.start_epoch", extractor.start_epoch, False)
+        # execution.edit_config("processing_options.epoch_control.end_epoch", extractor.end_epoch, False)
+        # execution.edit_config("processing_options.epoch_control.epoch_interval", extractor.epoch_interval, False)
+        # execution.edit_config(f"receiver_options.{extractor.marker_name}.receiver_type", extractor.receiver_type, False)
+        # execution.edit_config(f"receiver_options.{extractor.marker_name}.antenna_type", extractor.antenna_type, False)
+        # execution.edit_config(f"receiver_options.{extractor.marker_name}.models.eccentricity.offset", extractor.antenna_offset, False)
+        # execution.edit_config("estimation_parameters.receivers.global.pos.process_noise", extractor.mode, False)
 
         # Enable the constellations
         for const in extractor.constellations_raw.split(","):
@@ -63,9 +64,17 @@ class MainController:
         # Modify the file to include the PPP auto download product values
         #
 
-        # 2. Run PEA using PEAModel.py in the back-end and provide the YAML config file using --config [FILENAME]
-        execution.write_config()
+        # 2. ‼️Run PEA using PEAModel.py in the back-end and provide the YAML config file using --config [FILENAME]
+        # execution.write_config()
         #execution.execute_config()  # Will execute PEA with the provided config
+        # 3. ‼️Instead of running PEA, directly load local visualization file(‼️when the Pea is sucessful installed removed it)
+        fig1 = os.path.join(EXAMPLE_DIR, "visual", "fig1.html")
+        if not os.path.exists(fig1):
+           self.ui.terminalTextEdit.append(f"Cannot find fig1.html at: {fig1}")
+        return
+        self.ui.terminalTextEdit.append(f"Displaying visualisation: {fig1}")
+        self.visCtrl.set_html_files([fig1])
+
 
         # 4. Plot the output using plot_pos.py or other means.
         # TODO

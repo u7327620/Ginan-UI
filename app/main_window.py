@@ -118,15 +118,15 @@ class MainWindow(QMainWindow):
 
 
 
-        # ── Minimal version: manually use example/visual/fig1.html ── #
-        #fig1 = os.path.join(EXAMPLE_DIR, "visual", "fig1.html")
-        #if not os.path.exists(fig1):
-        #    self.ui.terminalTextEdit.append(f"Cannot find fig1.html at: {fig1}")
-        #    return
+        # ── Minimal version: manually use example/visual/fig1.html ── #‼️（removed when the pea is installed)
+        fig1 = os.path.join(EXAMPLE_DIR, "visual", "fig1.html")
+        if not os.path.exists(fig1):
+           self.ui.terminalTextEdit.append(f"Cannot find fig1.html at: {fig1}")
+           return
 
-        #self.ui.terminalTextEdit.append(f"Displaying visualisation: {fig1}")
+        self.ui.terminalTextEdit.append(f"Displaying visualisation: {fig1}")
         # Register & show via visualisation controller
-        #self.visCtrl.set_html_files([fig1])
+        self.visCtrl.set_html_files([fig1])
 
         # ── Replace with real backend call when ready:
         # html_paths = backend.process(self.rnx_file, self.output_dir, **extractor.get_params())
