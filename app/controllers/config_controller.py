@@ -293,6 +293,32 @@ class ConfigController:
 
         self.config_path = file_path
 
+        self.on_open_config_in_editor(self.config_path)
+
+
+    # ----------  open config file in editor  ----------
+    def on_open_config_in_editor(self, file_path):
+        import os
+        import subprocess
+        import platform
+
+        try:
+            abs_path = os.path.abspath(file_path)
+        
+            if platform.system() == "Windows":
+                os.startfile(abs_path)
+            elif platform.system() == "Darwin":
+                subprocess.run(["open", abs_path])
+            else:
+                subprocess.run(["xdg-open", abs_path])
+            
+        except Exception as e:
+            QMessageBox.critical(
+                None, 
+                "Error", 
+                f"Can not open config file: {str(e)}"
+            )
+        
     def on_run_pea(self):
         raw = self.ui.timeWindowValue.text()
         print(raw)
