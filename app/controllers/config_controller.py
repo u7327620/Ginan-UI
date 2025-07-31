@@ -79,7 +79,7 @@ class ConfigController:
         self.ui.dataIntervalButton.setCursor(Qt.PointingHandCursor)
 
         # Show config: Click the button to open the editor
-        self.ui.showConfigButton.clicked.connect(self.on_show_config)
+        # self.ui.showConfigButton.clicked.connect(self.on_show_config) #comment out for now, because it would active the button repeatedly
         self.ui.showConfigButton.setCursor(Qt.PointingHandCursor)
 
     def _on_select(self, combo, label, title, index):
@@ -176,7 +176,6 @@ class ConfigController:
         dlg.setWindowTitle("Antenna Offset")
 
         form = QFormLayout(dlg)
-        # 从现有文本解析初始值
         parts = self.ui.antennaOffsetValue.text().split(",")
         try:
             u0, n0, e0 = [float(x.strip()) for x in parts]
