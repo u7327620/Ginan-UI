@@ -150,7 +150,7 @@ color: rgb(255, 255, 255);</string>
            <property name="verticalSpacing">
             <number>10</number>
            </property>
-           <item row="1" column="0">
+           <item row="1" column="1">
             <widget class="QComboBox" name="Mode">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -163,12 +163,12 @@ color: rgb(255, 255, 255);</string>
              </property>
              <item>
               <property name="text">
-               <string>Mode</string>
+               <string>Static/Kinematic/Dynamic</string>
               </property>
              </item>
             </widget>
            </item>
-           <item row="4" column="0">
+           <item row="4" column="1">
             <widget class="QPushButton" name="dataIntervalButton">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -180,11 +180,11 @@ color: rgb(255, 255, 255);</string>
               <string notr="true">background-color:#2c5d7c;color:white;padding:0px 8px;font:13pt &quot;Segoe UI&quot;;text-align:left;</string>
              </property>
              <property name="text">
-              <string>Data interval</string>
+              <string>Input interval(seconds)</string>
              </property>
             </widget>
            </item>
-           <item row="8" column="0">
+           <item row="8" column="1">
             <widget class="QComboBox" name="PPP_provider">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -197,13 +197,13 @@ color: rgb(255, 255, 255);</string>
              </property>
              <item>
               <property name="text">
-               <string>PPP provider</string>
+               <string>Select one</string>
               </property>
              </item>
             </widget>
            </item>
-           <item row="8" column="1">
-            <widget class="QLabel" name="pppProviderValue">
+           <item row="8" column="0">
+            <widget class="QLabel" name="pppProviderLabel">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
                <horstretch>0</horstretch>
@@ -211,11 +211,11 @@ color: rgb(255, 255, 255);</string>
               </sizepolicy>
              </property>
              <property name="text">
-              <string>COD</string>
+              <string>PPP provider</string>
              </property>
             </widget>
            </item>
-           <item row="6" column="1">
+           <item row="6" column="0">
             <widget class="QLabel" name="antennaTypeValue">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
@@ -224,11 +224,11 @@ color: rgb(255, 255, 255);</string>
               </sizepolicy>
              </property>
              <property name="text">
-              <string>List populated from file</string>
+              <string>Antenna type</string>
              </property>
             </widget>
            </item>
-           <item row="3" column="1">
+           <item row="3" column="0">
             <widget class="QLabel" name="timeWindowValue">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
@@ -237,11 +237,11 @@ color: rgb(255, 255, 255);</string>
               </sizepolicy>
              </property>
              <property name="text">
-              <string>Start/End YYYY-MM-DD_HH:MM:SS</string>
+              <string>Time Window</string>
              </property>
             </widget>
            </item>
-           <item row="10" column="1">
+           <item row="10" column="0">
             <widget class="QLabel" name="showConfigValue">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
@@ -254,7 +254,7 @@ color: rgb(255, 255, 255);</string>
              </property>
             </widget>
            </item>
-           <item row="4" column="1">
+           <item row="4" column="0">
             <widget class="QLabel" name="dataIntervalValue">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
@@ -263,11 +263,11 @@ color: rgb(255, 255, 255);</string>
               </sizepolicy>
              </property>
              <property name="text">
-              <string>Interval (s)</string>
+              <string>Data interval</string>
              </property>
             </widget>
            </item>
-           <item row="9" column="1">
+           <item row="9" column="0">
             <widget class="QLabel" name="pppSeriesValue">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
@@ -276,11 +276,11 @@ color: rgb(255, 255, 255);</string>
               </sizepolicy>
              </property>
              <property name="text">
-              <string>RAP</string>
+              <string>PPP series</string>
              </property>
             </widget>
            </item>
-           <item row="7" column="0">
+           <item row="7" column="1">
             <widget class="QPushButton" name="antennaOffsetButton">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -292,11 +292,11 @@ color: rgb(255, 255, 255);</string>
               <string notr="true">background-color:#2c5d7c;color:white;padding:0px 8px;font:13pt &quot;Segoe UI&quot;;text-align:left;</string>
              </property>
              <property name="text">
-              <string>Antenna offset</string>
+              <string>0.0, 0.0, 0.0</string>
              </property>
             </widget>
            </item>
-           <item row="9" column="0">
+           <item row="9" column="1">
             <widget class="QComboBox" name="PPP_series">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -309,12 +309,12 @@ color: rgb(255, 255, 255);</string>
              </property>
              <item>
               <property name="text">
-               <string>PPP series</string>
+               <string>Select one</string>
               </property>
              </item>
             </widget>
            </item>
-           <item row="7" column="1">
+           <item row="7" column="0">
             <widget class="QLineEdit" name="antennaOffsetValue">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -326,14 +326,14 @@ color: rgb(255, 255, 255);</string>
               <string notr="true">background:transparent;border:none;</string>
              </property>
              <property name="text">
-              <string>0.0, 0.0, 0.0</string>
+              <string>Antenna offset</string>
              </property>
              <property name="readOnly">
               <bool>true</bool>
              </property>
             </widget>
            </item>
-           <item row="5" column="1">
+           <item row="5" column="0">
             <widget class="QLabel" name="receiverTypeValue">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
@@ -342,24 +342,18 @@ color: rgb(255, 255, 255);</string>
               </sizepolicy>
              </property>
              <property name="text">
-              <string>List populated from file</string>
+              <string>Receiver type</string>
              </property>
             </widget>
            </item>
-           <item row="1" column="1">
-            <widget class="QLabel" name="modeValue">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
+           <item row="1" column="0">
+            <widget class="QLabel" name="modeLabel">
              <property name="text">
-              <string>Static/Kinematic/Dynamic</string>
+              <string>Mode</string>
              </property>
             </widget>
            </item>
-           <item row="6" column="0">
+           <item row="6" column="1">
             <widget class="QComboBox" name="Antenna_type">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -372,12 +366,12 @@ color: rgb(255, 255, 255);</string>
              </property>
              <item>
               <property name="text">
-               <string>Antenna type</string>
+               <string>List populated from file</string>
               </property>
              </item>
             </widget>
            </item>
-           <item row="3" column="0">
+           <item row="3" column="1">
             <widget class="QPushButton" name="timeWindowButton">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -389,11 +383,11 @@ color: rgb(255, 255, 255);</string>
               <string notr="true">background-color:#2c5d7c;color:white;padding:0px 8px;font:13pt &quot;Segoe UI&quot;;text-align:left;</string>
              </property>
              <property name="text">
-              <string>Time window</string>
+              <string>Start/End</string>
              </property>
             </widget>
            </item>
-           <item row="5" column="0">
+           <item row="5" column="1">
             <widget class="QComboBox" name="Receiver_type">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -406,12 +400,12 @@ color: rgb(255, 255, 255);</string>
              </property>
              <item>
               <property name="text">
-               <string>Receiver type</string>
+               <string>List populated from file</string>
               </property>
              </item>
             </widget>
            </item>
-           <item row="10" column="0">
+           <item row="10" column="1">
             <widget class="QPushButton" name="showConfigButton">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -427,7 +421,7 @@ color: rgb(255, 255, 255);</string>
              </property>
             </widget>
            </item>
-           <item row="2" column="0">
+           <item row="2" column="1">
             <widget class="QComboBox" name="Constellations_2">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -440,19 +434,13 @@ color: rgb(255, 255, 255);</string>
              </property>
              <item>
               <property name="text">
-               <string>Constellations</string>
+               <string>Select one or more</string>
               </property>
              </item>
             </widget>
            </item>
-           <item row="2" column="1">
+           <item row="2" column="0">
             <widget class="QLabel" name="constellationsValue">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
              <property name="text">
               <string>Constellations</string>
              </property>

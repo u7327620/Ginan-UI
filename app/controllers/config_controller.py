@@ -47,25 +47,15 @@ class ConfigController:
         self._bind_combo(self.ui.PPP_series, self._get_ppp_series_items)
 
         # Multiple Choice Binding
-        self._bind_multiselect_combo(self.ui.Constellations_2,
+        combo = self.ui.Constellations_2
+        combo.setEditable(True)
+        combo.setInsertPolicy(QComboBox.NoInsert)
+        combo.lineEdit().setReadOnly(True)
+        self._bind_multiselect_combo(combo,
                                      self._get_constellations_items,
-                                     self.ui.constellationsValue,
-                                     placeholder="Constellations")
+                                     combo.lineEdit(), #The results are written directly here
+                                     placeholder="Select one or more") # Prompt to select one or more
 
-
-        # When selected, write the value to the right Label and reset the left text.
-        # Mode, Constellations...
-        self.ui.Mode.activated.connect(
-            lambda idx: self._on_select(self.ui.Mode, self.ui.modeValue, "Mode", idx))
-        self.ui.antennaOffsetButton.clicked.connect(self._open_antenna_offset_dialog)
-        self.ui.antennaOffsetButton.setCursor(Qt.PointingHandCursor)
-        self.ui.antennaOffsetValue.setText("0.0, 0.0, 0.0")
-        self.ui.Antenna_type.activated.connect(
-            lambda idx: self._on_select(self.ui.Antenna_type, self.ui.antennaTypeValue, "Antenna type", idx))
-        self.ui.PPP_provider.activated.connect(
-            lambda idx: self._on_select(self.ui.PPP_provider, self.ui.pppProviderValue, "PPP provider", idx))
-        self.ui.PPP_series.activated.connect(
-            lambda idx: self._on_select(self.ui.PPP_series, self.ui.pppSeriesValue, "PPP series", idx))
 
         # Time window：Start & End Date & Time
         self.ui.timeWindowButton.clicked.connect(self._open_time_window_dialog)
@@ -113,14 +103,11 @@ class ConfigController:
                     "Enter receiver type:"
                 )
                 if ok and text:
-                    # update left ComboBox 
-                    self.ui.Receiver_type.clear()
-                    self.ui.Receiver_type.addItem(text)
-                    # update right Label
-                    self.ui.receiverTypeValue.setText(text)
+                    self.ui.Receiver_type.insertItem(0, text)
+                    self.ui.Receiver_type.setCurrentIndex(0)
 
         self.ui.Receiver_type.showPopup = _ask_receiver_type
-        self.ui.receiverTypeValue.setText("")
+
 
         # ---------- Antenna Type   ----------
         def _ask_antenna_type():
@@ -130,11 +117,10 @@ class ConfigController:
                 "Enter antenna type:"
             )
             if ok and text:
-                self.ui.Antenna_type.clear()
-                self.ui.Antenna_type.addItem(text)
-                self.ui.antennaTypeValue.setText(text)
-        self.ui.Antenna_type.showPopup = _ask_antenna_type
-        self.ui.antennaTypeValue.setText("")
+                self.ui.Antenna_type.insertItem(0, text)
+                self.ui.Antenna_type.setCurrentIndex(0)
+        self.ui.Antenna_type.showPopup = _ask_antenna_type       
+
 
     # ---------- Mode  ----------
     def _bind_multiselect_combo(self, combo: QComboBox, items_func, label, placeholder: str):
@@ -212,7 +198,7 @@ class ConfigController:
 
     # ---------- Time window - Start & End Date & Time  ----------
     def _open_time_window_dialog(self, _):
-        dlg = QDialog(self.ui.timeWindowValue)
+        dlg = QDialog(self.ui.timeWindowButton)
         dlg.setWindowTitle("Select start / end time")
 
         vbox = QVBoxLayout(dlg)
@@ -252,14 +238,14 @@ class ConfigController:
 
         s = start_edit.dateTime().toString("yyyy-MM-dd_HH:mm:ss")
         e = end_edit.dateTime().toString("yyyy-MM-dd_HH:mm:ss")
-        self.ui.timeWindowValue.setText(f"{s} to {e}")
+        self.ui.timeWindowButton.setText(f"{s}\n{e}")
         dlg.accept()
     
     # ---------- Data interval  ---------  
     def _open_data_interval_dialog(self, _):
         # value = 1, minimum = 1, maximum = 3600
         val, ok = QInputDialog.getInt(
-            self.ui.dataIntervalValue,          # parent
+            self.ui.dataIntervalButton,          
             "Data interval",                    # title
             "Input interval (seconds):",        # label
             1,                                  # value
@@ -267,7 +253,7 @@ class ConfigController:
             999999                                # maximum
         )
         if ok:
-            self.ui.dataIntervalValue.setText(str(val))     
+            self.ui.dataIntervalButton.setText(f"{val} s")    
 
     # ----------  generate modified config YAML file (placeholder for backend)  ----------
     def _generate_modified_config_yaml(self, config_parameters):

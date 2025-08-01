@@ -40,14 +40,6 @@ class SideBarController(QObject):
             extractor = RinexExtractor(path)
             result = extractor.extract_rinex_data(path)
 
-            # Update UI fields directly
-            self.ui.constellationsValue.setText(result["constellations"])
-            self.ui.timeWindowValue.setText(f"{result['start_epoch']} to {result['end_epoch']}")
-            self.ui.dataIntervalValue.setText(f"{result['epoch_interval']} s")
-            self.ui.receiverTypeValue.setText(result["receiver_type"])
-            self.ui.antennaTypeValue.setText(result["antenna_type"])
-            self.ui.antennaOffsetValue.setText(", ".join(map(str, result["antenna_offset"])))
-
             # Fill drop-downs to match values
             self._set_combobox_by_value(self.ui.Receiver_type, result["receiver_type"])
             self._set_combobox_by_value(self.ui.Antenna_type, result["antenna_type"])

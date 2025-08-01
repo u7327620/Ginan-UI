@@ -9,17 +9,6 @@ class InputExtractController:
         self.rnx_path = rnx_path
         self.output_path = output_path
 
-        # Extract user input from the UI and assign it to class variables.
-        self.mode_raw = self.ui.modeValue.text()
-        self.constellations_raw = self.ui.constellationsValue.text()
-        self.time_window_raw = self.ui.timeWindowValue.text()
-        self.epoch_interval_raw = self.ui.dataIntervalValue.text()
-        self.receiver_type = self.ui.receiverTypeValue.text()
-        self.antenna_type = self.ui.antennaTypeValue.text()
-        self.antenna_offset_raw = self.ui.antennaOffsetValue.text()
-        self.ppp_provider = self.ui.pppProviderValue.text()
-        self.ppp_series = self.ui.pppSeriesValue.text()
-
         # Parsed values
         self.start_epoch, self.end_epoch = self.parse_time_window()
         self.antenna_offset = self.parse_antenna_offset()
