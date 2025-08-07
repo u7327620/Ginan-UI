@@ -130,6 +130,13 @@ class InputController(QObject):
             self.ui.antennaTypeValue.setText(result["antenna_type"])
             self.ui.antennaOffsetValue.setText(", ".join(map(str, result["antenna_offset"])))
 
+            self.ui.terminalTextEdit.append(f"constellationsValue: {self.ui.constellationsValue.text()}\n"
+                                            f"timeWindowValue: {self.ui.timeWindowValue.text()}\n"
+                                            f"dataIntervalValue: {self.ui.dataIntervalValue.text()}\n"
+                                            f"receiverTypeValue: {self.ui.receiverTypeValue.text()}\n"
+                                            f"antennaTypeValue: {self.ui.antennaTypeValue.text()}\n"
+                                            f"antennaOffsetValue: {self.ui.antennaOffsetValue.text()}\n")
+
             # Align left-side combos to extracted values where applicable
             self._set_combobox_by_value(self.ui.Receiver_type, result["receiver_type"])
             self._set_combobox_by_value(self.ui.Antenna_type, result["antenna_type"])
@@ -538,14 +545,6 @@ class InputController(QObject):
                 None,
                 "Time error",
                 "Start time cannot be later than end time."
-            )
-            return
-
-        if not getattr(self, "config_path", None):
-            QMessageBox.warning(
-                None,
-                "No config file",
-                "Please click Show config and select a YAML file first."
             )
             return
         
