@@ -1,15 +1,30 @@
 import os
+import shutil
 import subprocess
+from importlib.resources import files
+from pathlib import Path
 
 from app.utils.yaml import load_yaml, write_yaml
 
+TEMPLATE_PATH = Path(__file__).parent.parent / "resources" / "Yaml" / "default_config.yaml"
+GENERATED_YAML = Path(__file__).parent.parent / "resources" / "ppp_generated.yaml"
+INPUT_DATA_PATH = Path(__file__).parent.parent / "resources" / "inputData" / "data"
+INPUT_PRODUCTS_PATH = Path(__file__).parent.parent / "resources" / "inputData" / "products"
 
 class Execution:
-    def __init__(self, config_path: str, executable):
+    def __init__(self, executable, config_path: str=GENERATED_YAML):
         self.config_path = config_path
-        self.config = load_yaml(config_path)
         self.executable = executable # the PEA executable
         self.changes = False # Flag to track if config has been changed
+
+        try:
+            self.config = load_yaml(config_path)
+        except FileNotFoundError:
+            shutil.copy(TEMPLATE_PATH, config_path)
+            self.config = load_yaml(config_path)
+        if not self.config:
+            raise ValueError(f"Failed to load configuration from {config_path}. Please check the file format.")
+
 
     def edit_config(self, key_path: str, value, add_field=False):
         """
@@ -26,19 +41,53 @@ class Execution:
         node = self.config
         for key in keys[:-1]: # Ensure key path validity
             if key not in node:
-                raise KeyError(f"Key '{key}' not found in {node}")
+                if add_field:
+                    node[key] = {}
+                else:
+                    raise KeyError(f"Key '{key}' not found in {node}")
             node = node[key]
         if not add_field:
             if keys[-1] not in node:
                 raise KeyError(f"Key '{keys[-1]}' not found in {node}")
         node[keys[-1]] = value
 
-    def write_config(self):
+    def apply_ui_config(self, inputs):
+        self.changes = True
+        # 1. Set core inputs / outputs
+        self.edit_config("inputs.inputs_root", str(INPUT_DATA_PATH), False)
+        self.edit_config("inputs.gnss_observations.gnss_observations_root", str(INPUT_PRODUCTS_PATH), False)
+        self.edit_config("inputs.gnss_observations.rnx_inputs", inputs.rnx_path, False)
+        self.edit_config("outputs.outputs_root", inputs.output_path, False)
+
+        # 2. Modify the config file to use the right receiver acronym
+        if "TEST" in self.config.get("receiver_options", {}):
+            self.config["receiver_options"][inputs.marker_name] = self.config["receiver_options"].pop("TEST")
+
+        # 3. Modify the file to include the UI extraction values
+        self.edit_config("processing_options.epoch_control.start_epoch", inputs.start_epoch, False)
+        self.edit_config("processing_options.epoch_control.end_epoch", inputs.end_epoch, False)
+        self.edit_config("processing_options.epoch_control.epoch_interval", inputs.epoch_interval, False)
+        self.edit_config(f"receiver_options.{inputs.marker_name}.receiver_type", inputs.receiver_type, True)
+        self.edit_config(f"receiver_options.{inputs.marker_name}.antenna_type", inputs.antenna_type, True)
+        self.edit_config(f"receiver_options.{inputs.marker_name}.models.eccentricity.offset",
+                              inputs.antenna_offset, True)
+        self.edit_config("estimation_parameters.receivers.global.pos.process_noise", inputs.mode, False)
+
+        # 4. Enable the constellations
+        if inputs.constellations_raw:
+            for const in inputs.constellations_raw.split(","):
+                const_key = const.strip().lower()
+                if const_key:
+                    self.edit_config(f"processing_options.gnss_general.sys_options.{const_key}.process", True,
+                                          False)
+
+    def write_cached_changes(self):
         write_yaml(self.config_path, self.config)
+        self.changes = False
 
     def execute_config(self):
         if self.changes:
-            self.write_config()
+            self.write_cached_changes()
             self.changes = False
 
         command = [self.executable, "--config", self.config_path]

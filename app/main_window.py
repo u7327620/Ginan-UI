@@ -6,18 +6,20 @@ from PySide6.QtCore import QUrl
 from PySide6.QtWidgets import QMainWindow, QDialog, QVBoxLayout, QPushButton, QComboBox
 from PySide6.QtWebEngineWidgets import QWebEngineView
 
+from app.models.execution import Execution, GENERATED_YAML
+from app.models.find_executable import get_pea_exec
 from app.utils.ui_compilation import compile_ui
-from app.controllers.main_controller import MainController
 from app.controllers.input_controller import InputController
 from app.controllers.visualisation_controller import VisualisationController
 
+
 def setup_main_window():
-    try :
-        # Attempts to import the UI
-        from app.views.main_window_ui import Ui_MainWindow
-    except ModuleNotFoundError:
-        compile_ui()
-        from app.views.main_window_ui import Ui_MainWindow
+    # Whilst developing, we compile every time :)
+    #try :
+    #    from app.views.main_window_ui import Ui_MainWindow
+    #except ModuleNotFoundError:
+    compile_ui()
+    from app.views.main_window_ui import Ui_MainWindow
     window = Ui_MainWindow()
     return window
 
@@ -49,7 +51,8 @@ class MainWindow(QMainWindow):
         self.ui.setupUi(self)
 
         # —— Controllers —— #
-        self.inputCtrl = InputController(self.ui, self)
+        self.execution = Execution(get_pea_exec())
+        self.inputCtrl = InputController(self.ui, self, self.execution)
         self.visCtrl = VisualisationController(self.ui, self)
 
         # Can remove?: external base URL for live server previews
@@ -67,10 +70,6 @@ class MainWindow(QMainWindow):
         # —— State variables —— #
         self.rnx_file:   str | None = None
         self.output_dir: str | None = None
-
-        # —— Initial button states —— #
-        self.ui.outputButton.setEnabled(False)
-        self.ui.processButton.setEnabled(False)
 
         # —— Signal connections —— #
         # Note: processButton.clicked is now handled by InputController for basic validation

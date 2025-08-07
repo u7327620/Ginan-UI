@@ -3,7 +3,10 @@
 from __future__ import annotations
 
 import os
+import re
+from dataclasses import dataclass
 from datetime import datetime
+from pathlib import Path
 from typing import Callable, List
 
 from PySide6.QtCore import QObject, Signal, Qt, QDateTime
@@ -22,6 +25,7 @@ from PySide6.QtWidgets import (
     QComboBox,
 )
 
+from app.models.execution import Execution, GENERATED_YAML, TEMPLATE_PATH
 from app.models.rinex_extractor import RinexExtractor
 
 class InputController(QObject):
@@ -44,17 +48,17 @@ class InputController(QObject):
     ready = Signal(str, str) # rnx_path, output_path
     pea_ready = Signal() # emitted when PEA processing should start
 
-    def __init__(self, ui, parent_window):
+    def __init__(self, ui, parent_window, execution: Execution):
         super().__init__()
         self.ui = ui
         self.parent = parent_window
+        self.execution = execution
 
         self.rnx_file: str = ""
         self.output_dir: str = ""
         
         # Config file path
-        self.default_config_path = "app/resources/Yaml/default_config.yaml"
-        self.config_path = None
+        self.config_path = GENERATED_YAML
 
         ### Wire: file selection buttons ###
         self.ui.observationsButton.clicked.connect(self.load_rnx_file)
@@ -62,6 +66,7 @@ class InputController(QObject):
 
         # Initial states
         self.ui.outputButton.setEnabled(False) # output disabled until RNX chosen
+        self.ui.showConfigButton.setEnabled(False)  # show config disabled until RNX chosen
         self.ui.processButton.setEnabled(False) # process enabled later by MainWindow
 
         ### Bind: configuration drop-downs / UIs ###
@@ -110,7 +115,7 @@ class InputController(QObject):
 
         self.rnx_file = path
         self.ui.terminalTextEdit.append(f"RNX selected: {path}")
-        self.ui.outputButton.setEnabled(True)  # allow choosing output dir next
+
 
         # Extract information from submitted .RNX file and reflect it in the UI
         try:
@@ -130,6 +135,9 @@ class InputController(QObject):
             self._set_combobox_by_value(self.ui.Antenna_type, result["antenna_type"])
 
             self.ui.terminalTextEdit.append(".RNX file metadata extracted and applied to UI fields")
+
+            self.ui.outputButton.setEnabled(True)  # allow choosing output dir next
+            self.ui.showConfigButton.setEnabled(True)  # allow showing config
         except Exception as e:
             self.ui.terminalTextEdit.append(f"Error extracting RNX metadata: {e}")
             print(f"Error extracting RNX metadata: {e}")
@@ -402,33 +410,75 @@ class InputController(QObject):
         # TODO: backend please implement functions here.
         return self.default_config_path
 
+    def extract_ui_values(self, rnx_path):
+        # Extract user input from the UI and assign it to class variables.
+        mode_raw           = self.ui.modeValue.text()
+        constellations_raw = self.ui.constellationsValue.text()
+        time_window_raw    = self.ui.timeWindowValue.text()
+        epoch_interval_raw = self.ui.dataIntervalValue.text()
+        receiver_type      = self.ui.receiverTypeValue.text()
+        antenna_type       = self.ui.antennaTypeValue.text()
+        antenna_offset_raw = self.ui.antennaOffsetValue.text()
+        ppp_provider       = self.ui.pppProviderValue.text()
+        ppp_series         = self.ui.pppSeriesValue.text()
+
+        # Parsed values
+        start_epoch, end_epoch = self.parse_time_window(time_window_raw)
+        antenna_offset         = self.parse_antenna_offset(antenna_offset_raw)
+        epoch_interval         = int(epoch_interval_raw.replace("s", "").strip())
+        marker_name            = self.extract_marker_name(rnx_path)
+        mode                   = self.determine_mode_value(mode_raw)
+
+        # Print verification
+        print("InputExtractController Extraction Completed：")
+        print("mode =", mode)
+        print("constellation =", constellations_raw)
+        print("start_epoch =", start_epoch)
+        print("end_epoch =", end_epoch)
+        print("epoch_interval =", epoch_interval)
+        print("receiver_type =", receiver_type)
+        print("antenna_type =", antenna_type)
+        print("antenna_offset =", antenna_offset)
+        print("PPP_provider =", ppp_provider)
+        print("PPP_series =", ppp_series)
+        print("marker = ", marker_name)
+
+        # Returned the values found as a dataclass for easier access
+        return self.ExtractedInputs(
+            marker_name=marker_name,
+            start_epoch=start_epoch,
+            end_epoch=end_epoch,
+            epoch_interval=epoch_interval,
+            antenna_offset=antenna_offset,
+            mode=mode,
+            constellations_raw=constellations_raw,
+            receiver_type=receiver_type,
+            antenna_type=antenna_type,
+            ppp_provider=ppp_provider,
+            ppp_series=ppp_series,
+            rnx_path=rnx_path,
+            output_path=self.output_dir,
+        )
+
     def on_show_config(self):
         """
         Show config file
         Open the fixed path YAML config file: /resources/Yaml/default_config.yaml
         No longer need to manually select files
         """
-        print("opening default config file...")
+        print("opening config file...")
+        inputs = self.extract_ui_values(self.rnx_file)
+        self.execution.apply_ui_config(inputs)
+        self.execution.write_cached_changes()
 
-        file_path = self.default_config_path
-        
-        if not os.path.exists(file_path):
+        if not os.path.exists(GENERATED_YAML):
             QMessageBox.warning(
                 None,
                 "File not found",
-                f"The file {file_path} does not exist."
-            )
-            return
-        
-        if not (file_path.endswith(".yml") or file_path.endswith(".yaml")):
-            QMessageBox.warning(
-                None,
-                "File Format Error",
-                f"The file is not a valid YAML file:\n{file_path}"
+                f"The file {GENERATED_YAML} does not exist."
             )
             return
 
-        self.config_path = file_path
         self.on_open_config_in_editor(self.config_path)
 
     def on_open_config_in_editor(self, file_path):
@@ -440,26 +490,9 @@ class InputController(QObject):
         """
         import subprocess
         import platform
-
-        if not file_path:
-            QMessageBox.warning(
-                None,
-                "No File Path",
-                "No config file path specified."
-            )
-            return
-        
-        if not os.path.exists(file_path):
-            QMessageBox.critical(
-                None,
-                "File Not Found",
-                f"Config file not found:\n{file_path}"
-            )
-            return
         
         try:
             abs_path = os.path.abspath(file_path)
-            print(f"Opening config file: {abs_path}")
             
             # Open the file with the appropriate method for the operating system
             if platform.system() == "Windows":
@@ -551,6 +584,70 @@ class InputController(QObject):
         path = QFileDialog.getExistingDirectory(parent, "Select Output Directory")
         return path or ""
 
+    @staticmethod
+    def determine_mode_value(mode_raw: str) -> int:
+        if mode_raw == "Static":
+            return 0
+        elif mode_raw == "Kinematic":
+            return 30
+        elif mode_raw == "Dynamic":
+            return 100
+        else:
+            raise ValueError(f"Unknown mode: {mode_raw!r}")
+
+    @staticmethod
+    def extract_marker_name(rnx_path: str) -> str:
+        """
+        Extracts the 4-char site code from the RNX file name.
+        Falls back to "TEST" if one cannot be found.
+        E.g.: ALIC00AUS_R_20250190000_01D_30S_MO.rnx.gz -> ALBY
+        """
+        if not rnx_path:
+            return "TEST"
+        stem = Path(rnx_path).stem  # drops .gz/.rnx
+        m = re.match(r"([A-Za-z]{4})", stem)
+        return m.group(1).upper() if m else "TEST"
+
+    @staticmethod
+    def parse_time_window(time_window_raw: str):
+        """Convert 'start_time to end_time' into (start_epoch, end_epoch)."""
+        try:
+            start, end = map(str.strip, time_window_raw.split("to"))
+            return start, end
+        except ValueError:
+            raise ValueError("Invalid time_window format. Expected: 'start_time to end_time'")
+
+    @staticmethod
+    def parse_antenna_offset(antenna_offset_raw: str):
+        """Convert 'u, n, e' into [u, n, e] floats."""
+        try:
+            u, n, e = map(str.strip, antenna_offset_raw.split(","))
+            return [float(u), float(n), float(e)]
+        except ValueError:
+            raise ValueError("Invalid antenna offset format. Expected: 'u, n, e'")
+
+    @dataclass
+    class ExtractedInputs:
+        # Parsed / derived values
+        marker_name: str
+        start_epoch: str
+        end_epoch: str
+        epoch_interval: int
+        antenna_offset: list[float]
+        mode: int
+
+        # Raw strings / controls that are needed downstream
+        constellations_raw: str
+        receiver_type: str
+        antenna_type: str
+        ppp_provider: str
+        ppp_series: str
+
+        # File paths associated to this run
+        rnx_path: str
+        output_path: str
+
+    # endregion
     #endregion
 
     #region Statics
