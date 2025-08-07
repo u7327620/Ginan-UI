@@ -100,21 +100,21 @@ class MainWindow(QMainWindow):
             self.ui.terminalTextEdit.append("Please select an output directory first.")
             return
 
-        # # —— Launch the backend —— #
-        # try:
-        #     controller = MainController(
-        #         self.ui,
-        #         str(files("tests.resources").joinpath("inputData")),
-        #         str(files("tests.resources").joinpath("inputData/products")),
-        #         self.rnx_file,
-        #         self.output_dir,
-        #     )
+        # —— Launch the backend —— #
+        try:
+            controller = MainController(
+                self.ui,
+                str(files("tests.resources").joinpath("inputData")),
+                str(files("tests.resources").joinpath("inputData/products")),
+                self.rnx_file,
+                self.output_dir,
+            )
 
-        #     # Call the backend process
-        #     controller.execute_backend_process()
-        #     self.ui.terminalTextEdit.append("✔️ Processing finished.")
-        # except Exception as err:
-        #     self.ui.terminalTextEdit.append(f"❌ Processing failed: {err}")
+            # Call the backend process
+            controller.execute_backend_process()
+            self.ui.terminalTextEdit.append("✔️ Processing finished.")
+        except Exception as err:
+            self.ui.terminalTextEdit.append(f"❌ Processing failed: {err}")
         
         # just for sprint 4 show 
         html_dir = os.path.join(self.output_dir, "visual")

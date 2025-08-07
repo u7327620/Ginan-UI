@@ -1,7 +1,6 @@
 inputs:
     inputs_root:  #USER_SET
 
-
     atx_files: [igs20.atx] # Required
     igrf_files: [tables/igrf13coeffs.txt]
     ###erp_files: [finals.data.iau2000.txt]
@@ -20,8 +19,8 @@ inputs:
         - "*.SNX"
 
     satellite_data:
-        nav_files:
-            - "BRDC*"
+        #nav_files: # Not required
+            #- "BRDC*"
             # - "*.rnx"
 
         clk_files:
