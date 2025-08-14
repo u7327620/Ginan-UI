@@ -82,7 +82,7 @@ class InputController(QObject):
         # Constellations: multi-select with checkboxes, mirror to constellationsValue label
         self._bind_multiselect_combo(
             self.ui.Constellations_2,
-            self._get_constellations_items,
+            self._get_constellations_items(),
             self.ui.constellationsValue,
             placeholder="Select one or more",
         )
@@ -129,8 +129,8 @@ class InputController(QObject):
             self.ui.constellationsValue.setText(result["constellations"])
             self.ui.timeWindowValue.setText(f"{result['start_epoch']} to {result['end_epoch']}")
             self.ui.dataIntervalValue.setText(f"{result['epoch_interval']} s")
-            self.ui.receiverTypeValue.setText(result["receiver_type"])
-            self.ui.antennaTypeValue.setText(result["antenna_type"])
+            self.ui.Receiver_type.clear(); self.ui.Receiver_type.addItem(result["receiver_type"])
+            self.ui.Antenna_type.clear(); self.ui.Antenna_type.addItem(result["antenna_type"])
             self.ui.antennaOffsetValue.setText(", ".join(map(str, result["antenna_offset"])))
 
             # Align left-side combos to extracted values where applicable
@@ -170,6 +170,9 @@ class InputController(QObject):
 
     def enable_process_button(self):
         """Public helper so other components can enable the Process button without knowing UI internals."""
+        inputs = self.extract_ui_values(self.rnx_file)
+        download_ppp_products(inputs)
+        self.execution.apply_ui_config(inputs)
         self.ui.processButton.setEnabled(True)
 
     #endregion
@@ -189,7 +192,7 @@ class InputController(QObject):
     def _bind_multiselect_combo(
             self,
             combo: QComboBox,
-            items_func: Callable[[], List[str]],
+            items: List[str],
             mirror_label,
             placeholder: str,
     ):
@@ -200,13 +203,12 @@ class InputController(QObject):
         combo.setEditable(True)
         combo.lineEdit().setReadOnly(True)
         combo.lineEdit().setPlaceholderText(placeholder)
-        combo.setInsertPolicy(QComboBox.NoInsert)
 
         combo._old_showPopup = combo.showPopup
 
         def show_popup():
             model = QStandardItemModel(combo)
-            for txt in items_func():
+            for txt in items:
                 it = QStandardItem(txt)
                 it.setFlags(Qt.ItemIsEnabled | Qt.ItemIsUserCheckable)
                 it.setData(Qt.Unchecked, Qt.CheckStateRole)
@@ -230,7 +232,7 @@ class InputController(QObject):
         combo.showPopup = show_popup
         combo.clear()
         combo.lineEdit().clear()
-        combo.lineEdit().setPlaceholderText(placeholder)        
+        combo.lineEdit().setPlaceholderText(placeholder)
 
     def _enable_free_text_for_receiver_and_antenna(self):
         """Allow entering custom Receiver/Antenna types via popup prompt."""
@@ -246,11 +248,11 @@ class InputController(QObject):
                 self.ui.Receiver_type.clear()
                 self.ui.Receiver_type.addItem(text)
                 # Let ComboBox display the selected text itself
-                self.ui.Receiver_type.lineEdit().setText(text)
-                self.ui.receiverTypeValue.setText(text)
+                #self.ui.Receiver_type.lineEdit().setText(text)
+                # self.ui.receiverTypeValue.setText(text)
 
         self.ui.Receiver_type.showPopup = _ask_receiver_type
-        self.ui.receiverTypeValue.setText("")
+        #self.ui.receiverTypeValue.setText("")
 
         # Antenna type free text
         def _ask_antenna_type():
@@ -407,8 +409,8 @@ class InputController(QObject):
         constellations_raw = self.ui.constellationsValue.text()
         time_window_raw    = self.ui.timeWindowValue.text()
         epoch_interval_raw = self.ui.dataIntervalValue.text()
-        receiver_type      = self.ui.receiverTypeValue.text()
-        antenna_type       = self.ui.antennaTypeValue.text()
+        receiver_type      = self.ui.Receiver_type.currentText()
+        antenna_type       = self.ui.Antenna_type.currentText()
         antenna_offset_raw = self.ui.antennaOffsetValue.text()
         ppp_provider       = self.ui.PPP_provider.currentText()
         ppp_series         = self.ui.PPP_series.currentText()
@@ -535,10 +537,7 @@ class InputController(QObject):
             return
 
         # TODO Call the product download using "download_ppp_products(inputs)" and then run PEA
-        inputs = self.extract_ui_values(self.rnx_file)
-        download_ppp_products(inputs)
-        self.execution.apply_ui_config(inputs)
-        self.execution.execute_config()
+        self.execution.execute_config(bypass=True)
 
     #endregion
 
@@ -549,9 +548,10 @@ class InputController(QObject):
         """Find 'value' in a combo and set it if present."""
         if value is None:
             return
-        idx = combo.findText(value)
-        if idx != -1:
-            combo.setCurrentIndex(idx)
+        combo.clear()
+        combo.addItem(value)
+        if combo.currentText() != value:
+            raise ValueError(f"Couldn't set: {value} in combobox: {combo}")
 
     @staticmethod
     def _select_rnx_file(parent) -> str:

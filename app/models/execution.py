@@ -11,6 +11,7 @@ GENERATED_YAML = Path(__file__).parent.parent / "resources" / "ppp_generated.yam
 INPUT_DATA_PATH = Path(__file__).parent.parent / "resources" / "inputData" / "data"
 INPUT_PRODUCTS_PATH = Path(__file__).parent.parent / "resources" / "inputData" / "products"
 TEST_PRODUCTS_PATH = Path(__file__).parent.parent.parent / "tests" / "resources" / "inputData" / "products"
+TEST_DATA_PATH = Path(__file__).parent.parent.parent / "tests" / "resources" / "inputData" / "data"
 
 class Execution:
     def __init__(self, executable, config_path: str=GENERATED_YAML):
@@ -56,7 +57,7 @@ class Execution:
         self.changes = True
         # 1. Set core inputs / outputs
         self.edit_config("inputs.inputs_root", str(INPUT_PRODUCTS_PATH) + "/", False)
-        self.edit_config("inputs.gnss_observations.gnss_observations_root", str(INPUT_PRODUCTS_PATH), False)
+        self.edit_config("inputs.gnss_observations.gnss_observations_root", str(TEST_DATA_PATH) + "/", False)
         self.edit_config("inputs.gnss_observations.rnx_inputs", inputs.rnx_path, False)
         self.edit_config("outputs.outputs_root", inputs.output_path, False)
 
@@ -86,8 +87,8 @@ class Execution:
         write_yaml(self.config_path, self.config)
         self.changes = False
 
-    def execute_config(self):
-        if self.changes:
+    def execute_config(self, bypass: bool=False):
+        if self.changes and not bypass:
             self.write_cached_changes()
             self.changes = False
 

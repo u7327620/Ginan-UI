@@ -35,7 +35,7 @@ def download_static_products(start_datetime: str, end_datetime: str) -> None:
     auto_download(most_recent=True, dont_replace=True,
                   target_dir=INPUT_PRODUCTS_PATH, start_datetime=start_datetime, end_datetime=end_datetime,
                   preset="real-time", atx=True, aload=True, igrf=True, oload=True, opole=True, planet=True,
-                  sat_meta=True, yaw=True, gpt2=True)
+                  sat_meta=True, yaw=True, gpt2=True, snx=True, sp3=True, clk=True, bia=True)
 
     print("Static products downloaded successfully")
 
