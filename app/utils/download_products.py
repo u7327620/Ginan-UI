@@ -1,15 +1,9 @@
-import ftplib
-import os
-from ftplib import FTP_TLS
 from pathlib import Path
-from datetime import datetime
-from dotenv import load_dotenv
-
 from app.models.cddis_handler import CDDIS_Handler
-from app.utils.gn_functions import GPSDate
-import numpy as np
 import subprocess
 from app.models.execution import INPUT_PRODUCTS_PATH
+from app.utils.auto_download_PPP import auto_download, auto_download_main
+
 
 def download_ppp_products(inputs) -> bool:
     """Download PPP products using the CDDIS_handler and auto_download_PPP script"""
@@ -27,7 +21,7 @@ def download_ppp_products(inputs) -> bool:
 
     try:
         download_static_products(start_datetime, end_datetime)
-        download_dynamic_products(start_datetime, end_datetime, analysis_center, project_type, solution_type)
+        #download_dynamic_products(start_datetime, end_datetime, analysis_center, project_type, solution_type)
         return True
     except Exception as e:
         print(f"Error downloading PPP products: {e}")
@@ -37,26 +31,12 @@ def download_ppp_products(inputs) -> bool:
 def download_static_products(start_datetime: str, end_datetime: str) -> None:
     """Download static PPP products that don't change often"""
 
-    script_path = Path(__file__).parent / "auto_download_PPP.py"
-    products_path = Path(INPUT_PRODUCTS_PATH)
-
-    if not script_path.exists():
-        raise FileNotFoundError(f"auto_download_PPP.py not found at {script_path}")
-
-    command = [
-        "python3", str(script_path),
-        "--most_recent",
-        "--dont-replace",
-        "--target-dir", str(products_path),
-        "--start-datetime", start_datetime,
-        "--end-datetime", end_datetime,
-        "--preset", "manual",
-        "--atx", "--aload", "--igrf", "--oload",
-        "--opole", "--planet", "--sat-meta", "--yaw", "--gpt2"
-    ]
-
     print("Downloading static PPP products...")
-    result = subprocess.run(command, check=True, capture_output=True, text=True)
+    auto_download(most_recent=True, dont_replace=True,
+                  target_dir=INPUT_PRODUCTS_PATH, start_datetime=start_datetime, end_datetime=end_datetime,
+                  preset="real-time", atx=True, aload=True, igrf=True, oload=True, opole=True, planet=True,
+                  sat_meta=True, yaw=True, gpt2=True)
+
     print("Static products downloaded successfully")
 
 def download_dynamic_products(
