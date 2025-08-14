@@ -75,9 +75,9 @@ class InputController(QObject):
         ### Bind: configuration drop-downs / UIs ###
 
         # Single-choice combos (populated on open)
-        self._bind_combo(self.ui.Mode, self._get_mode_items)
-        self._bind_combo(self.ui.PPP_provider, self._get_ppp_provider_items)
-        self._bind_combo(self.ui.PPP_series, self._get_ppp_series_items)
+        self._bind_combo(self.ui.Mode, self._get_mode_items())
+        self._bind_combo(self.ui.PPP_provider, self._get_ppp_provider_items())
+        self._bind_combo(self.ui.PPP_series, self._get_ppp_series_items())
 
         # Constellations: multi-select with checkboxes, mirror to constellationsValue label
         self._bind_multiselect_combo(
@@ -176,31 +176,15 @@ class InputController(QObject):
 
     #region Multi-Selectors Assigning (A.K.A. Combo Plumbing)
 
-    def _on_select(self, combo: QComboBox, label, title: str, index: int):
-        """Mirror combo selection to label and reset combo's placeholder text."""
-        value = combo.itemText(index)
-        label.setText(value)
-
-        combo.clear()
-        combo.addItem(title)
-
-    def _bind_combo(self, combo: QComboBox, items_func: Callable[[], List[str]]):
+    def _bind_combo(self, combo: QComboBox, items: List[str]):
         """
         Populate a single-choice QComboBox each time it opens.
         Keeps the left combo visually clean while moving the chosen value to the right label.
         """
-        combo._old_showPopup = combo.showPopup
+        combo.clear()
+        combo.addItems(items)
+        combo.setEditable(False)
 
-        def new_showPopup():
-            combo.clear()
-            combo.setEditable(True)
-            combo.lineEdit().setAlignment(Qt.AlignCenter)
-            for item in items_func():
-                combo.addItem(item)
-            combo.setEditable(False)
-            combo._old_showPopup()
-
-        combo.showPopup = new_showPopup
 
     def _bind_multiselect_combo(
             self,
@@ -419,15 +403,15 @@ class InputController(QObject):
 
     def extract_ui_values(self, rnx_path):
         # Extract user input from the UI and assign it to class variables.
-        mode_raw           = self.ui.modeValue.text()
+        mode_raw           = self.ui.Mode.currentText()
         constellations_raw = self.ui.constellationsValue.text()
         time_window_raw    = self.ui.timeWindowValue.text()
         epoch_interval_raw = self.ui.dataIntervalValue.text()
         receiver_type      = self.ui.receiverTypeValue.text()
         antenna_type       = self.ui.antennaTypeValue.text()
         antenna_offset_raw = self.ui.antennaOffsetValue.text()
-        ppp_provider       = self.ui.pppProviderValue.text()
-        ppp_series         = self.ui.pppSeriesValue.text()
+        ppp_provider       = self.ui.PPP_provider.currentText()
+        ppp_series         = self.ui.PPP_series.currentText()
 
         # Parsed values
         start_epoch, end_epoch = self.parse_time_window(time_window_raw)
