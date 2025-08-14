@@ -556,6 +556,7 @@ class InputController(QObject):
         # self.ui.terminalTextEdit.clear()
         # self.ui.terminalTextEdit.append("Basic validation passed, starting PEA execution...")
         self.pea_ready.emit()
+        self.execution.execute_config()
 
     #endregion
 
@@ -576,7 +577,7 @@ class InputController(QObject):
         path, _ = QFileDialog.getOpenFileName(
             parent, 
             "Select RINEX Observation File", 
-            "", 
+            f"{Path(__file__).parent.parent.parent / "tests" / "resources" / "inputData" / "data"}",
             "RINEX Observation Files (*.rnx *.rnx.gz);;All Files (*.*)"
         )
         return path or ""
@@ -584,7 +585,10 @@ class InputController(QObject):
     @staticmethod
     def _select_output_dir(parent) -> str:
         """Select output directory using file dialog"""
-        path = QFileDialog.getExistingDirectory(parent, "Select Output Directory")
+        path = QFileDialog.getExistingDirectory(
+            parent,
+            "Select Output Directory",
+            f"{Path(__file__).parent.parent.parent / "tests" / "resources" / "outputData"}")
         return path or ""
 
     @staticmethod
