@@ -4,9 +4,12 @@ from ftplib import FTP_TLS
 from pathlib import Path
 from datetime import datetime
 from dotenv import load_dotenv
+
+from app.models.cddis_handler import cddis_handler
 from app.utils.gn_functions import GPSDate
 import numpy as np
 import subprocess
+from app.models.execution import INPUT_PRODUCTS_PATH
 
 # 1. Create an account with CDDIS
 # 2. Create a file named "cddis.env" in the same directory as this script
@@ -50,28 +53,67 @@ def create_cddis_file(filepath: Path, reference_start: GPSDate) -> None:
             except IndexError:
                 data.remove(d)
 
-
-def download_ppp_products(self, input_products_path: str, inputs) -> bool:
+def download_ppp_products(inputs) -> bool:
+    """Download PPP products using the CDDIS_handler and auto_download_PPP script"""
     start_datetime  = inputs.start_epoch
     end_datetime    = inputs.end_epoch
-    analysis_center = inputs
-    project_type    = inputs
-    solution_type   = inputs
+
+    cddis = cddis_handler(end_datetime)
+
+    # Get the optimal analysis_center, project_type, and solution_type
+    user_analysis_center = inputs.ppp_provider.upper()
+
+    if user_analysis_center in cddis.get_list_of_valid_analysis_centers():
+        analysis_center = user_analysis_center
+        project_type, solution_type = cddis.get_optimal_project_solution_tuple(analysis_center)
+
+        if project_type is None or solution_type is None:
+            # Fallback: try other analysis centers
+            for ac in ["COD", "IGS", "EMR", "GFZ"]:
+                if ac in cddis.get_list_of_valid_analysis_centers():
+                    project_type, solution_type = cddis.get_optimal_project_solution_tuple(ac)
+                    if project_type and solution_type:
+                        analysis_center = ac
+                        print(f"Using fallback analysis center: {ac}")
+                        break
+    else:
+        # User's provider is not available, find the best available
+        analysis_center = None
+        for ac in ["COD", "IGS", "EMR", "GFZ"]:
+            if ac in cddis.get_list_of_valid_analysis_centers():
+                project_type, solution_type = cddis.get_optimal_project_solution_tuple(ac)
+                if project_type and solution_type:
+                    analysis_center = ac
+                    print(f"User provider '{user_analysis_center}' not available, using: {ac}")
+                    break
+
+    if not analysis_center or not project_type or not solution_type:
+        print("No valid PPP products available for the specified time period")
+        return False
 
     try:
-        download_static_products(self, start_datetime, end_datetime)
-        download_dynamic_products(self, start_datetime, end_datetime, analysis_center, project_type, solution_type)
+        download_static_products(start_datetime, end_datetime)
+        download_dynamic_products(start_datetime, end_datetime, analysis_center, project_type, solution_type)
         return True
-    except ValueError:
+    except Exception as e:
+        print(f"Error downloading PPP products: {e}")
         return False
 
 
-def download_static_products(self, start_datetime, end_datetime) -> None:
+def download_static_products(start_datetime: str, end_datetime: str) -> None:
+    """Download static PPP products that don't change often"""
+
+    script_path = Path(__file__).parent / "auto_download_PPP.py"
+    products_path = Path(INPUT_PRODUCTS_PATH)
+
+    if not script_path.exists():
+        raise FileNotFoundError(f"auto_download_PPP.py not found at {script_path}")
+
     command = [
         "python3", str(script_path),
         "--most_recent",
         "--dont-replace",
-        "--target-dir", str(products_dir),
+        "--target-dir", str(products_path),
         "--start-datetime", start_datetime,
         "--end-datetime", end_datetime,
         "--preset", "manual",
@@ -79,14 +121,25 @@ def download_static_products(self, start_datetime, end_datetime) -> None:
         "--opole", "--planet", "--sat-meta", "--yaw", "--gpt2"
     ]
 
+    print("Downloading static PPP products...")
+    result = subprocess.run(command, check=True, capture_output=True, text=True)
+    print("Static products downloaded successfully")
+
 def download_dynamic_products(
-        self, start_datetime, end_datetime,
-        analysis_center, project_type, solution_type) -> None:
+        start_datetime: str, end_datetime: str,
+        analysis_center: str, project_type: str, solution_type: str) -> None:
+    """Download dynamic PPP products that change based on analysis center"""
+
+    script_path = Path(__file__).parent / "auto_download_PPP.py"
+    products_path = Path(INPUT_PRODUCTS_PATH)
+
+    if not script_path.exists():
+        raise FileNotFoundError(f"auto_download_PPP.py not found at {script_path}")
 
     command = [
         "python3", str(script_path),
         "--dont-replace",
-        "--target-dir", str(products_dir),
+        "--target-dir", str(products_path),
         "--start-datetime", start_datetime,
         "--end-datetime", end_datetime,
         "--analysis-center", analysis_center,
@@ -95,6 +148,10 @@ def download_dynamic_products(
         "--preset", "manual",
         "--clk", "--sp3", "--bia", "--nav"
     ]
+
+    print(f"Downloading dynamic PPP products for {analysis_center}...")
+    result = subprocess.run(command, check=True, capture_output=True, text=True)
+    print("Dynamic products downloaded successfully")
 
 if __name__ == "__main__":
     start_time = GPSDate(np.datetime64(datetime(2023, 10, 1, 0, 0)))
