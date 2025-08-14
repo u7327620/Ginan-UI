@@ -6,6 +6,7 @@ from datetime import datetime
 from dotenv import load_dotenv
 from app.utils.gn_functions import GPSDate
 import numpy as np
+import subprocess
 
 # 1. Create an account with CDDIS
 # 2. Create a file named "cddis.env" in the same directory as this script
@@ -49,6 +50,51 @@ def create_cddis_file(filepath: Path, reference_start: GPSDate) -> None:
             except IndexError:
                 data.remove(d)
 
+
+def download_ppp_products(self, input_products_path: str, inputs) -> bool:
+    start_datetime  = inputs.start_epoch
+    end_datetime    = inputs.end_epoch
+    analysis_center = inputs
+    project_type    = inputs
+    solution_type   = inputs
+
+    try:
+        download_static_products(self, start_datetime, end_datetime)
+        download_dynamic_products(self, start_datetime, end_datetime, analysis_center, project_type, solution_type)
+        return True
+    except ValueError:
+        return False
+
+
+def download_static_products(self, start_datetime, end_datetime) -> None:
+    command = [
+        "python3", str(script_path),
+        "--most_recent",
+        "--dont-replace",
+        "--target-dir", str(products_dir),
+        "--start-datetime", start_datetime,
+        "--end-datetime", end_datetime,
+        "--preset", "manual",
+        "--atx", "--aload", "--igrf", "--oload",
+        "--opole", "--planet", "--sat-meta", "--yaw", "--gpt2"
+    ]
+
+def download_dynamic_products(
+        self, start_datetime, end_datetime,
+        analysis_center, project_type, solution_type) -> None:
+
+    command = [
+        "python3", str(script_path),
+        "--dont-replace",
+        "--target-dir", str(products_dir),
+        "--start-datetime", start_datetime,
+        "--end-datetime", end_datetime,
+        "--analysis-center", analysis_center,
+        "--project-type", project_type,
+        "--solution-type", solution_type,
+        "--preset", "manual",
+        "--clk", "--sp3", "--bia", "--nav"
+    ]
 
 if __name__ == "__main__":
     start_time = GPSDate(np.datetime64(datetime(2023, 10, 1, 0, 0)))
