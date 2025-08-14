@@ -27,6 +27,8 @@ from PySide6.QtWidgets import (
 
 from app.models.execution import Execution, GENERATED_YAML, TEMPLATE_PATH
 from app.models.rinex_extractor import RinexExtractor
+from app.utils.download_products import download_ppp_products
+
 
 class InputController(QObject):
     """
@@ -56,6 +58,7 @@ class InputController(QObject):
 
         self.rnx_file: str = ""
         self.output_dir: str = ""
+        self.rnx_result_cache = None
         
         # Config file path
         self.config_path = GENERATED_YAML
@@ -147,6 +150,7 @@ class InputController(QObject):
         if self.rnx_file and self.output_dir:
             self.ready.emit(self.rnx_file, self.output_dir)
 
+        self.rnx_result_cache = result
         return result
 
     def load_output_dir(self):
@@ -544,18 +548,8 @@ class InputController(QObject):
             )
             return
 
-        if not getattr(self, "config_path", None):
-            QMessageBox.warning(
-                None,
-                "No config file",
-                "Please click Show config and select a YAML file first."
-            )
-            return
-        
-        # just for sprint 4 exhibition
-        # self.ui.terminalTextEdit.clear()
-        # self.ui.terminalTextEdit.append("Basic validation passed, starting PEA execution...")
-        self.pea_ready.emit()
+        download_ppp_products(self.rnx_result_cache)
+        self.execution.execute_config()
 
     #endregion
 

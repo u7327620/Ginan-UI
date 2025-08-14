@@ -5,7 +5,7 @@ from pathlib import Path
 from datetime import datetime
 from dotenv import load_dotenv
 
-from app.models.cddis_handler import cddis_handler
+from app.models.cddis_handler import CDDIS_Handler
 from app.utils.gn_functions import GPSDate
 import numpy as np
 import subprocess
@@ -58,7 +58,7 @@ def download_ppp_products(inputs) -> bool:
     start_datetime  = inputs.start_epoch
     end_datetime    = inputs.end_epoch
 
-    cddis = cddis_handler(end_datetime)
+    cddis = CDDIS_Handler(end_datetime)
 
     # Get the optimal analysis_center, project_type, and solution_type
     user_analysis_center = inputs.ppp_provider.upper()
