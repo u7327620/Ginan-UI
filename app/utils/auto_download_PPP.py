@@ -1056,7 +1056,7 @@ def auto_download(
     bia_ac: str=None,
     iau2000: bool=False,
     datetime_format: str="%Y-%m-%d_%H:%M:%S",
-    data_source: str="gnss-data",
+    data_source: str="cddis",
     verbose: bool=False,
 ) -> None:
     configure_logging(verbose)

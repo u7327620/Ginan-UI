@@ -535,8 +535,8 @@ class InputController(QObject):
         # TODO Call the product download using "download_ppp_products(inputs)" and then run PEA
         inputs = self.extract_ui_values(self.rnx_file)
         download_ppp_products(inputs)
-        self.execution.apply_ui_config(inputs)
-        self.execution.execute_config()
+        #self.execution.apply_ui_config(inputs)
+        #self.execution.execute_config()
 
     #endregion
 

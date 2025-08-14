@@ -21,7 +21,7 @@ def download_ppp_products(inputs) -> bool:
 
     try:
         download_static_products(start_datetime, end_datetime)
-        #download_dynamic_products(start_datetime, end_datetime, analysis_center, project_type, solution_type)
+        download_dynamic_products(start_datetime, end_datetime, analysis_center, project_type, solution_type)
         return True
     except Exception as e:
         print(f"Error downloading PPP products: {e}")
@@ -35,7 +35,7 @@ def download_static_products(start_datetime: str, end_datetime: str) -> None:
     auto_download(most_recent=True, dont_replace=True,
                   target_dir=INPUT_PRODUCTS_PATH, start_datetime=start_datetime, end_datetime=end_datetime,
                   preset="real-time", atx=True, aload=True, igrf=True, oload=True, opole=True, planet=True,
-                  sat_meta=True, yaw=True, gpt2=True)
+                  sat_meta=True, yaw=True, gpt2=True, data_source="cddis", verbose=True)
 
     print("Static products downloaded successfully")
 
@@ -44,25 +44,11 @@ def download_dynamic_products(
         analysis_center: str, project_type: str, solution_type: str) -> None:
     """Download dynamic PPP products that change based on analysis center"""
 
-    script_path = Path(__file__).parent / "auto_download_PPP.py"
-    products_path = Path(INPUT_PRODUCTS_PATH)
+    print(f"Downloading dynamic PPP products for {analysis_center}, {project_type}, {solution_type}...")
+    auto_download(dont_replace=True, target_dir=INPUT_PRODUCTS_PATH,
+                  start_datetime=start_datetime, end_datetime=end_datetime,
+                  analysis_center=analysis_center, project_type=project_type,
+                  solution_type=solution_type, preset="manual", clk=True,
+                  sp3=True, bia=True, nav=True, data_source="cddis", verbose=True)
 
-    if not script_path.exists():
-        raise FileNotFoundError(f"auto_download_PPP.py not found at {script_path}")
-
-    command = [
-        "python3", str(script_path),
-        "--dont-replace",
-        "--target-dir", str(products_path),
-        "--start-datetime", start_datetime,
-        "--end-datetime", end_datetime,
-        "--analysis-center", analysis_center,
-        "--project-type", project_type,
-        "--solution-type", solution_type,
-        "--preset", "manual",
-        "--clk", "--sp3", "--bia", "--nav"
-    ]
-
-    print(f"Downloading dynamic PPP products for {analysis_center}...")
-    result = subprocess.run(command, check=True, capture_output=True, text=True)
     print("Dynamic products downloaded successfully")
