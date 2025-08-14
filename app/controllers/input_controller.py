@@ -548,8 +548,7 @@ class InputController(QObject):
             )
             return
 
-        download_ppp_products(self.rnx_result_cache)
-        self.execution.execute_config()
+        # TODO Call the product download using "download_ppp_products(inputs)" and then run PEA
 
     #endregion
 
