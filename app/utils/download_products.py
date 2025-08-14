@@ -60,36 +60,8 @@ def download_ppp_products(inputs) -> bool:
 
     cddis = CDDIS_Handler(end_datetime)
 
-    # Get the optimal analysis_center, project_type, and solution_type
-    user_analysis_center = inputs.ppp_provider.upper()
-
-    if user_analysis_center in cddis.get_list_of_valid_analysis_centers():
-        analysis_center = user_analysis_center
-        project_type, solution_type = cddis.get_optimal_project_solution_tuple(analysis_center)
-
-        if project_type is None or solution_type is None:
-            # Fallback: try other analysis centers
-            for ac in ["COD", "IGS", "EMR", "GFZ"]:
-                if ac in cddis.get_list_of_valid_analysis_centers():
-                    project_type, solution_type = cddis.get_optimal_project_solution_tuple(ac)
-                    if project_type and solution_type:
-                        analysis_center = ac
-                        print(f"Using fallback analysis center: {ac}")
-                        break
-    else:
-        # User's provider is not available, find the best available
-        analysis_center = None
-        for ac in ["COD", "IGS", "EMR", "GFZ"]:
-            if ac in cddis.get_list_of_valid_analysis_centers():
-                project_type, solution_type = cddis.get_optimal_project_solution_tuple(ac)
-                if project_type and solution_type:
-                    analysis_center = ac
-                    print(f"User provider '{user_analysis_center}' not available, using: {ac}")
-                    break
-
-    if not analysis_center or not project_type or not solution_type:
-        print("No valid PPP products available for the specified time period")
-        return False
+    analysis_center = inputs.ppp_provider.upper()
+    project_type, solution_type = cddis.get_optimal_project_solution_tuple(analysis_center)
 
     try:
         download_static_products(start_datetime, end_datetime)
