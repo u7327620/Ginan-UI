@@ -76,6 +76,25 @@ class InputController(QObject):
         self._bind_combo(self.ui.PPP_provider, self._get_ppp_provider_items)
         self._bind_combo(self.ui.PPP_series, self._get_ppp_series_items)
 
+        # Prime PPP combos once so they have items even before user opens the dropdowns
+        self._prime_single_choice_combo(self.ui.PPP_provider, self._get_ppp_provider_items)
+        self._prime_single_choice_combo(self.ui.PPP_series, self._get_ppp_series_items)
+
+        # Mirror selection to right-side labels so UI always shows chosen values
+        self.ui.PPP_provider.activated.connect(
+            lambda _i: self.ui.pppProviderValue.setText(self.ui.PPP_provider.currentText())
+        )
+        self.ui.PPP_series.activated.connect(
+            lambda _i: self.ui.pppSeriesValue.setText(self.ui.PPP_series.currentText())
+        )
+
+        # Initialize right-side labels with the primed defaults (first item)
+        if not self.ui.pppProviderValue.text().strip():
+            self.ui.pppProviderValue.setText(self.ui.PPP_provider.currentText())
+        if not self.ui.pppSeriesValue.text().strip():
+            self.ui.pppSeriesValue.setText(self.ui.PPP_series.currentText())        
+
+
         # Constellations: multi-select with checkboxes, mirror to constellationsValue label
         self._bind_multiselect_combo(
             self.ui.Constellations_2,
@@ -116,6 +135,10 @@ class InputController(QObject):
         self.rnx_file = path
         self.ui.terminalTextEdit.append(f"RNX selected: {path}")
 
+        # Resolve PPP texts from combo first, then fall back to labels (if any)
+        ppp_provider_txt = (self.ui.PPP_provider.currentText() or self.ui.pppProviderValue.text()).strip()
+        ppp_series_txt   = (self.ui.PPP_series.currentText()   or self.ui.pppSeriesValue.text()).strip()
+
 
         # Extract information from submitted .RNX file and reflect it in the UI
         try:
@@ -135,7 +158,10 @@ class InputController(QObject):
                                             f"dataIntervalValue: {self.ui.dataIntervalValue.text()}\n"
                                             f"receiverTypeValue: {self.ui.receiverTypeValue.text()}\n"
                                             f"antennaTypeValue: {self.ui.antennaTypeValue.text()}\n"
-                                            f"antennaOffsetValue: {self.ui.antennaOffsetValue.text()}\n")
+                                            f"antennaOffsetValue: {self.ui.antennaOffsetValue.text()}\n"
+                                            f"pppProviderValue: {ppp_provider_txt}\n"
+                                            f"pppSeriesValue: {ppp_series_txt}\n"
+                                            )
 
             # Align left-side combos to extracted values where applicable
             self._set_combobox_by_value(self.ui.Receiver_type, result["receiver_type"])
@@ -201,6 +227,24 @@ class InputController(QObject):
             combo._old_showPopup()
 
         combo.showPopup = new_showPopup
+
+
+    def _prime_single_choice_combo(self, combo, items_func):
+        """
+        Pre-populate a single-choice combo once at startup so currentText() is non-empty
+        even before the user opens the dropdown. showPopup() can still repopulate later.
+        """
+        combo.clear()
+        combo.setEditable(True)
+        if combo.lineEdit() is not None:
+            combo.lineEdit().setAlignment(Qt.AlignCenter)
+        for item in items_func():
+            combo.addItem(item)
+        combo.setEditable(False)
+        if combo.count() > 0:
+            combo.setCurrentIndex(0)
+
+
 
     def _bind_multiselect_combo(
             self,
@@ -426,8 +470,9 @@ class InputController(QObject):
         receiver_type      = self.ui.receiverTypeValue.text()
         antenna_type       = self.ui.antennaTypeValue.text()
         antenna_offset_raw = self.ui.antennaOffsetValue.text()
-        ppp_provider       = self.ui.pppProviderValue.text()
-        ppp_series         = self.ui.pppSeriesValue.text()
+        
+        ppp_provider       = (self.ui.PPP_provider.currentText() or self.ui.pppProviderValue.text()).strip()
+        ppp_series         = (self.ui.PPP_series.currentText()   or self.ui.pppSeriesValue.text()).strip()        
 
         # Parsed values
         start_epoch, end_epoch = self.parse_time_window(time_window_raw)
