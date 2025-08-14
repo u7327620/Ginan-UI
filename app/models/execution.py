@@ -1,6 +1,7 @@
 import os
 import shutil
 import subprocess
+from ruamel.yaml.scalarstring import PlainScalarString
 from pathlib import Path
 
 from app.utils.yaml import load_yaml, write_yaml
@@ -54,7 +55,7 @@ class Execution:
     def apply_ui_config(self, inputs):
         self.changes = True
         # 1. Set core inputs / outputs
-        self.edit_config("inputs.inputs_root", str(TEST_PRODUCTS_PATH) + "/", False)
+        self.edit_config("inputs.inputs_root", str(INPUT_PRODUCTS_PATH) + "/", False)
         self.edit_config("inputs.gnss_observations.gnss_observations_root", str(INPUT_PRODUCTS_PATH), False)
         self.edit_config("inputs.gnss_observations.rnx_inputs", inputs.rnx_path, False)
         self.edit_config("outputs.outputs_root", inputs.output_path, False)
@@ -64,8 +65,8 @@ class Execution:
             self.config["receiver_options"][inputs.marker_name] = self.config["receiver_options"].pop("TEST")
 
         # 3. Modify the file to include the UI extraction values
-        self.edit_config("processing_options.epoch_control.start_epoch", inputs.start_epoch, False)
-        self.edit_config("processing_options.epoch_control.end_epoch", inputs.end_epoch, False)
+        self.edit_config("processing_options.epoch_control.start_epoch", PlainScalarString(inputs.start_epoch), False)
+        self.edit_config("processing_options.epoch_control.end_epoch", PlainScalarString(inputs.end_epoch), False)
         self.edit_config("processing_options.epoch_control.epoch_interval", inputs.epoch_interval, False)
         self.edit_config(f"receiver_options.{inputs.marker_name}.receiver_type", inputs.receiver_type, True)
         self.edit_config(f"receiver_options.{inputs.marker_name}.antenna_type", inputs.antenna_type, True)

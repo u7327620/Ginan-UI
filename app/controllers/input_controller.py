@@ -27,6 +27,8 @@ from PySide6.QtWidgets import (
 
 from app.models.execution import Execution, GENERATED_YAML, TEMPLATE_PATH
 from app.models.rinex_extractor import RinexExtractor
+from app.utils.download_products import download_ppp_products
+
 
 class InputController(QObject):
     """
@@ -56,7 +58,8 @@ class InputController(QObject):
 
         self.rnx_file: str = ""
         self.output_dir: str = ""
-        
+        self.rnx_result_cache = None
+
         # Config file path
         self.config_path = GENERATED_YAML
 
@@ -72,9 +75,9 @@ class InputController(QObject):
         ### Bind: configuration drop-downs / UIs ###
 
         # Single-choice combos (populated on open)
-        self._bind_combo(self.ui.Mode, self._get_mode_items)
-        self._bind_combo(self.ui.PPP_provider, self._get_ppp_provider_items)
-        self._bind_combo(self.ui.PPP_series, self._get_ppp_series_items)
+        self._bind_combo(self.ui.Mode, self._get_mode_items())
+        self._bind_combo(self.ui.PPP_provider, self._get_ppp_provider_items())
+        self._bind_combo(self.ui.PPP_series, self._get_ppp_series_items())
 
         # Constellations: multi-select with checkboxes, mirror to constellationsValue label
         self._bind_multiselect_combo(
@@ -147,6 +150,7 @@ class InputController(QObject):
         if self.rnx_file and self.output_dir:
             self.ready.emit(self.rnx_file, self.output_dir)
 
+        self.rnx_result_cache = result
         return result
 
     def load_output_dir(self):
@@ -172,31 +176,15 @@ class InputController(QObject):
 
     #region Multi-Selectors Assigning (A.K.A. Combo Plumbing)
 
-    def _on_select(self, combo: QComboBox, label, title: str, index: int):
-        """Mirror combo selection to label and reset combo's placeholder text."""
-        value = combo.itemText(index)
-        label.setText(value)
-
-        combo.clear()
-        combo.addItem(title)
-
-    def _bind_combo(self, combo: QComboBox, items_func: Callable[[], List[str]]):
+    def _bind_combo(self, combo: QComboBox, items: List[str]):
         """
         Populate a single-choice QComboBox each time it opens.
         Keeps the left combo visually clean while moving the chosen value to the right label.
         """
-        combo._old_showPopup = combo.showPopup
+        combo.clear()
+        combo.addItems(items)
+        combo.setEditable(False)
 
-        def new_showPopup():
-            combo.clear()
-            combo.setEditable(True)
-            combo.lineEdit().setAlignment(Qt.AlignCenter)
-            for item in items_func():
-                combo.addItem(item)
-            combo.setEditable(False)
-            combo._old_showPopup()
-
-        combo.showPopup = new_showPopup
 
     def _bind_multiselect_combo(
             self,
@@ -415,15 +403,15 @@ class InputController(QObject):
 
     def extract_ui_values(self, rnx_path):
         # Extract user input from the UI and assign it to class variables.
-        mode_raw           = self.ui.modeValue.text()
+        mode_raw           = self.ui.Mode.currentText()
         constellations_raw = self.ui.constellationsValue.text()
         time_window_raw    = self.ui.timeWindowValue.text()
         epoch_interval_raw = self.ui.dataIntervalValue.text()
         receiver_type      = self.ui.receiverTypeValue.text()
         antenna_type       = self.ui.antennaTypeValue.text()
         antenna_offset_raw = self.ui.antennaOffsetValue.text()
-        ppp_provider       = self.ui.pppProviderValue.text()
-        ppp_series         = self.ui.pppSeriesValue.text()
+        ppp_provider       = self.ui.PPP_provider.currentText()
+        ppp_series         = self.ui.PPP_series.currentText()
 
         # Parsed values
         start_epoch, end_epoch = self.parse_time_window(time_window_raw)
@@ -545,11 +533,11 @@ class InputController(QObject):
                 "Start time cannot be later than end time."
             )
             return
-        
-        # just for sprint 4 exhibition
-        # self.ui.terminalTextEdit.clear()
-        # self.ui.terminalTextEdit.append("Basic validation passed, starting PEA execution...")
-        self.pea_ready.emit()
+
+        # TODO Call the product download using "download_ppp_products(inputs)" and then run PEA
+        inputs = self.extract_ui_values(self.rnx_file)
+        download_ppp_products(inputs)
+        self.execution.apply_ui_config(inputs)
         self.execution.execute_config()
 
     #endregion

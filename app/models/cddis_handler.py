@@ -5,8 +5,45 @@ from collections import defaultdict
 from pathlib import Path
 from dotenv import load_dotenv
 import numpy as np
-from app.utils.download_products import create_cddis_file
+import ftplib
+import os
+from ftplib import FTP_TLS
 from app.utils.gn_functions import GPSDate
+
+
+def retrieve_all_cddis_types(reference_start: GPSDate) -> list[str]:
+    """
+    Retrieve all CDDIS data types for a given GPS Week.
+    """
+    load_dotenv(Path(__file__).parent.parent / "utils" / "cddis.env")  # Adjust path
+
+    ftp_tls = FTP_TLS(host="gdc.cddis.eosdis.nasa.gov", user="anonymous", passwd=os.getenv("EMAIL"), timeout=60)
+    ftp_tls.prot_p()
+    files = None
+    try:
+        ftp_tls.cwd(f"gnss/products/{reference_start.gpswk}")
+        files = ftp_tls.nlst()
+    except ftplib.all_errors as e:
+        print("Error getting file list", e)
+    finally:
+        ftp_tls.quit()
+    return files or []
+
+
+def create_cddis_file(filepath: Path, reference_start: GPSDate) -> None:
+    """
+    Create a file named "CDDIS.list" with CDDIS data types for a given reference start time.
+    """
+    data = retrieve_all_cddis_types(reference_start)
+    cddis_file_path = filepath / "CDDIS.list"
+
+    with open(cddis_file_path, "w") as f:
+        for d in data:
+            try:
+                time = datetime.strptime(d.split("_")[1], "%Y%j%H%M")
+                f.write(f"{d} {time}\n")
+            except (IndexError, ValueError):
+                continue
 
 class CDDIS_Handler ():
     def __init__(self, date_time_end_str:str):    
