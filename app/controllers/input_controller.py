@@ -474,6 +474,8 @@ class InputController(QObject):
         self.execution.apply_ui_config(inputs)
         self.execution.write_cached_changes()
 
+        # Execution class will throw error when instantiated if the file doesn't exist and it can't create it
+        # This code is run after Execution class is instantiated within this file, thus never will occur
         if not os.path.exists(GENERATED_YAML):
             QMessageBox.warning(
                 None,
@@ -541,14 +543,6 @@ class InputController(QObject):
                 None,
                 "Time error",
                 "Start time cannot be later than end time."
-            )
-            return
-
-        if not getattr(self, "config_path", None):
-            QMessageBox.warning(
-                None,
-                "No config file",
-                "Please click Show config and select a YAML file first."
             )
             return
         
