@@ -124,15 +124,78 @@ class InputController(QObject):
 
             # Update UI fields directly
             self.ui.constellationsValue.setText(result["constellations"])
-            self.ui.timeWindowValue.setText(f"{result['start_epoch']} to {result['end_epoch']}")
-            self.ui.dataIntervalValue.setText(f"{result['epoch_interval']} s")
+            self.ui.timeWindowButton.setText(f"{result['start_epoch']} to {result['end_epoch']}")
+            self.ui.dataIntervalButton.setText(f"{result['epoch_interval']} s")
             self.ui.receiverTypeValue.setText(result["receiver_type"])
             self.ui.antennaTypeValue.setText(result["antenna_type"])
-            self.ui.antennaOffsetValue.setText(", ".join(map(str, result["antenna_offset"])))
+            self.ui.antennaOffsetButton.setText(", ".join(map(str, result["antenna_offset"])))
 
-            # Align left-side combos to extracted values where applicable
-            self._set_combobox_by_value(self.ui.Receiver_type, result["receiver_type"])
-            self._set_combobox_by_value(self.ui.Antenna_type, result["antenna_type"])
+            # Set left-side combos to extracted values
+            # Receiver type
+            self.ui.Receiver_type.clear()
+            self.ui.Receiver_type.addItem(result["receiver_type"])
+            self.ui.Receiver_type.setCurrentIndex(0)
+            self.ui.Receiver_type.lineEdit().setText(result["receiver_type"])
+
+            # Antenna type
+            self.ui.Antenna_type.clear()
+            self.ui.Antenna_type.addItem(result["antenna_type"])
+            self.ui.Antenna_type.setCurrentIndex(0)
+            self.ui.Antenna_type.lineEdit().setText(result["antenna_type"])
+
+            # Constellations (multi-select combo)
+            # Completely replace the constellation dropdown behavior with file-specific constellations
+            constellations = [c.strip() for c in result["constellations"].split(",") if c.strip()]
+            combo = self.ui.Constellations_2
+            
+            # Clear any existing bindings and reset combo
+            if hasattr(combo, '_old_showPopup'):
+                delattr(combo, '_old_showPopup')
+            combo.clear()
+            combo.setEditable(True)
+            combo.lineEdit().setReadOnly(True)
+            combo.setInsertPolicy(QComboBox.NoInsert)
+            
+            from PySide6.QtGui import QStandardItemModel, QStandardItem
+            model = QStandardItemModel(combo)
+            for txt in constellations:
+                it = QStandardItem(txt)
+                it.setFlags(Qt.ItemIsEnabled | Qt.ItemIsUserCheckable)
+                it.setCheckState(Qt.Checked)
+                model.appendRow(it)
+            
+            def on_item_changed(_item):
+                current_model = combo.model()
+                if current_model:
+                    selected = [current_model.item(i).text() for i in range(current_model.rowCount()) if current_model.item(i).checkState() == Qt.Checked]
+                    text = ", ".join(selected) if selected else "Select one or more"
+                    combo.lineEdit().setText(text)
+                    self.ui.constellationsValue.setText(text)
+            
+            model.itemChanged.connect(on_item_changed)
+            combo.setModel(model)
+            
+            # Set current index to -1 to avoid the first item being "selected"
+            combo.setCurrentIndex(-1)
+            
+            # Store references and override showPopup completely
+            combo._constellation_model = model
+            combo._constellation_on_item_changed = on_item_changed
+            
+            def show_popup_constellation():
+                # Ensure model is still connected and items are checked
+                if combo.model() != combo._constellation_model:
+                    combo.setModel(combo._constellation_model)
+                # Make sure no item is currently selected
+                combo.setCurrentIndex(-1)
+                # Call the original showPopup without any custom logic
+                QComboBox.showPopup(combo)
+            
+            combo.showPopup = show_popup_constellation
+            
+            # Set initial text
+            combo.lineEdit().setText(", ".join(constellations))
+            self.ui.constellationsValue.setText(", ".join(constellations))
 
             self.ui.terminalTextEdit.append(".RNX file metadata extracted and applied to UI fields")
 
@@ -294,15 +357,15 @@ class InputController(QObject):
 
         sb_u = QDoubleSpinBox(dlg)
         sb_u.setRange(-9999, 9999)
-        sb_u.setDecimals(1)
+        sb_u.setDecimals(3)
         sb_u.setValue(u0)
         sb_n = QDoubleSpinBox(dlg)
         sb_n.setRange(-9999, 9999)
-        sb_n.setDecimals(1)
+        sb_n.setDecimals(3)
         sb_n.setValue(n0)
         sb_e = QDoubleSpinBox(dlg)
         sb_e.setRange(-9999, 9999)
-        sb_e.setDecimals(1)
+        sb_e.setDecimals(3)
         sb_e.setValue(e0)
 
         form.addRow("U:", sb_u)
@@ -415,15 +478,26 @@ class InputController(QObject):
 
     def extract_ui_values(self, rnx_path):
         # Extract user input from the UI and assign it to class variables.
-        mode_raw           = self.ui.modeValue.text()
-        constellations_raw = self.ui.constellationsValue.text()
-        time_window_raw    = self.ui.timeWindowValue.text()
-        epoch_interval_raw = self.ui.dataIntervalValue.text()
+        mode_raw           = self.ui.Mode.currentText() if self.ui.Mode.currentText() != "Select one" else "Static"
+        
+        # Get constellations from the actual dropdown selections, not the label
+        constellations_raw = ""
+        combo = self.ui.Constellations_2
+        if hasattr(combo, '_constellation_model') and combo._constellation_model:
+            model = combo._constellation_model
+            selected = [model.item(i).text() for i in range(model.rowCount()) if model.item(i).checkState() == Qt.Checked]
+            constellations_raw = ", ".join(selected)
+        else:
+            # Fallback to the label text if no custom model exists
+            constellations_raw = self.ui.constellationsValue.text()
+        print("*****", constellations_raw)
+        time_window_raw    = self.ui.timeWindowButton.text()  # Get from button, not value label
+        epoch_interval_raw = self.ui.dataIntervalButton.text()  # Get from button, not value label
         receiver_type      = self.ui.receiverTypeValue.text()
         antenna_type       = self.ui.antennaTypeValue.text()
-        antenna_offset_raw = self.ui.antennaOffsetValue.text()
-        ppp_provider       = self.ui.pppProviderValue.text()
-        ppp_series         = self.ui.pppSeriesValue.text()
+        antenna_offset_raw = self.ui.antennaOffsetButton.text()  # Get from button, not value label
+        ppp_provider       = self.ui.PPP_provider.currentText() if self.ui.PPP_provider.currentText() != "Select one" else ""
+        ppp_series         = self.ui.PPP_series.currentText() if self.ui.PPP_series.currentText() != "Select one" else ""
 
         # Parsed values
         start_epoch, end_epoch = self.parse_time_window(time_window_raw)

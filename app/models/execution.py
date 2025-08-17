@@ -73,13 +73,18 @@ class Execution:
                               inputs.antenna_offset, True)
         self.edit_config("estimation_parameters.receivers.global.pos.process_noise", inputs.mode, False)
 
-        # 4. Enable the constellations
+        # 4. Set constellation processing based on user selection
+        # First, disable all possible constellations
+        all_constellations = ["gps", "gal", "glo", "bds", "qzs"]
+        for const in all_constellations:
+            self.edit_config(f"processing_options.gnss_general.sys_options.{const}.process", False, False)
+        
+        # Then enable only the selected constellations
         if inputs.constellations_raw:
-            for const in inputs.constellations_raw.split(","):
-                const_key = const.strip().lower()
-                if const_key:
-                    self.edit_config(f"processing_options.gnss_general.sys_options.{const_key}.process", True,
-                                          False)
+            selected_constellations = [const.strip().lower() for const in inputs.constellations_raw.split(",") if const.strip()]
+            for const_key in selected_constellations:
+                if const_key in all_constellations:
+                    self.edit_config(f"processing_options.gnss_general.sys_options.{const_key}.process", True, False)
 
     def write_cached_changes(self):
         write_yaml(self.config_path, self.config)
