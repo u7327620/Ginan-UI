@@ -7,7 +7,7 @@ from PySide6.QtWidgets import QMainWindow, QDialog, QVBoxLayout, QPushButton, QC
 from PySide6.QtWebEngineWidgets import QWebEngineView
 
 from app.models.execution import Execution, GENERATED_YAML
-from app.models.find_executable import get_pea_exec
+from app.utils.find_executable import get_pea_exec
 from app.utils.ui_compilation import compile_ui
 from app.controllers.input_controller import InputController
 from app.controllers.visualisation_controller import VisualisationController

@@ -1,5 +1,5 @@
 import unittest
-from app.models.find_executable import get_pea_exec
+from app.utils.find_executable import get_pea_exec
 from importlib.resources import files
 import subprocess
 
