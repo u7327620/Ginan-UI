@@ -126,6 +126,7 @@ class InputController(QObject):
 
             # Update UI fields directly
             self.ui.constellationsValue.setText(result["constellations"])
+            self.ui.timeWindowValue.setText(f"{result['start_epoch']} to {result['end_epoch']}")
             self.ui.timeWindowButton.setText(f"{result['start_epoch']} to {result['end_epoch']}")
             self.ui.dataIntervalButton.setText(f"{result['epoch_interval']} s")
             self.ui.receiverTypeValue.setText(result["receiver_type"])
@@ -493,7 +494,7 @@ class InputController(QObject):
             # Fallback to the label text if no custom model exists
             constellations_raw = self.ui.constellationsValue.text()
         print("*****", constellations_raw)
-        time_window_raw    = self.ui.timeWindowButton.text()  # Get from button, not value label
+        time_window_raw    = self.ui.timeWindowValue.text()  # Get from button, not value label
         epoch_interval_raw = self.ui.dataIntervalButton.text()  # Get from button, not value label
         receiver_type      = self.ui.receiverTypeValue.text()
         antenna_type       = self.ui.antennaTypeValue.text()
@@ -599,8 +600,10 @@ class InputController(QObject):
         """Run PEA processing with validation"""
         raw = self.ui.timeWindowValue.text()
         print(raw)
+
         try:
             start_str, end_str = raw.split("to")
+
             start = datetime.strptime(start_str.strip(), "%Y-%m-%d_%H:%M:%S")
             end = datetime.strptime(end_str.strip(), "%Y-%m-%d_%H:%M:%S")
         except ValueError:
