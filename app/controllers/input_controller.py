@@ -150,7 +150,7 @@ class InputController(QObject):
             # Completely replace the constellation dropdown behavior with file-specific constellations
             constellations = [c.strip() for c in result["constellations"].split(",") if c.strip()]
             combo = self.ui.Constellations_2
-
+            
             # Clear any existing bindings and reset combo
             if hasattr(combo, '_old_showPopup'):
                 delattr(combo, '_old_showPopup')
@@ -158,7 +158,7 @@ class InputController(QObject):
             combo.setEditable(True)
             combo.lineEdit().setReadOnly(True)
             combo.setInsertPolicy(QComboBox.NoInsert)
-
+            
             from PySide6.QtGui import QStandardItemModel, QStandardItem
             model = QStandardItemModel(combo)
             for txt in constellations:
@@ -166,7 +166,7 @@ class InputController(QObject):
                 it.setFlags(Qt.ItemIsEnabled | Qt.ItemIsUserCheckable)
                 it.setCheckState(Qt.Checked)
                 model.appendRow(it)
-
+            
             def on_item_changed(_item):
                 current_model = combo.model()
                 if current_model:
@@ -174,17 +174,17 @@ class InputController(QObject):
                     text = ", ".join(selected) if selected else "Select one or more"
                     combo.lineEdit().setText(text)
                     self.ui.constellationsValue.setText(text)
-
+            
             model.itemChanged.connect(on_item_changed)
             combo.setModel(model)
-
+            
             # Set current index to -1 to avoid the first item being "selected"
             combo.setCurrentIndex(-1)
-
+            
             # Store references and override showPopup completely
             combo._constellation_model = model
             combo._constellation_on_item_changed = on_item_changed
-
+            
             def show_popup_constellation():
                 # Ensure model is still connected and items are checked
                 if combo.model() != combo._constellation_model:
@@ -193,9 +193,9 @@ class InputController(QObject):
                 combo.setCurrentIndex(-1)
                 # Call the original showPopup without any custom logic
                 QComboBox.showPopup(combo)
-
+            
             combo.showPopup = show_popup_constellation
-
+            
             # Set initial text
             combo.lineEdit().setText(", ".join(constellations))
             self.ui.constellationsValue.setText(", ".join(constellations))
@@ -482,7 +482,7 @@ class InputController(QObject):
     def extract_ui_values(self, rnx_path):
         # Extract user input from the UI and assign it to class variables.
         mode_raw           = self.ui.Mode.currentText() if self.ui.Mode.currentText() != "Select one" else "Static"
-
+        
         # Get constellations from the actual dropdown selections, not the label
         constellations_raw = ""
         combo = self.ui.Constellations_2
@@ -551,6 +551,8 @@ class InputController(QObject):
         self.execution.apply_ui_config(inputs)
         self.execution.write_cached_changes()
 
+        # Execution class will throw error when instantiated if the file doesn't exist and it can't create it
+        # This code is run after Execution class is instantiated within this file, thus never will occur
         if not os.path.exists(GENERATED_YAML):
             QMessageBox.warning(
                 None,
@@ -600,10 +602,8 @@ class InputController(QObject):
         """Run PEA processing with validation"""
         raw = self.ui.timeWindowValue.text()
         print(raw)
-
         try:
             start_str, end_str = raw.split("to")
-
             start = datetime.strptime(start_str.strip(), "%Y-%m-%d_%H:%M:%S")
             end = datetime.strptime(end_str.strip(), "%Y-%m-%d_%H:%M:%S")
         except ValueError:
@@ -623,12 +623,15 @@ class InputController(QObject):
             )
             return
 
+        # just for sprint 4 exhibition
+        # self.ui.terminalTextEdit.clear()
+        # self.ui.terminalTextEdit.append("Basic validation passed, starting PEA execution...")
+
         # TODO Call the product download using "download_ppp_products(inputs)" and then run PEA
         inputs = self.extract_ui_values(self.rnx_file)
         download_ppp_products(inputs)
-        #self.execution.apply_ui_config(inputs)
-        #self.execution.execute_config()
         self.pea_ready.emit()
+        self.execution.execute_config()
 
     #endregion
 
@@ -649,7 +652,7 @@ class InputController(QObject):
         path, _ = QFileDialog.getOpenFileName(
             parent, 
             "Select RINEX Observation File", 
-            "", 
+            f"{Path(__file__).parent.parent.parent / "tests" / "resources" / "inputData" / "data"}",
             "RINEX Observation Files (*.rnx *.rnx.gz);;All Files (*.*)"
         )
         return path or ""
@@ -657,7 +660,10 @@ class InputController(QObject):
     @staticmethod
     def _select_output_dir(parent) -> str:
         """Select output directory using file dialog"""
-        path = QFileDialog.getExistingDirectory(parent, "Select Output Directory")
+        path = QFileDialog.getExistingDirectory(
+            parent,
+            "Select Output Directory",
+            f"{Path(__file__).parent.parent.parent / "tests" / "resources" / "outputData"}")
         return path or ""
 
     @staticmethod

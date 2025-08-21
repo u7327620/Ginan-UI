@@ -11,6 +11,7 @@ TEMPLATE_PATH = Path(__file__).parent.parent / "resources" / "Yaml" / "default_c
 GENERATED_YAML = Path(__file__).parent.parent / "resources" / "ppp_generated.yaml"
 INPUT_DATA_PATH = Path(__file__).parent.parent / "resources" / "inputData" / "data"
 INPUT_PRODUCTS_PATH = Path(__file__).parent.parent / "resources" / "inputData" / "products"
+TEST_PRODUCTS_PATH = Path(__file__).parent.parent.parent / "tests" / "resources" / "inputData" / "products"
 
 class Execution:
     def __init__(self, executable, config_path: str=GENERATED_YAML):
@@ -55,7 +56,7 @@ class Execution:
     def apply_ui_config(self, inputs):
         self.changes = True
         # 1. Set core inputs / outputs
-        self.edit_config("inputs.inputs_root", str(INPUT_DATA_PATH), False)
+        self.edit_config("inputs.inputs_root", str(TEST_PRODUCTS_PATH) + "/", False)
         self.edit_config("inputs.gnss_observations.gnss_observations_root", str(INPUT_PRODUCTS_PATH), False)
         self.edit_config("inputs.gnss_observations.rnx_inputs", inputs.rnx_path, False)
         self.edit_config("outputs.outputs_root", inputs.output_path, False)
