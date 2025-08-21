@@ -1,6 +1,8 @@
 import os
 import shutil
 import subprocess
+from ruamel.yaml.scalarstring import PlainScalarString
+from importlib.resources import files
 from pathlib import Path
 
 from app.utils.yaml import load_yaml, write_yaml
@@ -64,8 +66,8 @@ class Execution:
             self.config["receiver_options"][inputs.marker_name] = self.config["receiver_options"].pop("TEST")
 
         # 3. Modify the file to include the UI extraction values
-        self.edit_config("processing_options.epoch_control.start_epoch", inputs.start_epoch, False)
-        self.edit_config("processing_options.epoch_control.end_epoch", inputs.end_epoch, False)
+        self.edit_config("processing_options.epoch_control.start_epoch", PlainScalarString(inputs.start_epoch), False)
+        self.edit_config("processing_options.epoch_control.end_epoch", PlainScalarString(inputs.end_epoch), False)
         self.edit_config("processing_options.epoch_control.epoch_interval", inputs.epoch_interval, False)
         self.edit_config(f"receiver_options.{inputs.marker_name}.receiver_type", inputs.receiver_type, True)
         self.edit_config(f"receiver_options.{inputs.marker_name}.antenna_type", inputs.antenna_type, True)

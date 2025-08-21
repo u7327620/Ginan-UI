@@ -27,6 +27,8 @@ from PySide6.QtWidgets import (
 
 from app.models.execution import Execution, GENERATED_YAML, TEMPLATE_PATH
 from app.models.rinex_extractor import RinexExtractor
+from app.utils.download_products import download_ppp_products
+
 
 class InputController(QObject):
     """
@@ -124,6 +126,7 @@ class InputController(QObject):
 
             # Update UI fields directly
             self.ui.constellationsValue.setText(result["constellations"])
+            self.ui.timeWindowValue.setText(f"{result['start_epoch']} to {result['end_epoch']}")
             self.ui.timeWindowButton.setText(f"{result['start_epoch']} to {result['end_epoch']}")
             self.ui.dataIntervalButton.setText(f"{result['epoch_interval']} s")
             self.ui.receiverTypeValue.setText(result["receiver_type"])
@@ -491,7 +494,7 @@ class InputController(QObject):
             # Fallback to the label text if no custom model exists
             constellations_raw = self.ui.constellationsValue.text()
         print("*****", constellations_raw)
-        time_window_raw    = self.ui.timeWindowButton.text()  # Get from button, not value label
+        time_window_raw    = self.ui.timeWindowValue.text()  # Get from button, not value label
         epoch_interval_raw = self.ui.dataIntervalButton.text()  # Get from button, not value label
         receiver_type      = self.ui.receiverTypeValue.text()
         antenna_type       = self.ui.antennaTypeValue.text()
@@ -619,10 +622,14 @@ class InputController(QObject):
                 "Start time cannot be later than end time."
             )
             return
-        
+
         # just for sprint 4 exhibition
         # self.ui.terminalTextEdit.clear()
         # self.ui.terminalTextEdit.append("Basic validation passed, starting PEA execution...")
+
+        # TODO Call the product download using "download_ppp_products(inputs)" and then run PEA
+        inputs = self.extract_ui_values(self.rnx_file)
+        download_ppp_products(inputs)
         self.pea_ready.emit()
         self.execution.execute_config()
 
