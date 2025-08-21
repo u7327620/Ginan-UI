@@ -7,23 +7,38 @@ from app.models.execution import Execution
 from app.utils.find_executable import get_pea_exec
 
 class TestExecution(unittest.TestCase):
-    def test_load_config(self):
-        execution = Execution(files("tests.resources").joinpath("ppp_example.yaml"), get_pea_exec())
-        self.assertFalse(execution.config.values() == {}, "Config isn't empty")
+    def test_load_sample_config(self):
+        execution = Execution(executable=get_pea_exec(), config_path=str(files("tests.resources").joinpath("ppp_example.yaml")))
+        self.assertFalse(execution.config.values() == {}, "Caches ppp_example config from tests/resources/ppp_example.yaml")
 
-    def test_execute_config(self):
-        data_folder = files("tests.resources").joinpath("inputData/data")
-        product_folder = files("tests.resources").joinpath("inputData/products")
-        if not len(os.listdir(str(data_folder))) > 3:
-            subprocess.call("./getData.sh", shell=True, text=True, cwd=str(data_folder))
+    def test_copies_template_config(self):
+        test_config_path = str(files("tests.resources").joinpath("non_existent.yaml"))
+        if os.path.isfile(test_config_path):
+            os.remove(test_config_path)
+        self.assertFalse(os.path.isfile(test_config_path), "tests/resources/non_existent.yaml shouldn't exist prior to test")
+        Execution(executable=get_pea_exec(), config_path=str(files("tests.resources").joinpath("non_existent.yaml")))
+        self.assertTrue(os.path.isfile(test_config_path), "tests/resources/non_existent.yaml should be created by execution")
 
-        if not len(os.listdir(str(product_folder))) > 3:
-            subprocess.call("./getProducts.sh", shell=True, text=True, cwd=str(product_folder))
 
-        execution = Execution(files("tests.resources").joinpath("ppp_example.yaml"), get_pea_exec())
-        folder_path = str(files("tests.resources").joinpath("output"))
-        for filename in os.listdir(folder_path):
-            file_path = os.path.join(folder_path, filename)
+    def test_execute_ppp_example_config(self):
+        # common paths
+        data_folder = str(files("tests.resources.inputData").joinpath("data"))
+        product_folder = str(files("tests.resources.inputData").joinpath("products"))
+        output_folder = str(files("tests.resources").joinpath("output"))
+        sample_config = str(files("tests.resources").joinpath("ppp_example.yaml"))
+
+        # Ensure data downloaded
+        if not len(os.listdir(data_folder)) > 3:
+            subprocess.call("./getData.sh", shell=True, text=True, cwd=data_folder)
+
+        if not len(os.listdir(product_folder)) > 3:
+            subprocess.call("./getProducts.sh", shell=True, text=True, cwd=product_folder)
+
+        execution = Execution(get_pea_exec(), sample_config)
+
+        # Clears output folder
+        for filename in os.listdir(output_folder):
+            file_path = os.path.join(output_folder, filename)
             try:
                 if os.path.isfile(file_path) or os.path.islink(file_path):
                     os.unlink(file_path)
@@ -32,10 +47,14 @@ class TestExecution(unittest.TestCase):
             except Exception as e:
                 print(f"Failed to delete {file_path}. Reason: {e}")
 
-        alterations = {"outputs.outputs_root": files("tests.resources").joinpath("output"),
-                       "inputs.inputs_root": files("tests.resources").joinpath("inputData/products")}
+        # Apply test settings
+        alterations = {"outputs.outputs_root": output_folder + "/",
+                       "inputs.inputs_root": product_folder + "/"}
         for key, value in alterations.items():
-            execution.edit_config(key, str(value))
+            execution.edit_config(key, value)
 
+        # Executes
         execution.execute_config()
-        self.assertTrue(os.listdir(folder_path), "Output folder should not be empty")
+
+        # Only checks if output is created successfully, not accuracy of output
+        self.assertTrue(os.listdir(output_folder), "Output folder should not be empty")

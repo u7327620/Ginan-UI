@@ -4,8 +4,6 @@ from importlib.resources import files
 
 
 def get_pea_exec():
-    executable = None
-
     # AppImage works natively
     if platform.system().lower() == "linux":
         executable = files('app.resources').joinpath('ginan.AppImage')
@@ -15,11 +13,10 @@ def get_pea_exec():
         executable = "pea"
 
     elif platform.system().lower() == "darwin":
-        raise RuntimeError("macOS requires a manual installation of pea on PATH. Please install it from github.com/GeoscienceAustralia/ginan")
+        executable = files('app.resources.osx_arm64.bin').joinpath('pea')
 
     elif platform.system().lower() == "windows":
-        # TODO: Check if Ubuntu is installed then try calling it with "pea" command.
-        pass
+        raise RuntimeError("MichaelSoft WiNdLoWs cAn'T PEa")
 
     # Unknown system
     else:
