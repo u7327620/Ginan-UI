@@ -22,23 +22,20 @@ class TestExecution(unittest.TestCase):
 
     def test_execute_ppp_example_config(self):
         # common paths
-        data_folder = str(files("tests.resources.inputData").joinpath("data"))
-        product_folder = str(files("tests.resources.inputData").joinpath("products"))
-        output_folder = str(files("tests.resources").joinpath("output"))
-        sample_config = str(files("tests.resources").joinpath("ppp_example.yaml"))
+        from tests.resources.common_paths import TEST_DATA_FOLDER, TEST_PRODUCT_FOLDER, TEST_SAMPLE_CONFIG, TEST_OUTPUT_FOLDER
 
         # Ensure data downloaded
-        if not len(os.listdir(data_folder)) > 3:
-            subprocess.call("./getData.sh", shell=True, text=True, cwd=data_folder)
+        if not len(os.listdir(TEST_DATA_FOLDER)) > 3:
+            subprocess.call("./getData.sh", shell=True, text=True, cwd=TEST_DATA_FOLDER)
 
-        if not len(os.listdir(product_folder)) > 3:
-            subprocess.call("./getProducts.sh", shell=True, text=True, cwd=product_folder)
+        if not len(os.listdir(TEST_PRODUCT_FOLDER)) > 3:
+            subprocess.call("./getProducts.sh", shell=True, text=True, cwd=TEST_PRODUCT_FOLDER)
 
-        execution = Execution(get_pea_exec(), sample_config)
+        execution = Execution(get_pea_exec(), TEST_SAMPLE_CONFIG)
 
         # Clears output folder
-        for filename in os.listdir(output_folder):
-            file_path = os.path.join(output_folder, filename)
+        for filename in os.listdir(TEST_OUTPUT_FOLDER):
+            file_path = os.path.join(TEST_OUTPUT_FOLDER, filename)
             try:
                 if os.path.isfile(file_path) or os.path.islink(file_path):
                     os.unlink(file_path)
@@ -48,8 +45,8 @@ class TestExecution(unittest.TestCase):
                 print(f"Failed to delete {file_path}. Reason: {e}")
 
         # Apply test settings
-        alterations = {"outputs.outputs_root": output_folder + "/",
-                       "inputs.inputs_root": product_folder + "/"}
+        alterations = {"outputs.outputs_root": TEST_OUTPUT_FOLDER + "/",
+                       "inputs.inputs_root": TEST_PRODUCT_FOLDER + "/"}
         for key, value in alterations.items():
             execution.edit_config(key, value)
 
@@ -57,4 +54,4 @@ class TestExecution(unittest.TestCase):
         execution.execute_config()
 
         # Only checks if output is created successfully, not accuracy of output
-        self.assertTrue(os.listdir(output_folder), "Output folder should not be empty")
+        self.assertTrue(os.listdir(TEST_OUTPUT_FOLDER), "Output folder should not be empty")
