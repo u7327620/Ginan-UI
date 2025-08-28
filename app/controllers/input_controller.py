@@ -213,6 +213,9 @@ class InputController(QObject):
         if self.rnx_file and self.output_dir:
             self.ready.emit(self.rnx_file, self.output_dir)
 
+        inputs = self.extract_ui_values(self.rnx_file)
+        self.execution.apply_ui_config(inputs)
+
         return result
 
     def load_output_dir(self):
@@ -546,8 +549,6 @@ class InputController(QObject):
         No longer need to manually select files
         """
         print("opening config file...")
-        inputs = self.extract_ui_values(self.rnx_file)
-        self.execution.apply_ui_config(inputs)
         self.execution.write_cached_changes()
 
         # Execution class will throw error when instantiated if the file doesn't exist and it can't create it
@@ -635,7 +636,7 @@ class InputController(QObject):
             self.ui.terminalTextEdit.append("Continuing without PPP products...")
         
         self.pea_ready.emit()
-        
+
         # Ignore PEA execution, TODO: need backend to repair configuration problems
         try:
             self.execution.execute_config()

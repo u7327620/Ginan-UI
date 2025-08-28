@@ -4,6 +4,7 @@ import subprocess
 import unittest
 from importlib.resources import files
 from app.models.execution import Execution
+from tests.resources.common_paths import *
 from app.utils.find_executable import get_pea_exec
 
 class TestExecution(unittest.TestCase):
@@ -12,18 +13,15 @@ class TestExecution(unittest.TestCase):
         self.assertFalse(execution.config.values() == {}, "Caches ppp_example config from tests/resources/ppp_example.yaml")
 
     def test_copies_template_config(self):
-        test_config_path = str(files("tests.resources").joinpath("non_existent.yaml"))
-        if os.path.isfile(test_config_path):
-            os.remove(test_config_path)
-        self.assertFalse(os.path.isfile(test_config_path), "tests/resources/non_existent.yaml shouldn't exist prior to test")
-        Execution(executable=get_pea_exec(), config_path=str(files("tests.resources").joinpath("non_existent.yaml")))
-        self.assertTrue(os.path.isfile(test_config_path), "tests/resources/non_existent.yaml should be created by execution")
+        if os.path.isfile(TEST_NON_EXISTENT_CONFIG):
+            os.remove(TEST_NON_EXISTENT_CONFIG)
+        self.assertFalse(os.path.isfile(TEST_NON_EXISTENT_CONFIG), "tests/resources/non_existent.yaml shouldn't exist prior to test")
+        Execution(executable=get_pea_exec(), config_path=TEST_NON_EXISTENT_CONFIG)
+        self.assertTrue(os.path.isfile(TEST_NON_EXISTENT_CONFIG), "tests/resources/non_existent.yaml should be created by execution")
+        os.remove(TEST_NON_EXISTENT_CONFIG)
 
 
     def test_execute_ppp_example_config(self):
-        # common paths
-        from tests.resources.common_paths import TEST_DATA_FOLDER, TEST_PRODUCT_FOLDER, TEST_SAMPLE_CONFIG, TEST_OUTPUT_FOLDER
-
         # Ensure data downloaded
         if not len(os.listdir(TEST_DATA_FOLDER)) > 3:
             subprocess.call("./getData.sh", shell=True, text=True, cwd=TEST_DATA_FOLDER)

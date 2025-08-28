@@ -29,6 +29,13 @@ class Execution:
         if not self.config:
             raise ValueError(f"Failed to load configuration from {config_path}. Please check the file format.")
 
+    def safe_load_yaml_from_disk(self):
+        """
+        Supports manual changes to the file. Checks the diff between file and cache then rebases cache onto the file.
+        """
+        file_config = load_yaml(self.config_path)
+
+
 
     def edit_config(self, key_path: str, value, add_field=False):
         """
