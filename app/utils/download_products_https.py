@@ -1,9 +1,6 @@
-import json
 import threading
 from datetime import datetime
-from PySide6.QtCore import QThread
 from bs4 import BeautifulSoup
-
 from app.utils.common_dirs import INPUT_PRODUCTS_PATH
 from app.utils.gn_functions import GPSDate
 from app.utils.yaml import load_yaml
@@ -12,7 +9,6 @@ import netrc
 import requests
 from pathlib import Path
 from typing import Optional, List  # Python 3.9-compatible generics
-
 from app.utils.auto_download_PPP import (
     download_atx,
     download_ocean_loading_model,
@@ -30,11 +26,7 @@ from app.utils.auto_download_PPP import (
 BASE_URL = "https://cddis.nasa.gov/archive"
 
 
-def download_file(
-    file_url: str,
-    download_dir: Path = INPUT_PRODUCTS_PATH,
-    overwrite_file: bool = False
-) -> Optional[Path]:
+def download_file(file_url: str, download_dir: Path = INPUT_PRODUCTS_PATH, overwrite_file: bool = False) -> Optional[Path]:
     output_path = Path(download_dir / file_url.split("/")[-1])
     if output_path.exists() and not overwrite_file:
         print(f"❌ File already downloaded: {output_path}")
@@ -67,7 +59,6 @@ def download_metadata(terminal_callback=None):
     tables_dir = INPUT_PRODUCTS_PATH / "tables"
     trop_dir = INPUT_PRODUCTS_PATH / "tables"
     trop_model = "gpt2"
-    long_filename = False
     if_file_present = "dont_replace"
 
     log("🌐 Starting auxiliary metadata download...")
@@ -139,10 +130,7 @@ def download_metadata2(terminal_callback=None):
 
     log("✅ All required metadata files downloaded (or already present).")
 
-def download_iau2000_eop_from_url(
-    download_dir: Path,
-    if_file_present: str = "dont_repalce"
-) -> Optional[Path]:
+def download_iau2000_eop_from_url(download_dir: Path, if_file_present: str = "dont_repalce") -> Optional[Path]:
     url = "https://datacenter.iers.org/data/latestVersion/finals.data.iau2000.txt"
     output_path = download_dir / "finals.data.iau2000.txt"
 
