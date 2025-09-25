@@ -148,6 +148,10 @@ class InputController(QObject):
             extractor = RinexExtractor(self.rnx_file)
             result = extractor.extract_rinex_data(self.rnx_file)
 
+            # Verify antenna_type against .atx file
+            atx_path = INPUT_PRODUCTS_PATH / "igs20.atx"
+            self.verify_antenna_type(atx_path, result)
+
             self.ui.terminalTextEdit.append("🔍 Scanning CDDIS archive for PPP products. Please wait...")
 
             # Synchronous CDDIS Products list downloader (for testing only)
@@ -208,6 +212,30 @@ class InputController(QObject):
             self.ready.emit(str(self.rnx_file), str(self.output_dir))
 
         return result
+
+    def verify_antenna_type(self, atx_path: str, result: List[str]):
+        # Verify antenna_type is present within the .atx file
+        # Return warning if not
+        with open(atx_path, "r") as file:
+            for line in file:
+                label = line[60:].strip()
+
+                # Read and find antenna_type tag
+                # If not present, return warning
+                if label == "TYPE / SERIAL NO":
+                    valid_antenna_type = line[0:20]
+                    if result["antenna_type"] == valid_antenna_type:
+                        print("yes!")
+                        self.ui.terminalTextEdit.append("✅ Antenna type verified from .atx file")
+                        return
+
+        # Not found! Return warning to user
+        QMessageBox.warning(
+            None,
+            "Provided Antenna Type Invalid",
+            f'Provided antenna type in .rnx file: "{result['antenna_type']}" not found in .atx file: "{atx_path}"'
+        )
+        return
 
     def _update_constellations_multiselect(self, constellation_str: str):
         """
