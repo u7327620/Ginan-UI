@@ -223,7 +223,7 @@ class InputController(QObject):
                 label = line[60:].strip()
 
                 # Read and find antenna_type tag
-                if label == "TYPE / SERIAL NO":
+                if label == "TYPE / SERIAL NO" and line[20:24].strip() == "":
                     valid_antenna_type = line[0:20]
 
                     if len(valid_antenna_type.strip()) < 16 or not valid_antenna_type[16:].strip():
