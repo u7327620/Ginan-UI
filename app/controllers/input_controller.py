@@ -218,9 +218,6 @@ class InputController(QObject):
         # Return warning if not
         atx_path = self.get_best_atx_path()
 
-        print(f"DEBUG: Looking for antenna type: '{result['antenna_type']}'")
-        print(f"DEBUG: Searching in .atx file: {atx_path}")
-
         with open(atx_path, "r") as file:
             for line in file:
                 label = line[60:].strip()
@@ -228,37 +225,21 @@ class InputController(QObject):
                 # Read and find antenna_type tag
                 if label == "TYPE / SERIAL NO":
                     valid_antenna_type = line[0:20]
-                    print(f"DEBUG: Found .atx antenna type: '{valid_antenna_type}' (length: {len(valid_antenna_type)})")
 
                     if len(valid_antenna_type.strip()) < 16 or not valid_antenna_type[16:].strip():
                         # Just the antenna part is included, need to add radome (cover)
                         antenna_part = valid_antenna_type[:15].strip()
-                        print(f"DEBUG: .atx antenna missing radome, extracted part: '{antenna_part}'")
                         valid_antenna_type = f"{antenna_part:<15} NONE"
-                        print(f"DEBUG: .atx antenna normalised to: '{valid_antenna_type}'")
-                    else:
-                        print(f"DEBUG: .atx antenna already has radome part: '{valid_antenna_type[16:].strip()}'")
 
                     # Do same normalisation for result["antenna_type"]
                     result_antenna = result["antenna_type"]
-                    print(f"DEBUG: RINEX antenna type: '{result_antenna}' (length: {len(result_antenna)})")
 
                     if len(result_antenna.strip()) < 16 or (
                             len(result_antenna) > 16 and not result_antenna[16:].strip()):
                         antenna_part = result_antenna[:15].strip()
-                        print(f"DEBUG: RINEX antenna missing radome, extracted part: '{antenna_part}'")
                         result_antenna = f"{antenna_part:<15} NONE"
-                        print(f"DEBUG: RINEX antenna normalised to: '{result_antenna}'")
-                    else:
-                        print(
-                            f"DEBUG: RINEX antenna already has radome part: '{result_antenna[16:].strip() if len(result_antenna) > 16 else 'N/A'}'")
 
                     # Compare strings
-                    print(f"DEBUG: Comparing:")
-                    print(f"  RINEX: '{result_antenna.strip()}'")
-                    print(f"  .atx:  '{valid_antenna_type.strip()}'")
-                    print(f"  Match: {result_antenna.strip() == valid_antenna_type.strip()}")
-
                     if result_antenna.strip() == valid_antenna_type.strip():
                         self.ui.terminalTextEdit.append("✅ Antenna type verified from .atx file")
                         return
